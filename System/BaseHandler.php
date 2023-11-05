@@ -32,11 +32,15 @@ class BaseHandler
      */
     public function __construct()
     {
+        if (!file_exists('config.php')) {
+            die('[ERROR] Please run the command: `cp config.php.sample config.php`');
+        }
+
         $this->config = require_once 'config.php';
         $this->event = Inbound::context();
         $this->handler = new Handler();
 
-        $handlers = Collector::getNamespacedFiles('App\Handlers', 'TeleBot');
+        $handlers = Collector::getNamespacedFiles('App\Handlers');
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
             foreach ($refClass->getMethods() as $method) {
