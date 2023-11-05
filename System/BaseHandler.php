@@ -32,11 +32,6 @@ class BaseHandler
      */
     public function __construct()
     {
-        if (!file_exists('config.php')) {
-            die('[ERROR] Please run the command: `cp config.php.sample config.php`');
-        }
-
-        $this->config = require_once 'config.php';
         $this->event = Inbound::context();
         $this->handler = new Handler();
 
