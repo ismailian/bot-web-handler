@@ -5,6 +5,9 @@ namespace TeleBot\System\Filesystem;
 class Collector
 {
 
+    /** @var string default project namespace */
+    const DEFAULT_NS = 'TeleBot';
+
     /**
      * recursively collect files in path based on their extension
      *
@@ -34,7 +37,7 @@ class Collector
      * @param string $extension
      * @return array
      */
-    public static function getNamespacedFiles(string $folder, string $namespace, string $extension = 'php'): array
+    public static function getNamespacedFiles(string $folder, string $namespace = self::DEFAULT_NS, string $extension = 'php'): array
     {
         $pattern = $folder . '/*.' . $extension;
         $files = glob($pattern);
