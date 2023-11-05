@@ -6,6 +6,7 @@ use Exception;
 use ReflectionClass;
 use ReflectionException;
 use JetBrains\PhpStorm\NoReturn;
+use TeleBot\System\Filesystem\Bootstrap;
 use TeleBot\System\Filesystem\Handler;
 use TeleBot\System\Messages\Inbound;
 use TeleBot\System\Filesystem\Collector;
@@ -32,6 +33,7 @@ class BaseHandler
      */
     public function __construct()
     {
+        (new Bootstrap())->setup();
         $this->event = Inbound::context();
         $this->handler = new Handler();
 
