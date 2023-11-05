@@ -40,4 +40,14 @@ class Outbound extends BaseHttp
 
         die($body);
     }
+
+    /**
+     * terminate connection
+     *
+     * @return void
+     */
+    public static function terminate(): void
+    {
+        die('ok');
+    }
 }
