@@ -92,4 +92,14 @@ class Inbound
         return self::hasJson() ? self::json() : self::body();
     }
 
+    /**
+     * get Event object
+     *
+     * @return array
+     */
+    public static function event(): array
+    {
+        return [];
+    }
+
 }

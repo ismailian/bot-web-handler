@@ -17,7 +17,7 @@ class BaseEvent
 
     public function __construct()
     {
-        $this->event = Inbound::context();
+        $this->event = Inbound::event();
         $this->telegram = (object)[];
     }
 

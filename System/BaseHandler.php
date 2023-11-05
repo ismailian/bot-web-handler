@@ -10,6 +10,7 @@ use TeleBot\System\Filesystem\Bootstrap;
 use TeleBot\System\Filesystem\Handler;
 use TeleBot\System\Messages\Inbound;
 use TeleBot\System\Filesystem\Collector;
+use TeleBot\System\Messages\Outbound;
 
 class BaseHandler
 {
@@ -34,7 +35,7 @@ class BaseHandler
     public function __construct()
     {
         (new Bootstrap())->setup();
-        $this->event = Inbound::context();
+        $this->event = Inbound::event();
         $this->handler = new Handler();
 
         $handlers = Collector::getNamespacedFiles('App\Handlers');
@@ -64,7 +65,7 @@ class BaseHandler
     #[NoReturn]
     public function __destruct()
     {
-        die();
+        Outbound::terminate();
     }
 
 }
