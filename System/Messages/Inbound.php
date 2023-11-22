@@ -11,8 +11,8 @@ class Inbound
     /** @var ?array $_body */
     protected static ?array $_body;
 
-    /** @var array $event */
-    protected array $event;
+    /** @var ?array $event */
+    protected static ?array $event;
 
     /**
      * default constructor
@@ -99,7 +99,11 @@ class Inbound
      */
     public static function event(): array
     {
-        return [];
+        if (empty(self::$event)) {
+            return self::$event = self::context();
+        }
+
+        return self::$event;
     }
 
 }
