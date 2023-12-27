@@ -21,7 +21,7 @@ class Url implements IEvent
 
         if (!$isMessage || !$hasText || !$hasEntities) return false;
         foreach ($event['data'][$key]['entities'] as $entity)
-            return isset($entity['type']) && $entity['type'] == 'url';
+            if ($entity['type'] == 'url') return true;
 
         return false;
     }
