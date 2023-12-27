@@ -14,6 +14,7 @@ class Document implements IEvent
      */
     public function apply(array $event): bool
     {
-        return isset($event['data']['message']) && isset($event['data']['message']['document']);
+        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
+        return isset($event['data'][$key]) && isset($event['data'][$key]['document']);
     }
 }
