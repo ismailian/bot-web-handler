@@ -11,6 +11,9 @@ class Text implements IEvent
 
     /**
      * default constructor
+     *
+     * @param bool $textOnly capture plain-text only
+     * this will only capture text messages without mentions, urls or commands
      */
     public function __construct(public bool $textOnly = false) {}
 
@@ -19,10 +22,14 @@ class Text implements IEvent
      */
     public function apply(array $event): bool
     {
-        $isMessage = isset($event['data']['message']);
-        $hasText = isset($event['data']['message']['text']);
+        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
+        $isMessage = isset($event['data'][$key]);
+        $hasText = isset($event['data'][$key]['text']);
         if (!$isMessage || !$hasText) return false;
 
-        return !$this->textOnly || !isset($event['data']['message']['entities']);
+        return !$this->textOnly || !count(array_filter(
+            $event['data'][$key]['entities'] ?? [],
+            fn($entity) => isset($entity['bot_command']) || in_array($entity['type'], ['url', 'mention'])
+        ));
     }
 }
