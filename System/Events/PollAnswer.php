@@ -6,7 +6,7 @@ use Attribute;
 use TeleBot\System\Interfaces\IEvent;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class Contact implements IEvent
+class PollAnswer implements IEvent
 {
 
     /**
@@ -14,6 +14,6 @@ class Contact implements IEvent
      */
     public function apply(array $event): bool
     {
-        return isset($event['data']['message']) && isset($event['data']['message']['contact']);
+        return false;
     }
 }
