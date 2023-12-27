@@ -75,7 +75,7 @@ class Bootstrap
 
     /**
      * verify payload
-     * 
+     *
      * @return bool
      */
     private function verifyPayload(): bool

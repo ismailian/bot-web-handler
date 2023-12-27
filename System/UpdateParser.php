@@ -76,7 +76,8 @@ class UpdateParser
         $message['chat'] = $data['chat'] ?? null;
         $message['caption'] = $data['caption'] ?? null;
 
-        unset($data['message_id'], $data['date'], $data['from'], $data['chat'], $data['caption']);
+        $unset = ['message_id', 'date', 'from', 'chat', 'caption', 'edit_date'];
+        array_map(function($k) use (&$data) { unset($data[$k]); }, $unset);
 
         /** determine message type */
         $keys = array_keys($data);
