@@ -2,6 +2,10 @@
 
 namespace TeleBot\System\Messages;
 
+use TeleBot\System\Exceptions\InvalidMessage;
+use TeleBot\System\Exceptions\InvalidUpdate;
+use TeleBot\System\UpdateParser;
+
 class Inbound
 {
 
@@ -96,11 +100,12 @@ class Inbound
      * get Event object
      *
      * @return array
+     * @throws InvalidUpdate|InvalidMessage
      */
     public static function event(): array
     {
         if (empty(self::$event)) {
-            return self::$event = self::context();
+            self::$event = UpdateParser::parseUpdate(self::context());
         }
 
         return self::$event;

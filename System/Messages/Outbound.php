@@ -48,6 +48,6 @@ class Outbound extends BaseHttp
      */
     public static function terminate(): void
     {
-        die('ok');
+        die();
     }
 }
