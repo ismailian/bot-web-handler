@@ -8,6 +8,23 @@ use TeleBot\System\Exceptions\InvalidMessage;
 class UpdateParser
 {
 
+    /** @var array|string[] list of top level updates */
+    static array $updates = [
+        'message', 'edited_message', 'callback_query',
+        'inline_query', 'chosen_inline_result',
+        'shipping_query', 'pre_checkout_query',
+        'channel_post', 'edited_channel_post',
+        'poll', 'poll_answer',
+        'my_chat_member', 'chat_member', 'chat_join_request'
+    ];
+
+    /** @var array list of message types */
+    static array $messageTypes = [
+        'text', 'photo', 'video', 'audio', 'voice',
+        'animation', 'document', 'contact', 'location',
+        'poll', 'dice', 'sticker', 'game'
+    ];
+
     /**
      * parse telegram update
      *
@@ -25,25 +42,17 @@ class UpdateParser
 
         /** get top level update type */
         $keys = array_keys($data);
-        $topLevelEventName = $keys[0];
-        $topLevelUpdates = [
-            'message', 'edited_message', 'callback_query',
-            'inline_query', 'chosen_inline_result',
-            'shipping_query', 'pre_checkout_query',
-            'channel_post', 'edited_channel_post',
-            'poll', 'poll_answer',
-            'my_chat_member', 'chat_member', 'chat_join_request'
-        ];
+        $updateName = $keys[0];
 
-        if (empty($topLevelEventName) || !in_array($topLevelEventName, $topLevelUpdates))
-            throw new InvalidUpdate('Unrecognized update type: ' . $topLevelEventName);
+        if (empty($updateName) || !in_array($updateName, self::$updates))
+            throw new InvalidUpdate('Unrecognized update type: ' . $updateName);
 
-        $event['type'] = str_replace('_', '', ucwords($topLevelEventName, '_')) . '::class';
+        $event['type'] = str_replace('_', '', ucwords($updateName, '_')) . '::class';
 
         /** check for message types */
-        if (in_array($topLevelEventName, ['message', 'edited_message'])) {
-            $data[$topLevelEventName] = self::parseMessage($data[$topLevelEventName]);
-            $event['type'] = $data[$topLevelEventName]['type'];
+        if (in_array($updateName, ['message', 'edited_message'])) {
+            $data[$updateName] = self::parseMessage($data[$updateName]);
+            $event['type'] = $data[$updateName]['type'];
         }
 
         return $event;
@@ -71,18 +80,13 @@ class UpdateParser
 
         /** determine message type */
         $keys = array_keys($data);
-        $typeName = $keys[0];
-        $messageTypes = [
-            'text', 'photo', 'video', 'audio', 'voice',
-            'animation', 'document', 'contact', 'location',
-            'poll', 'dice', 'sticker', 'game'
-        ];
+        $messageType = $keys[0];
 
-        if (empty($typeName) || !in_array($typeName, $messageTypes)) {
-            throw new InvalidMessage('Unrecognized message type: ' . $typeName);
+        if (empty($messageType) || !in_array($messageType, self::$messageTypes)) {
+            throw new InvalidMessage('Unrecognized message type: ' . $messageType);
         }
 
-        $message['type'] = str_replace('_', '', ucwords($typeName, '_')) . '::class';
+        $message['type'] = str_replace('_', '', ucwords($messageType, '_')) . '::class';
         return $message;
     }
 

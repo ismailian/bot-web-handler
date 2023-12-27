@@ -4,6 +4,7 @@ namespace TeleBot\System\Filesystem;
 
 use TeleBot\System\Messages\Inbound;
 use TeleBot\System\Messages\Outbound;
+use TeleBot\System\UpdateParser;
 
 class Bootstrap
 {
@@ -74,14 +75,14 @@ class Bootstrap
 
     /**
      * verify payload
+     * 
      * @return bool
      */
     private function verifyPayload(): bool
     {
         $payload = Inbound::context();
         if (isset($payload['update_id'])) {
-            $updateTypes = ['message', 'inline_query', 'callback_query'];
-            if (!empty(array_intersect($updateTypes, array_keys($payload)))) {
+            if (!empty(array_intersect(UpdateParser::$updates, array_keys($payload)))) {
                 return true;
             }
         }
