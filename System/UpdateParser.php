@@ -74,7 +74,8 @@ class UpdateParser
         $typeName = $keys[0];
         $messageTypes = [
             'text', 'photo', 'video', 'audio', 'voice',
-            'animation', 'document', 'contact', 'location', 'poll'
+            'animation', 'document', 'contact', 'location',
+            'poll', 'dice', 'sticker'
         ];
 
         if (empty($typeName) || !in_array($typeName, $messageTypes)) {
