@@ -6,7 +6,7 @@ use Attribute;
 use TeleBot\System\Interfaces\IEvent;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class Callback implements IEvent
+class CallbackQuery implements IEvent
 {
 
     /**
