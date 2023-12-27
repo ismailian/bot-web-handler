@@ -100,7 +100,7 @@ class Bootstrap
         $payload = Inbound::context();
         unset($payload['update_id']);
         $keys = array_keys($payload);
-        $userId = $payload[$keys[0]]['chat']['id'];
+        $userId = $payload[$keys[0]]['from']['id'];
 
         $whitelist = self::$config['users']['whitelist'];
         $blacklist = self::$config['users']['blacklist'];
