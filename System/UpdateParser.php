@@ -62,11 +62,12 @@ class UpdateParser
 
         /** get static properties */
         $message['id'] = $data['message_id'] ?? null;
+        $message['date'] = $data['date'] ?? null;
         $message['from'] = $data['from'] ?? null;
         $message['chat'] = $data['chat'] ?? null;
         $message['caption'] = $data['caption'] ?? null;
 
-        unset($data['message_id'], $data['from'], $data['chat'], $data['caption']);
+        unset($data['message_id'], $data['date'], $data['from'], $data['chat'], $data['caption']);
 
         /** determine message type */
         $keys = array_keys($data);
