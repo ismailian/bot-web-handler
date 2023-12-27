@@ -29,7 +29,7 @@ class Text implements IEvent
 
         return !$this->textOnly || !count(array_filter(
             $event['data'][$key]['entities'] ?? [],
-            fn($entity) => isset($entity['bot_command']) || in_array($entity['type'], ['url', 'mention'])
+            fn($entity) => in_array($entity['type'], ['bot_command', 'url', 'mention'])
         ));
     }
 }
