@@ -14,6 +14,6 @@ class EditedMessage implements IEvent
      */
     public function apply(array $event): bool
     {
-        return false;
+        return isset($event['data']['edited_message']);
     }
 }
