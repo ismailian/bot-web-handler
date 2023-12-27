@@ -14,6 +14,7 @@ class Poll implements IEvent
      */
     public function apply(array $event): bool
     {
-        return false;
+        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
+        return isset($event['data'][$key]) && isset($event['data'][$key]['poll']);
     }
 }
