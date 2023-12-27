@@ -73,7 +73,7 @@ class UpdateParser
         $keys = array_keys($data);
         $typeName = $keys[0];
         $messageTypes = [
-            'text', 'photo', 'video', 'audio',
+            'text', 'photo', 'video', 'audio', 'voice',
             'animation', 'document', 'contact', 'location'
         ];
 
