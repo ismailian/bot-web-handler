@@ -6,11 +6,13 @@ use Exception;
 use ReflectionClass;
 use ReflectionException;
 use JetBrains\PhpStorm\NoReturn;
-use TeleBot\System\Filesystem\Bootstrap;
-use TeleBot\System\Filesystem\Handler;
+use TeleBot\System\Exceptions\InvalidMessage;
 use TeleBot\System\Messages\Inbound;
-use TeleBot\System\Filesystem\Collector;
 use TeleBot\System\Messages\Outbound;
+use TeleBot\System\Filesystem\Handler;
+use TeleBot\System\Filesystem\Collector;
+use TeleBot\System\Filesystem\Bootstrap;
+use TeleBot\System\Exceptions\InvalidUpdate;
 
 class BaseHandler
 {
@@ -28,11 +30,10 @@ class BaseHandler
     protected Handler $handler;
 
     /**
-     * default constructor
-     *
      * @throws ReflectionException
+     * @throws InvalidUpdate|InvalidMessage
      */
-    public function __construct()
+    public function init(): bool
     {
         (new Bootstrap())->setup();
         $this->event = Inbound::event();
@@ -42,19 +43,21 @@ class BaseHandler
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
             foreach ($refClass->getMethods() as $method) {
-                foreach ($method->getAttributes($this->event['type']) as $attr) {
-                    if ($attr->newInstance()->apply($this->event)) {
+                foreach ($method->getAttributes() as $attr) {
+                    if ($attr->newInstance()?->apply($this->event)) {
                         $this->handler->setConfig($this->config)->assign(
                             $refClass->newInstance($attr),
                             $method->name,
                             $attr->getArguments(),
                             $this->event
                         );
-                        break;
+                        return true;
                     }
                 }
             }
         }
+
+        return false;
     }
 
     /**
