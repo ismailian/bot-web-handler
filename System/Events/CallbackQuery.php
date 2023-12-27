@@ -12,9 +12,10 @@ class CallbackQuery implements IEvent
     /**
      * default constructor
      *
-     * @param string $key
+     * @param string|null $key property name in the callback data
+     * @param string|null $value property value in the callback data
      */
-    public function __construct(public string $key = '') {}
+    public function __construct(public ?string $key = null, public ?string $value = null) {}
 
     /**
      * @inheritDoc
@@ -22,13 +23,12 @@ class CallbackQuery implements IEvent
     public function apply(array $event): bool
     {
         if (isset($event['data']['callback_query'])) {
-            if (empty($this->key)) return true;
-
-            $callbackData = $event['data']['callback_query']['callback_data'] ?? null;
-            if (!$callbackData) return false;
-
-            $callbackData = json_decode($callbackData, true);
-            return (isset($callbackData['key']) && $callbackData['key'] == $this->key);
+            if (!$this->key && !$this->value) return true;
+            if (!empty(($data = $event['data']['callback_query']['data']))) {
+                $data = json_decode($data, true);
+                if (array_key_exists($this->key, $data))
+                    return $data[$this->key] == $this->value;
+            }
         }
 
         return false;
