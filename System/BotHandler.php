@@ -2,6 +2,8 @@
 
 namespace TeleBot\System;
 
+use Exception;
+
 class BotHandler extends BaseHandler
 {
 
@@ -12,7 +14,11 @@ class BotHandler extends BaseHandler
      */
     public function start(): void
     {
-        $this->handler->run();
+        try {
+            if ($this->init()) {
+                $this->handler->run();
+            }
+        } catch (Exception $ex) {}
     }
 
 }
