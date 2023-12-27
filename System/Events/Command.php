@@ -12,22 +12,23 @@ class Command implements IEvent
     /**
      * default constructor
      *
-     * @param string $command
+     * @param ?string $command
      */
-    public function __construct(public string $command) {}
+    public function __construct(public ?string $command = null) {}
 
     /**
      * @inheritDoc
      */
     public function apply(array $event): bool
     {
-        $this->command = trim($this->command, '/');
-        if (str_contains($event['data']['message']['text'], "/{$this->command}")) {
-            foreach ($event['data']['message']['entities'] as $entity) {
-                if (isset($entity['bot_command']) && $entity['bot_command']) {
+        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
+        if (!empty($this->command))
+            $this->command = str_starts_with($this->command, '/') ? '' : "/{$this->command}";
+
+        foreach ($event['data'][$key]['entities'] as $entity) {
+            if ($entity['type'] == 'bot_command')
+                if (!$this->command || substr($event['data'][$key]['text'], $entity['offset'], $entity['length']) == $this->command)
                     return true;
-                }
-            }
         }
 
         return false;
