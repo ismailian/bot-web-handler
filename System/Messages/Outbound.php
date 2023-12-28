@@ -47,7 +47,7 @@ class Outbound extends BaseHttp
      *
      * @return void
      */
-    public function close(): void
+    public static function close(): void
     {
         if (is_callable('fastcgi_finish_request')) {
             session_write_close();

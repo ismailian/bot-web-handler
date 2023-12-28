@@ -129,6 +129,8 @@ class Bootstrap
         if (!$allowedId || !$validSignature || !$allowedRoute || !$validPayload || !$this->verifyUserId()) {
             die();
         }
+
+        Outbound::close();
     }
 
 }
