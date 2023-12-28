@@ -127,7 +127,7 @@ class Bootstrap
         $validPayload = $this->verifyPayload();
 
         if (!$allowedId || !$validSignature || !$allowedRoute || !$validPayload || !$this->verifyUserId()) {
-            Outbound::terminate();
+            die();
         }
     }
 

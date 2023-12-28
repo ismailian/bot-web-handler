@@ -68,7 +68,7 @@ class BaseHandler
     #[NoReturn]
     public function __destruct()
     {
-        Outbound::terminate();
+        Outbound::end();
     }
 
 }
