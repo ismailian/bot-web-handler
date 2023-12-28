@@ -7,7 +7,7 @@ use TeleBot\System\Interfaces\IFile;
 class File implements IFile
 {
 
-    private string $resourceUrl = 'https://api.telegram.org/file/bot{token}/path?file_id={file_id}';
+    private string $resourceUrl = 'https://api.telegram.org/file/bot{token}/{path}?file_id={file_id}';
 
     /**
      * @inheritDoc
