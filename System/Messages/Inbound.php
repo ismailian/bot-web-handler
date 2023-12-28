@@ -44,7 +44,11 @@ class Inbound
     public static function headers(string $key = null): array|string
     {
         if (!$key) return getallheaders();
-        return getallheaders()[$key];
+        foreach (getallheaders() as $hkey => $hvalue)
+            if (strtolower($hkey) == strtolower($key))
+                return $hvalue;
+
+        return '';
     }
 
     /**
