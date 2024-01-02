@@ -9,11 +9,34 @@ use TeleBot\System\UpdateParser;
 class Bootstrap
 {
 
+    /** @var array $config */
+    public static array $config;
     /** @var string $envFilename */
     protected string $envFilename = '.env';
 
-    /** @var array $config */
-    protected static array $config;
+    /**
+     * setup necessary configurations to run the app
+     *
+     * @return void
+     */
+    public function setup(): void
+    {
+        $this->__env();
+        self::$config = require_once 'config.php';
+
+        $allowedId = $this->verifyIP();
+        $validSignature = $this->verifySignature();
+        $allowedRoute = $this->verifyRoute();
+        $validPayload = $this->verifyPayload();
+        if (!$allowedId || !$validSignature || !$allowedRoute || !$validPayload || !$this->verifyUserId())
+            die();
+
+        if (!empty(($async = getenv('ASYNC')))) {
+            if ($async == 'true') {
+                Outbound::close();
+            }
+        }
+    }
 
     /**
      * load env configurations
@@ -109,28 +132,6 @@ class Bootstrap
         if (!empty($blacklist)) return !in_array($userId, $blacklist);
 
         return true;
-    }
-
-    /**
-     * setup necessary configurations to run the app
-     *
-     * @return void
-     */
-    public function setup(): void
-    {
-        $this->__env();
-        self::$config = require_once 'config.php';
-
-        $allowedId = $this->verifyIP();
-        $validSignature = $this->verifySignature();
-        $allowedRoute = $this->verifyRoute();
-        $validPayload = $this->verifyPayload();
-
-        if (!$allowedId || !$validSignature || !$allowedRoute || !$validPayload || !$this->verifyUserId()) {
-            die();
-        }
-
-        Outbound::close();
     }
 
 }
