@@ -9,8 +9,8 @@ interface IEvent
      * verify event type
      *
      * @param array $event
-     * @return bool
+     * @return mixed
      */
-    public function apply(array $event): bool;
+    public function apply(array $event): mixed;
 
 }
