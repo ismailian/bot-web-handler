@@ -2,17 +2,14 @@
 
 namespace TeleBot\System;
 
-use Exception;
 use ReflectionClass;
 use ReflectionException;
-use JetBrains\PhpStorm\NoReturn;
-use TeleBot\System\Exceptions\InvalidMessage;
 use TeleBot\System\Messages\Inbound;
-use TeleBot\System\Messages\Outbound;
 use TeleBot\System\Filesystem\Handler;
 use TeleBot\System\Filesystem\Collector;
 use TeleBot\System\Filesystem\Bootstrap;
 use TeleBot\System\Exceptions\InvalidUpdate;
+use TeleBot\System\Exceptions\InvalidMessage;
 
 class BaseHandler
 {
@@ -30,6 +27,8 @@ class BaseHandler
     protected Handler $handler;
 
     /**
+     * initialize handler
+     *
      * @throws ReflectionException
      * @throws InvalidUpdate|InvalidMessage
      */
@@ -44,12 +43,11 @@ class BaseHandler
             $refClass = new ReflectionClass($handler);
             foreach ($refClass->getMethods() as $method) {
                 foreach ($method->getAttributes() as $attr) {
-                    if ($attr->newInstance()?->apply($this->event)) {
+                    if (($result = $attr->newInstance()?->apply($this->event))) {
                         $this->handler->setConfig($this->config)->assign(
                             $refClass->newInstance($attr),
                             $method->name,
-                            $attr->getArguments(),
-                            $this->event
+                            $result[1] ?? null
                         );
                         return true;
                     }
@@ -58,17 +56,6 @@ class BaseHandler
         }
 
         return false;
-    }
-
-    /**
-     * default destructor
-     *
-     * @throws Exception
-     */
-    #[NoReturn]
-    public function __destruct()
-    {
-        Outbound::end();
     }
 
 }
