@@ -3,35 +3,52 @@
 namespace TeleBot\App\Handlers;
 
 use TeleBot\System\BaseEvent;
-use TeleBot\System\Events\Message;
-use GuzzleHttp\Exception\GuzzleException;
+use TeleBot\System\Events\Audio;
+use TeleBot\System\Events\Photo;
+use TeleBot\System\Events\Video;
+use TeleBot\System\Events\Voice;
+use TeleBot\System\Types\IncomingAudio;
+use TeleBot\System\Types\IncomingPhoto;
+use TeleBot\System\Types\IncomingVideo;
+use TeleBot\System\Types\IncomingVoice;
 
 class GetMyId extends BaseEvent
 {
 
     /**
-     * handle all incoming messages
+     * handle incoming photo messages
      *
+     * @param IncomingPhoto $photo
      * @return void
-     * @throws GuzzleException
      */
-    #[Message]
-    public function index(): void
-    {
-        try {
-            $botToken = getenv('TG_BOT_TOKEN', true);
-            $chatId = $this->event['message']['chat']['id'];
-            $userId = $this->event['message']['chat']['id'];
-            $message = "Your user ID: <strong>{$userId}</strong>\nCurrent chat ID: <strong>{$chatId}</strong>";
+    #[Photo]
+    public function handlePhoto(IncomingPhoto $photo): void {}
 
-            $this->client->post("/bot{$botToken}/sendMessage", [
-                'json' => [
-                    'chat_id' => $this->event['message']['chat']['id'],
-                    'text' => $message,
-                    'parse_mode' => 'html'
-                ]
-            ]);
-        } catch (\Exception $ex) {}
-    }
+    /**
+     * handle incoming video messages
+     *
+     * @param IncomingVideo $video
+     * @return void
+     */
+    #[Video]
+    public function handleVideo(IncomingVideo $video): void {}
+
+    /**
+     * handle incoming audio messages
+     *
+     * @param IncomingAudio $audio
+     * @return void
+     */
+    #[Audio]
+    public function handleAudio(IncomingAudio $audio): void {}
+
+    /**
+     * handle incoming voice messages
+     *
+     * @param IncomingVoice $voice
+     * @return void
+     */
+    #[Voice]
+    public function handleVoice(IncomingVoice $voice): void {}
 
 }
