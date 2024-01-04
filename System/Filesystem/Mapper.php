@@ -15,7 +15,7 @@ class Mapper
      */
     public static function call(object $handler, string $method, ...$args): void
     {
-        call_user_func([$handler, $method], $args);
+        call_user_func([$handler, $method], ...$args);
     }
 
 }

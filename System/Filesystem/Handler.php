@@ -39,15 +39,13 @@ class Handler
      * @param mixed $instance
      * @param string $method
      * @param mixed $args
-     * @param array $event
      * @return $this
      */
-    public function assign(mixed $instance, string $method, mixed $args, array $event): self
+    public function assign(mixed $instance, string $method, mixed $args): self
     {
         $this->instance = $instance;
         $this->method = $method;
         $this->args = $args;
-        $this->event = $event;
 
         $this->instance->config = $this->config;
 
@@ -61,7 +59,7 @@ class Handler
      */
     public function run(): void
     {
-        Mapper::call($this->instance, $this->method, $this->args, $this->event);
+        Mapper::call($this->instance, $this->method, $this->args);
     }
 
 }
