@@ -46,8 +46,7 @@ class BaseHandler
                     if (($result = $attr->newInstance()?->apply($this->event))) {
                         $this->handler->setConfig($this->config)->assign(
                             $refClass->newInstance($attr),
-                            $method->name,
-                            $result[1] ?? null
+                            $method->name, $result
                         );
                         return true;
                     }
