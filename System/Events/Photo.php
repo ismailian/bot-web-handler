@@ -13,14 +13,12 @@ class Photo implements IEvent
     /**
      * @inheritDoc
      */
-    public function apply(array $event): array
+    public function apply(array $event): IncomingPhoto|bool
     {
         $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $photo = new IncomingPhoto($event['data'][$key]['photo']);
+        $isPhoto = isset($event['data'][$key]) && isset($event['data'][$key]['photo']);
+        if (!$isPhoto) return false;
 
-        return [
-            isset($event['data'][$key]) && isset($event['data'][$key]['photo']),
-            $photo
-        ];
+        return new IncomingPhoto($event['data'][$key]['photo']);
     }
 }
