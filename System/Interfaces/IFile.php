@@ -8,17 +8,17 @@ interface IFile
     /**
      * get file temporary link
      *
-     * @return string
+     * @param string|int $idOrIndex
+     * @return string|null
      */
-    public function getLink(): string;
+    public function getLink(string|int $idOrIndex): ?string;
 
     /**
      * download context file
      *
-     * @param string $path directory to store the file in
      * @param string|null $filename name of the file, defaults to remote filename
-     * @return bool
+     * @return string|null
      */
-    public function download(string $path, string $filename = null): bool;
+    public function saveAs(string $filename = null): ?string;
 
 }
