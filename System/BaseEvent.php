@@ -27,7 +27,7 @@ class BaseEvent
      */
     public function __construct()
     {
-        $this->event = Inbound::event();
+        $this->event = Inbound::event()['data'];
         $this->telegram = (object)[];
         $this->client = new Client([
             'verify' => false,

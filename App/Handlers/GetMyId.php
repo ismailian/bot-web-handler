@@ -20,13 +20,13 @@ class GetMyId extends BaseEvent
     {
         try {
             $botToken = getenv('TG_BOT_TOKEN', true);
-            $chatId = $this->event['data']['message']['chat']['id'];
-            $userId = $this->event['data']['message']['chat']['id'];
+            $chatId = $this->event['message']['chat']['id'];
+            $userId = $this->event['message']['chat']['id'];
             $message = "Your user ID: <strong>{$userId}</strong>\nCurrent chat ID: <strong>{$chatId}</strong>";
 
             $this->client->post("/bot{$botToken}/sendMessage", [
                 'json' => [
-                    'chat_id' => $this->event['data']['message']['chat']['id'],
+                    'chat_id' => $this->event['message']['chat']['id'],
                     'text' => $message,
                     'parse_mode' => 'html'
                 ]
