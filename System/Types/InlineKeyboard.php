@@ -31,13 +31,13 @@ class InlineKeyboard
      * add keyboard button
      *
      * @param string $text
-     * @param string $value
+     * @param mixed $value
      * @param string $type
      * @return $this
      */
-    public function addButton(string $text, string $value, string $type = InlineKeyboard::URL): InlineKeyboard
+    public function addButton(string $text, mixed $value, string $type = InlineKeyboard::URL): InlineKeyboard
     {
-        $this->buttons[] = ['text' => $text, $type => $value];
+        $this->buttons[] = ['text' => $text, $type => is_array($value) ? json_encode($value, JSON_UNESCAPED_SLASHES) : $value];
         return $this;
     }
 
