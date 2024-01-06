@@ -6,6 +6,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Exception\GuzzleException;
+use TeleBot\System\Types\IncomingDice;
 
 class BotClient
 {
@@ -45,6 +46,7 @@ class BotClient
         'action' => 'sendChatAction',
         'user' => 'getChatMember',
         'edit' => 'editMessageText',
+        'dice' => 'sendDice',
     ];
 
     /**
@@ -274,6 +276,22 @@ class BotClient
         ]);
 
         return $data && $data['ok'] == true;
+    }
+
+    /**
+     * send a dice message
+     *
+     * @param string $emoji
+     * @return IncomingDice|bool
+     * @throws Exception
+     */
+    public function sendDice(string $emoji): IncomingDice|bool
+    {
+        $data = $this->post('dice', [
+            'emoji' => $emoji,
+        ]);
+
+        return ($data && $data['ok']) ? new IncomingDice($data['result']['dice']) : false;
     }
 
     /**
