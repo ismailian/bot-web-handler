@@ -4,6 +4,7 @@ namespace TeleBot\System\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
+use TeleBot\System\Types\IncomingCallbackQuery;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class CallbackQuery implements IEvent
@@ -20,14 +21,15 @@ class CallbackQuery implements IEvent
     /**
      * @inheritDoc
      */
-    public function apply(array $event): bool
+    public function apply(array $event): IncomingCallbackQuery|bool
     {
         if (isset($event['data']['callback_query'])) {
             if (!$this->key && !$this->value) return true;
             if (!empty(($data = $event['data']['callback_query']['data']))) {
                 $data = json_decode($data, true);
                 if (array_key_exists($this->key, $data))
-                    return $data[$this->key] == $this->value;
+                    if (!$this->value || $data[$this->key] == $this->value)
+                        return new IncomingCallbackQuery($data);
             }
         }
 
