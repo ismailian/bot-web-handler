@@ -27,10 +27,18 @@ class BaseEvent
      */
     public function __construct()
     {
+        $userId = null;
         $this->event = Inbound::event()['data'];
+        foreach (array_keys($this->event) as $key) {
+            if ($key !== 'update_id') {
+                $userId = $this->event[$key]['from']['id'];
+                break;
+            }
+        }
+
         $this->telegram = (new BotClient())
             ->setToken(getenv('TG_BOT_TOKEN'))
-            ->setChatId($this->event['message']['from']['id']);
+            ->setChatId($userId);
     }
 
 }
