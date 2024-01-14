@@ -14,6 +14,28 @@ class SessionManager
     protected static array $cached;
 
     /**
+     * get session prop value
+     *
+     * @param string $path
+     * @return mixed
+     */
+    protected static function getProp(string $path): mixed
+    {
+        $tmp = self::$cached;
+        $keys = explode('.', $path);
+        $lastKey = $keys[count($keys) - 1];
+
+        foreach ($keys as $key) {
+            if (isset($tmp[$key])) {
+                if ($key == $lastKey) return $tmp[$key];
+                $tmp = $tmp[$key];
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * initialize session
      *
      * @return SessionManager
@@ -22,7 +44,14 @@ class SessionManager
     {
         if (empty(self::$sessionId)) {
             try {
-                self::$sessionId = Inbound::event()['data']['message']['from']['id'];
+                $event = Inbound::event()['data'];
+                foreach (array_keys($event) as $key) {
+                    if ($key !== 'update_id') {
+                        self::$sessionId = $event[$key]['from']['id'];
+                        break;
+                    }
+                }
+
                 if (!file_exists('session') && !is_dir('session')) {
                     mkdir('session');
                 }
@@ -50,19 +79,18 @@ class SessionManager
     public static function get(string $key = null): mixed
     {
         if (empty(self::$cached)) self::start();
-        if (!empty($key) && !array_key_exists($key, self::$cached)) return null;
 
-        return $key ? self::$cached[$key] : self::$cached;
+        return $key ? self::getProp($key) : self::$cached;
     }
 
     /**
      * set session data
      *
-     * @param string $state
      * @param array $data
+     * @param string $state
      * @return void
      */
-    public static function set(string $state, array $data): void
+    public static function set(array $data, string $state = 'started'): void
     {
         if (empty(self::$sessionId) || empty(self::$cached)) {
             self::start();

@@ -2,4 +2,5 @@
 .idea
 vendor
 tmp
+session
 todos.txt
