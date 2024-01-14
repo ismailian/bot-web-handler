@@ -37,7 +37,7 @@ class SessionManager
         }
 
         $session::$cached = ['state' => 'started'];
-        file_put_contents($sessionKey, json_encode($session::$cached, JSON_UNESCAPED_SLASHES));
+        file_put_contents($sessionKey, json_encode($session::$cached, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
         return $session;
     }
 
@@ -70,7 +70,7 @@ class SessionManager
 
         $sessionKey = 'session/' . self::$sessionId . ' .json';
         self::$cached = ['state' => $state, ...$data];
-        file_put_contents($sessionKey, json_encode(self::$cached, JSON_UNESCAPED_SLASHES));
+        file_put_contents($sessionKey, json_encode(self::$cached, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
     }
 
 }
