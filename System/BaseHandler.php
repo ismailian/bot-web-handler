@@ -38,7 +38,7 @@ class BaseHandler
         $this->event = Inbound::event();
         $this->handler = new Handler();
 
-        $handlers = Collector::getNamespacedFiles('App\Handlers');
+        $handlers = Collector::getNamespacedFiles('App/Handlers');
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
             foreach ($refClass->getMethods() as $method) {
