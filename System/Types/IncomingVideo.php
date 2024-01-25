@@ -46,24 +46,6 @@ class IncomingVideo extends File
     }
 
     /**
-     * get video file size
-     *
-     * @param bool $readable
-     * @return int|string
-     */
-    public function getSize(bool $readable = false): int|string
-    {
-        if (!$readable) return $this->file['file_size'];
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $fileSize = $this->file['file_size'];
-        $n = 0;
-
-        while ($fileSize >= 1024 && $n++ < count($units))
-            $fileSize /= 1024;
-        return join(' ', [number_format($fileSize, 2), $units[$n]]);
-    }
-
-    /**
      * download video
      *
      * @return string|null returns stored file name

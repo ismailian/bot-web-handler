@@ -21,4 +21,12 @@ interface IFile
      */
     public function saveAs(string $filename = null): ?string;
 
+    /**
+     * get file size
+     *
+     * @param bool $readable
+     * @return int|string
+     */
+    public function getSize(bool $readable = false): int|string;
+
 }
