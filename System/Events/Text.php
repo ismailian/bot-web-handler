@@ -33,6 +33,6 @@ class Text implements IEvent
                 fn($entity) => in_array($entity['type'], ['bot_command', 'url', 'mention'])
             ));
 
-        return $isCleanText && $this->Validator->isValid($event['data'][$key]['text']);
+        return $isCleanText && (!$this->Validator || $this->Validator->isValid($event['data'][$key]['text']));
     }
 }
