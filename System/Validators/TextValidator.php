@@ -11,9 +11,10 @@ class TextValidator implements IValidator
      * default constructor
      *
      * @param int|null $minLength
+     * @param string|null $equals
      * @param string|null $regex
      */
-    public function __construct(public ?int $minLength = null, public ?string $regex = null) {}
+    public function __construct(public ?int $minLength = null, public ?string $equals = null, public ?string $regex = null) {}
 
     /**
      * @inheritDoc
@@ -21,9 +22,9 @@ class TextValidator implements IValidator
     public function isValid(mixed $data): bool
     {
         if ($this->minLength && $this->minLength > strlen($data)) return false;
-        if ($this->regex) {
-            return (bool) preg_match("/{$this->regex}/i", $data);
-        }
+        if ($this->equals && $this->equals !== $data) return false;
+        if ($this->regex && !((bool)preg_match("/{$this->regex}/i", $data)))
+            return false;
 
         return true;
     }
