@@ -11,10 +11,10 @@ class TextValidator implements IValidator
      * default constructor
      *
      * @param int|null $minLength
-     * @param string|null $equals
+     * @param int|null $equals
      * @param string|null $regex
      */
-    public function __construct(public ?int $minLength = null, public ?string $equals = null, public ?string $regex = null) {}
+    public function __construct(public ?int $minLength = null, public ?int $equals = null, public ?string $regex = null) {}
 
     /**
      * @inheritDoc
