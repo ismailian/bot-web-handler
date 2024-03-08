@@ -17,11 +17,6 @@ class ExceptionHandler
      */
     public static function onError(int $code, string $message, string $file = null, int $line = null, array $context = []): void
     {
-        /** create logs dir if it does not already exist */
-        if (!file_exists('logs') && !is_dir('logs')) {
-            mkdir('logs');
-        }
-
         self::log([
             'file' => $file,
             'line' => $line,
@@ -38,6 +33,11 @@ class ExceptionHandler
      */
     protected static function log(array $data): void
     {
+        /** create logs dir if it does not already exist */
+        if (!file_exists('logs') && !is_dir('logs')) {
+            mkdir('logs');
+        }
+
         $logPath = 'logs/' . date('Y-m-d__H-i-s') . '.log';
         file_put_contents($logPath, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     }
@@ -50,11 +50,6 @@ class ExceptionHandler
      */
     public static function onException($exception): void
     {
-        /** create logs dir if it does not already exist */
-        if (!file_exists('logs') && !is_dir('logs')) {
-            mkdir('logs');
-        }
-
         self::log([
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
