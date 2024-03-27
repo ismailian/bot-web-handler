@@ -8,7 +8,13 @@ class IncomingCallbackQuery
     /** @var array $callbackQuery */
     protected mixed $callbackQuery;
 
-    public function __construct(mixed $callbackQuery)
+    /**
+     * default constructor
+     *
+     * @param int $messageId
+     * @param mixed $callbackQuery
+     */
+    public function __construct(public int $messageId, mixed $callbackQuery)
     {
         $this->callbackQuery = $callbackQuery;
         if (!is_array($callbackQuery) && !empty($json = json_decode($callbackQuery, true))) {
