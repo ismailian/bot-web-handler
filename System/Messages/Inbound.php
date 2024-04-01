@@ -77,7 +77,10 @@ class Inbound
      */
     protected static function json(): array
     {
-        return json_decode(file_get_contents('php://input'),true);
+        if (($json = json_decode(file_get_contents('php://input'),true)))
+            return $json;
+
+        return [];
     }
 
     /**
