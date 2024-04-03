@@ -48,8 +48,8 @@ class Bootstrap
         if (file_exists($this->envFilename) && is_file($this->envFilename)) {
             $envFile = new \SplFileObject($this->envFilename);
             while (!$envFile->eof()) {
-                $validLine = preg_match('/^(?<key>[!a-zA-Z]\S+)=(?<value>\S+)?$/', ($line = trim($envFile->fgets())));
-                if ($validLine) putenv($line);
+                $validLine = preg_match('/^(?<key>[!a-zA-Z]\S+)=(?<value>.+)?$/', ($line = trim($envFile->fgets())));
+                if ($validLine) putenv(str_replace('"', '', $line));
             }
         }
     }
