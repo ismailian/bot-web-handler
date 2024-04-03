@@ -106,6 +106,42 @@ class BotClient
     }
 
     /**
+     * send a text message
+     *
+     * @param string $text text message to send
+     * @param bool $withAction send action
+     * @return bool returns true on success, otherwise false
+     * @throws Exception
+     */
+    public function sendMessage(string $text, bool $withAction = false): bool
+    {
+        if ($withAction) $this->sendAction('typing');
+        $data = $this->post('message', [
+            'text' => $text,
+            'parse_mode' => $this->mode,
+        ]);
+
+        return $data && $data['ok'] == true;
+    }
+
+    /**
+     * send an action
+     *
+     * @param string $action action to send
+     * @return BotClient
+     * @throws Exception
+     */
+    public function sendAction(string $action): BotClient
+    {
+        $this->post('action', [
+            'chat_id' => $this->chatId,
+            'action' => $action
+        ]);
+
+        return $this;
+    }
+
+    /**
      * send request to API
      *
      * @param string $action
@@ -150,68 +186,9 @@ class BotClient
             }
 
             return $body['ok'] ? $body : null;
-        } catch (GuzzleException $e) {}
+        } catch (GuzzleException $e) {
+        }
         return null;
-    }
-
-    /**
-     * send request to API
-     *
-     * @param string $action
-     * @param array $query
-     * @return array|null
-     */
-    protected function get(string $action, array $query): ?array
-    {
-        try {
-            $endpoint = $this->baseUrl . $this->endpoints[$action];
-            $endpoint = str_replace('{token}', $this->token, $endpoint);
-            $response = $this->api->request('GET', $endpoint, [
-                'query' => ['chat_id' => $this->chatId, ...$query]
-            ]);
-
-            if ($response->getStatusCode() !== 200) return null;
-            $body = json_decode($response->getBody(), true);
-
-            return $body['ok'] ? $body : null;
-        } catch (GuzzleException $e) {}
-        return null;
-    }
-
-    /**
-     * send an action
-     *
-     * @param string $action action to send
-     * @return BotClient
-     * @throws Exception
-     */
-    public function sendAction(string $action): BotClient
-    {
-        $this->post('action', [
-            'chat_id' => $this->chatId,
-            'action' => $action
-        ]);
-
-        return $this;
-    }
-
-    /**
-     * send a text message
-     *
-     * @param string $text text message to send
-     * @param bool $withAction send action
-     * @return bool returns true on success, otherwise false
-     * @throws Exception
-     */
-    public function sendMessage(string $text, bool $withAction = false): bool
-    {
-        if ($withAction) $this->sendAction('typing');
-        $data = $this->post('message', [
-            'text' => $text,
-            'parse_mode' => $this->mode,
-        ]);
-
-        return $data && $data['ok'] == true;
     }
 
     /**
@@ -263,14 +240,15 @@ class BotClient
      * @param string $fileUrl
      * @param string|null $caption caption to send with image
      * @param bool $withAction send action indicator
+     * @param bool $asUrl
      * @return bool returns true on success, otherwise false
      * @throws Exception
      */
-    public function sendDocument(string $fileUrl, string $caption = null, bool $withAction = false): bool
+    public function sendDocument(string $fileUrl, string $caption = null, bool $withAction = false, bool $asUrl = false): bool
     {
         if ($withAction) $this->sendAction('upload_document');
         $data = $this->post('document', [
-            'document' => $fileUrl,
+            'document' => $asUrl ? $fileUrl : Utils::tryFopen($fileUrl, 'r'),
             'caption' => $caption ?? '',
             'parse_mode' => $this->mode
         ]);
@@ -295,22 +273,6 @@ class BotClient
     }
 
     /**
-     * delete a message
-     *
-     * @param string $messageId id of message to delete
-     * @return bool
-     * @throws Exception
-     */
-    public function deleteMessage(string $messageId): bool
-    {
-        $data = $this->post('delete', [
-            'message_id' => $messageId
-        ]);
-
-        return $data && $data['ok'] == true;
-    }
-
-    /**
      * delete last message sent by bot
      *
      * @return BotClient
@@ -327,6 +289,22 @@ class BotClient
     }
 
     /**
+     * delete a message
+     *
+     * @param string $messageId id of message to delete
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteMessage(string $messageId): bool
+    {
+        $data = $this->post('delete', [
+            'message_id' => $messageId
+        ]);
+
+        return $data && $data['ok'] == true;
+    }
+
+    /**
      * get user info
      *
      * @param string $userId
@@ -339,6 +317,31 @@ class BotClient
         if (empty($data)) return null;
 
         return $data['result']['user'];
+    }
+
+    /**
+     * send request to API
+     *
+     * @param string $action
+     * @param array $query
+     * @return array|null
+     */
+    protected function get(string $action, array $query): ?array
+    {
+        try {
+            $endpoint = $this->baseUrl . $this->endpoints[$action];
+            $endpoint = str_replace('{token}', $this->token, $endpoint);
+            $response = $this->api->request('GET', $endpoint, [
+                'query' => ['chat_id' => $this->chatId, ...$query]
+            ]);
+
+            if ($response->getStatusCode() !== 200) return null;
+            $body = json_decode($response->getBody(), true);
+
+            return $body['ok'] ? $body : null;
+        } catch (GuzzleException $e) {
+        }
+        return null;
     }
 
     /**
