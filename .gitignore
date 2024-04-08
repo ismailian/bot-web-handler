@@ -3,4 +3,5 @@
 vendor
 tmp
 session
+logs
 todos.txt
