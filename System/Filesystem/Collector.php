@@ -54,4 +54,21 @@ class Collector
         );
     }
 
+    /**
+     * get full file path
+     *
+     * @param string $handlerName
+     * @param string $folder
+     * @return string|null
+     */
+    public static function getNamespacedFile(string $handlerName, string $folder = 'App/Handlers'): ?string
+    {
+        $handlers = array_values(array_filter(
+            self::getNamespacedFiles($folder),
+            fn($h) => str_ends_with($h, explode('::', $handlerName)[0])
+        ));
+
+        return empty($handlers) ? null : array_values($handlers)[0];
+    }
+
 }
