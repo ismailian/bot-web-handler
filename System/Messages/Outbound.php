@@ -3,10 +3,22 @@
 namespace TeleBot\System\Messages;
 
 use Exception;
-use TeleBot\System\BaseHttp;
 
-class Outbound extends BaseHttp
+class Outbound
 {
+
+    /**
+     * set http status code
+     *
+     * @param int $code
+     * @return self
+     */
+    public static function setStatusCode(int $code = 200): self
+    {
+        http_response_code($code);
+
+        return new static();
+    }
 
     /**
      * send response to client
@@ -28,6 +40,20 @@ class Outbound extends BaseHttp
         }
 
         die($body);
+    }
+
+    /**
+     * add http header
+     *
+     * @param string $key
+     * @param string $value
+     * @return self
+     */
+    public static function addHeader(string $key, string $value): self
+    {
+        header("$key: $value");
+
+        return new static();
     }
 
     /**
