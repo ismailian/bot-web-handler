@@ -34,7 +34,7 @@ class Bootstrap
             if ($handler = Collector::getNamespacedFile($route['handler'])) {
                 (new Handler())
                     ->setConfig(self::$config)
-                    ->assign(new $handler, explode('::', $route['handler'])[1], $route['params'])
+                    ->assign(new $handler, explode('::', $route['handler'])[1], array_values($route['params']))
                     ->run();
                 return;
             }
@@ -106,8 +106,10 @@ class Bootstrap
      */
     private function verifyRoute(): bool
     {
-        if (!empty(($routes = self::$config['routes']['telegram']))) {
-            return in_array(Inbound::uri(), $routes);
+        if (!empty(($routes = self::$config['routes']))) {
+            if (!empty($routes['telegram'])) {
+                return in_array(Inbound::uri(), $routes);
+            }
         }
 
         return true;
