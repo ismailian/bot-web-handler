@@ -118,4 +118,14 @@ class Inbound
         return self::$event;
     }
 
+    /**
+     * get request method (lowercase)
+     *
+     * @return string
+     */
+    public static function method(): string
+    {
+        return strtolower($_SERVER['REQUEST_METHOD']);
+    }
+
 }
