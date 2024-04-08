@@ -59,7 +59,7 @@ class Handler
      */
     public function run(): void
     {
-        Mapper::call($this->instance, $this->method, $this->args);
+        call_user_func_array([$this->instance, $this->method], $this->args);
     }
 
 }
