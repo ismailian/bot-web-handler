@@ -2,17 +2,22 @@
 
 namespace TeleBot\System\Filesystem;
 
+use TeleBot\System\Router;
+use TeleBot\System\UpdateParser;
 use TeleBot\System\Messages\Inbound;
 use TeleBot\System\Messages\Outbound;
-use TeleBot\System\UpdateParser;
 
 class Bootstrap
 {
 
     /** @var array $config */
     public static array $config;
+
     /** @var string $envFilename */
     protected string $envFilename = '.env';
+
+    /** @var Router $router */
+    protected Router $router;
 
     /**
      * setup necessary configurations to run the app
@@ -22,14 +27,26 @@ class Bootstrap
     public function setup(): void
     {
         $this->__env();
+        $this->router = new Router();
         self::$config = require_once 'config.php';
+
+        if ($route = $this->router->matches(self::$config['routes']['web'])) {
+            if ($handler = Collector::getNamespacedFile($route['handler'])) {
+                (new Handler())
+                    ->setConfig(self::$config)
+                    ->assign(new $handler, explode('::', $route['handler'])[1], $route['params'])
+                    ->run();
+                return;
+            }
+        }
 
         $allowedId = $this->verifyIP();
         $validSignature = $this->verifySignature();
         $allowedRoute = $this->verifyRoute();
         $validPayload = $this->verifyPayload();
-        if (!$allowedId || !$validSignature || !$allowedRoute || !$validPayload || !$this->verifyUserId())
-            die();
+        if (!$allowedId || !$validSignature || !$allowedRoute || !$validPayload || !$this->verifyUserId()) {
+            Outbound::setStatusCode(401)->end();
+        }
 
         if (!empty(($async = getenv('ASYNC')))) {
             if ($async == 'true') {
@@ -89,7 +106,7 @@ class Bootstrap
      */
     private function verifyRoute(): bool
     {
-        if (!empty(($routes = self::$config['routes']))) {
+        if (!empty(($routes = self::$config['routes']['telegram']))) {
             return in_array(Inbound::uri(), $routes);
         }
 
