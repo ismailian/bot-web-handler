@@ -20,12 +20,12 @@ class Router
      */
     public function matches(array $routes): array|bool
     {
-        if (empty($routes) || empty($list = $routes[Inbound::method()])) {
+        if (empty($routes) || empty($routes[Inbound::method()])) {
             return false;
         }
 
         $uri = Inbound::uri();
-        foreach ($list as $route => $handler) {
+        foreach ($routes[Inbound::method()] as $route => $handler) {
             if ($this->isDynamic($route)) {
                 $routeMeta = $this->getUrlInfo($uri, $route);
                 if ($routeMeta['valid']) {

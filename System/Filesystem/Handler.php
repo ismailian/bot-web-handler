@@ -16,11 +16,6 @@ class Handler
     private array $event;
 
     /**
-     * default constructor
-     */
-    public function __construct() {}
-
-    /**
      * set bot configurations
      *
      * @param mixed $config
@@ -59,7 +54,10 @@ class Handler
      */
     public function run(): void
     {
-        call_user_func_array([$this->instance, $this->method], $this->args);
+        call_user_func_array(
+            [$this->instance, $this->method],
+            (!is_array($this->args) ? [] : $this->args)
+        );
     }
 
 }
