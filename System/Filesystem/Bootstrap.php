@@ -30,7 +30,7 @@ class Bootstrap
         $this->router = new Router();
         self::$config = require_once 'config.php';
 
-        if ($route = $this->router->matches(self::$config['routes']['web'])) {
+        if ($route = $this->router->matches(self::$config['routes']['web'] ?? [])) {
             if ($handler = Collector::getNamespacedFile($route['handler'])) {
                 (new Handler())
                     ->setConfig(self::$config)
