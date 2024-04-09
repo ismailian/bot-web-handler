@@ -1,6 +1,6 @@
 <?php
 
-namespace TeleBot\System\Triggers;
+namespace TeleBot\System\Filters;
 
 use Attribute;
 use TeleBot\System\SessionManager;
