@@ -55,8 +55,7 @@ class Handler
     public function run(): void
     {
         call_user_func_array(
-            [$this->instance, $this->method],
-            (!is_array($this->args) ? [] : $this->args)
+            [$this->instance, $this->method], [$this->args]
         );
     }
 
