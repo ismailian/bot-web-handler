@@ -4,6 +4,7 @@ namespace TeleBot\System\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
+use TeleBot\System\Types\IncomingCommand;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Command implements IEvent
@@ -19,7 +20,7 @@ class Command implements IEvent
     /**
      * @inheritDoc
      */
-    public function apply(array $event): bool
+    public function apply(array $event): IncomingCommand|bool
     {
         $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
         if (!empty($this->command))
@@ -28,7 +29,7 @@ class Command implements IEvent
         foreach ($event['data'][$key]['entities'] ?? [] as $entity) {
             if ($entity['type'] == 'bot_command') {
                 if (!$this->command || substr($event['data'][$key]['text'], $entity['offset'], $entity['length']) == $this->command) {
-                    return true;
+                    return new IncomingCommand($event['data'][$key]['text'], $entity);
                 }
             }
         }
