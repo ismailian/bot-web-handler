@@ -27,7 +27,11 @@ class Cli
 
         foreach ($updates as $update) {
             foreach ($update['files'] as $file) {
-                $action = match ($file['status']) { 'added' => 'creating', 'modified' => 'updating', 'deleted' => 'deleting' };
+                $action = match ($file['status']) {
+                    'added' => 'creating',
+                    'modified' => 'updating',
+                    'deleted' => 'deleting'
+                };
                 echo "[+] {$action}: {$file['filename']}" . PHP_EOL;
                 if ($action == 'deleting') {
                     @unlink($file['filename']);
@@ -63,7 +67,12 @@ class Cli
                     'files' => $autoFetchFiles ? self::getCommitFiles($commit['sha']) : [],
                 ];
             }, json_decode($response, true)));
-        } catch (GuzzleException $e) {}
+        } catch (GuzzleException $e) {
+            if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
+                die('[!] Rate limit exceeded, please wait before trying again!');
+            }
+        }
+
         return [];
     }
 
@@ -78,6 +87,10 @@ class Cli
             self::$client = new Client([
                 'verify' => false,
                 'base_uri' => 'https://api.github.com/',
+                'headers' => [
+                    'X-GitHub-Api-Version' => '2022-11-28',
+                    'Authorization' => 'Bearer <token>',
+                ]
             ]);
         }
 
@@ -100,7 +113,11 @@ class Cli
                 'filename' => $file['filename'],
                 'url' => $file['raw_url'],
             ]), json_decode($response, true)['files']);
-        } catch (GuzzleException $e) {}
+        } catch (GuzzleException $e) {
+            if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
+                die('[!] Rate limit exceeded, please wait before trying again!');
+            }
+        }
         return [];
     }
 
