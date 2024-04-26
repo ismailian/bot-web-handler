@@ -44,8 +44,16 @@ class Bootstrap
         $validSignature = $this->verifySignature();
         $allowedRoute = $this->verifyRoute();
         $validPayload = $this->verifyPayload();
+        $validUser = $this->verifyUserId();
+
+        # unauthorized source
+        if (!$allowedIp || !$validSignature || !$allowedRoute) {
             Outbound::setStatusCode(401)->end();
-        if (!$allowedIp || !$validSignature || !$allowedRoute || !$validPayload || !$this->verifyUserId()) {
+        }
+        
+        # blacklisted user or invalid payload
+        if (!$validPayload || !$validUser) {
+            Outbound::setStatusCode(200)->end();
         }
 
         if (!empty(($async = getenv('ASYNC')))) {
