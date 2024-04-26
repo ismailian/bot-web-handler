@@ -17,6 +17,7 @@
   ],
   "require": {
     "guzzlehttp/guzzle": "^7.7",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "clue/commander": "^1.4"
   }
 }

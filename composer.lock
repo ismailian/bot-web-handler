@@ -4,8 +4,73 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab28fdceb9fc8415b4a1d0e15c51d19d",
+    "content-hash": "578bfcbe5d58297d7bfe41ee93f462cb",
     "packages": [
+        {
+            "name": "clue/commander",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/clue/php-commander.git",
+                "reference": "04bc3f167cf7485c97f4a1274eb826e6d4290c23"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/clue/php-commander/zipball/04bc3f167cf7485c97f4a1274eb826e6d4290c23",
+                "reference": "04bc3f167cf7485c97f4a1274eb826e6d4290c23",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "clue/arguments": "^1.0",
+                "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.35"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Clue\\Commander\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Lück",
+                    "email": "christian@clue.engineering"
+                }
+            ],
+            "description": "Finally a sane way to register available commands and arguments and match your command line in PHP.",
+            "homepage": "https://github.com/clue/php-commander",
+            "keywords": [
+                "args",
+                "arguments",
+                "argv",
+                "command",
+                "command line",
+                "getopt",
+                "parse",
+                "router"
+            ],
+            "support": {
+                "issues": "https://github.com/clue/php-commander/issues",
+                "source": "https://github.com/clue/php-commander/tree/v1.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://clue.engineering/support",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/clue",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-12-07T16:20:08+00:00"
+        },
         {
             "name": "guzzlehttp/guzzle",
             "version": "7.8.1",
