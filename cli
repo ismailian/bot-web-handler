@@ -1,0 +1,18 @@
+#!/bin/php
+<?php
+
+use TeleBot\System\Cli;
+use Clue\Commander\Router;
+
+require_once 'vendor/autoload.php';
+
+/**
+ * registered commands
+ */
+$router = new Router();
+
+$router->add('update', fn($args) => Cli::update($args));
+$router->add('handler:make <name>', fn($args) => Cli::makeHandler($args));
+$router->add('handler:delete <name>', fn($args) => Cli::deleteHandler($args));
+
+$router->execArgv();
