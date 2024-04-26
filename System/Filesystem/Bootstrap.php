@@ -40,12 +40,12 @@ class Bootstrap
             }
         }
 
-        $allowedId = $this->verifyIP();
+        $allowedIp = $this->verifyIP();
         $validSignature = $this->verifySignature();
         $allowedRoute = $this->verifyRoute();
         $validPayload = $this->verifyPayload();
-        if (!$allowedId || !$validSignature || !$allowedRoute || !$validPayload || !$this->verifyUserId()) {
             Outbound::setStatusCode(401)->end();
+        if (!$allowedIp || !$validSignature || !$allowedRoute || !$validPayload || !$this->verifyUserId()) {
         }
 
         if (!empty(($async = getenv('ASYNC')))) {
