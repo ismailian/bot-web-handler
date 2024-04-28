@@ -47,6 +47,7 @@ class BotClient
         'user' => 'getChatMember',
         'edit' => 'editMessageText',
         'dice' => 'sendDice',
+        'editMedia' => 'editMessageMedia',
     ];
 
     /**
@@ -111,7 +112,7 @@ class BotClient
      * @param string $text text message to send
      * @param bool $withAction send action
      * @return bool returns true on success, otherwise false
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function sendMessage(string $text, bool $withAction = false): bool
     {
@@ -129,7 +130,7 @@ class BotClient
      *
      * @param string $action action to send
      * @return BotClient
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function sendAction(string $action): BotClient
     {
@@ -147,7 +148,7 @@ class BotClient
      * @param string $action
      * @param array $data
      * @return array|null
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     protected function post(string $action, array $data): ?array
     {
@@ -156,13 +157,14 @@ class BotClient
             $endpoint = str_replace('{token}', $this->token, $endpoint);
 
             /** use [multipart] when uploading */
-            if (in_array($action, ['photo', 'video', 'audio', 'document', 'voice'])) {
+            if (in_array($action, ['photo', 'video', 'audio', 'document', 'voice', 'editMedia'])) {
                 $ak = fn($arr) => array_keys($arr);
                 $av = fn($arr) => array_values($arr);
+                $jsonify = fn($input) => is_array($input) ? json_encode($input) : $input;
                 $response = $this->api->request('POST', $endpoint, [
                     'multipart' => [
                         ['name' => 'chat_id', 'contents' => $this->chatId],
-                        ...array_map(fn($k, $v) => ['name' => $k, 'contents' => $v], $ak($this->options), $av($this->options)),
+                        ...array_map(fn($k, $v) => ['name' => $k, 'contents' => $jsonify($v)], $ak($this->options), $av($this->options)),
                         ...array_map(fn($k, $v) => ['name' => $k, 'contents' => $v], $ak($data), $av($data)),
                     ],
                 ]);
@@ -181,13 +183,12 @@ class BotClient
 
                 /** store last upload id */
                 if (in_array($action, ['photo', 'video', 'audio', 'voice', 'document'])) {
-                    $this->lastUploadId = $body['result']['video']['file_id'] ?? null;
+                    $this->lastUploadId = $body['result'][$action]['file_id'] ?? null;
                 }
             }
 
             return $body['ok'] ? $body : null;
-        } catch (GuzzleException $e) {
-        }
+        } catch (Exception $e) {}
         return null;
     }
 
@@ -198,7 +199,7 @@ class BotClient
      * @param string|null $caption caption to send with image
      * @param bool $withAction send action indicator
      * @return bool returns true on success, otherwise false
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function sendPhoto(string $imagePath, string $caption = null, bool $withAction = false, bool $asUrl = false): bool
     {
@@ -220,7 +221,7 @@ class BotClient
      * @param bool $withAction send action indicator
      * @param bool $asUrl weather the provider video is an ID or Url
      * @return bool returns true on success, otherwise false
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function sendVideo(string $videoPath, string $caption = null, bool $withAction = false, bool $asUrl = false): bool
     {
@@ -242,7 +243,7 @@ class BotClient
      * @param bool $withAction send action indicator
      * @param bool $asUrl
      * @return bool returns true on success, otherwise false
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function sendDocument(string $fileUrl, string $caption = null, bool $withAction = false, bool $asUrl = false): bool
     {
@@ -261,7 +262,7 @@ class BotClient
      *
      * @param string $emoji
      * @return IncomingDice|bool
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function sendDice(string $emoji): IncomingDice|bool
     {
@@ -276,7 +277,7 @@ class BotClient
      * delete last message sent by bot
      *
      * @return BotClient
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function deleteLastMessage(): BotClient
     {
@@ -293,7 +294,7 @@ class BotClient
      *
      * @param string $messageId id of message to delete
      * @return bool
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function deleteMessage(string $messageId): bool
     {
@@ -339,8 +340,7 @@ class BotClient
             $body = json_decode($response->getBody(), true);
 
             return $body['ok'] ? $body : null;
-        } catch (GuzzleException $e) {
-        }
+        } catch (GuzzleException $e) {}
         return null;
     }
 
@@ -370,7 +370,7 @@ class BotClient
      * @param string $messageId
      * @param string $text
      * @return bool
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function editMessage(string $messageId, string $text): bool
     {
@@ -378,6 +378,33 @@ class BotClient
             'message_id' => $messageId,
             'text' => $text,
             'parse_mode' => $this->mode
+        ]);
+
+        return $data && $data['ok'] == true;
+    }
+
+    /**
+     * edit media message
+     *
+     * @param string $messageId
+     * @param string $type
+     * @param string $mediaPath
+     * @param string|null $caption
+     * @param bool $asUrl
+     * @return bool
+     * @throws GuzzleException
+     */
+    public function editMedia(string $messageId, string $type, string $mediaPath, string $caption = null, bool $asUrl = false): bool
+    {
+        $data = $this->post('editMedia', [
+            'message_id' => $messageId,
+            'media' => json_encode([
+                'type' => $type,
+                'caption' => $caption ?? '',
+                'parse_mode' => $this->mode,
+                'media' => 'attach://media_file',
+            ]),
+            'media_file' => $asUrl ? $mediaPath : Utils::tryFopen($mediaPath, 'r'),
         ]);
 
         return $data && $data['ok'] == true;
