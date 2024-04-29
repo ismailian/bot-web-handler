@@ -13,6 +13,7 @@ class Cli
     protected static ?Client $client = null;
     protected static string $owner = 'ismailian';
     protected static string $repo = 'bot-web-handler';
+    protected static string $history = 'history.json';
 
     /**
      * update system
@@ -23,8 +24,12 @@ class Cli
     {
         $date = new \DateTime();
         $lastDate = $date->sub(\DateInterval::createFromDateString('1 day'))->format('Y-m-d\T00:00:00\Z');
-        $updates = self::getCommits($lastDate, null, true);
+        if (file_exists(self::$history)) {
+            $history = json_decode(file_get_contents(self::$history), true);
+            $lastDate = $history['date'];
+        }
 
+        $updates = self::getCommits($lastDate, null, true);
         foreach ($updates as $update) {
             foreach ($update['files'] as $file) {
                 $action = match ($file['status']) {
@@ -40,6 +45,12 @@ class Cli
                 }
             }
         }
+
+        /** save last update details */
+        file_put_contents(self::$history, json_encode([
+            'date' => (new \DateTime())->format('Y-m-d\T00:00:00\Z'),
+            'changes' => $updates,
+        ], JSON_PRETTY_PRINT));
     }
 
     /**
@@ -188,6 +199,11 @@ class Cli
     {
         $date = new \DateTime();
         $lastDate = $date->sub(\DateInterval::createFromDateString('1 day'))->format('Y-m-d\T00:00:00\Z');
+        if (file_exists(self::$history)) {
+            $history = json_decode(file_get_contents(self::$history), true);
+            $lastDate = $history['date'];
+        }
+
         $updates = self::getCommits($lastDate, null, true);
         if (empty($updates)) {
             die('[+] system is up-to-date!' . PHP_EOL);
