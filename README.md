@@ -99,7 +99,7 @@ public function callbacks(IncomingCallbackQuery $query): void
  */
 #[Text]
 #[Chat(Chat::PRIVATE)]
-public function callbacks(): void
+public function text(): void
 {
     echo '[+] user sent: ' . $this->event['message']['text'];
 }
@@ -114,7 +114,7 @@ public function callbacks(): void
  */
 #[Text]
 #[Only(userId: '<id>', userIds: [...'<id>'])]
-public function callbacks(): void
+public function text(): void
 {
     echo '[+] user sent: ' . $this->event['message']['text'];
 }
