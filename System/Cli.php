@@ -103,8 +103,7 @@ class Cli
                 'verify' => false,
                 'base_uri' => 'https://api.github.com/',
                 'headers' => [
-                    'X-GitHub-Api-Version' => '2022-11-28',
-                    'Authorization' => 'Bearer <token>',
+                    'X-GitHub-Api-Version' => '2022-11-28'
                 ]
             ]);
         }
