@@ -30,6 +30,10 @@ class Cli
         }
 
         $updates = self::getCommits($lastDate, null, true);
+        if (empty($updates)) {
+            die('[+] system is up-to-date!');
+        }
+
         foreach ($updates as $update) {
             foreach ($update['files'] as $file) {
                 $action = match ($file['status']) {
@@ -50,7 +54,7 @@ class Cli
         file_put_contents(self::$history, json_encode([
             'date' => (new \DateTime())->format('Y-m-d\T00:00:00\Z'),
             'changes' => $updates,
-        ], JSON_PRETTY_PRINT));
+        ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
     }
 
     /**
