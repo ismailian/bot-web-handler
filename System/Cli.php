@@ -138,6 +138,8 @@ class Cli
             'date' => (new \DateTime())->format('Y-m-d\TH:i:s\Z'),
             'changes' => $updates,
         ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+
+        die(PHP_EOL . '[+] all changes have been applied!' . PHP_EOL);
     }
 
     /**
