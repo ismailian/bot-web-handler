@@ -23,12 +23,12 @@ This little project is designed specifically for [Telegram](https://core.telegra
 - blacklist - list of disallowed user ids (Optional)
 
 #### 3. Useful commands
-| Command                        | Description                |
-|--------------------------------|----------------------------|
-| `php cli update:check`         | check for updates          |
-| `php cli update:apply`         | apply available updates    |
-| `php cli handler:make <name>`  | create new handler         |
-| `php cli update:delete <name>` | delete an existing handler |
+| Command                         | Description                |
+|---------------------------------|----------------------------|
+| `php cli update:check`          | check for updates          |
+| `php cli update:apply`          | apply available updates    |
+| `php cli handler:make <name>`   | create new handler         |
+| `php cli handler:delete <name>` | delete an existing handler |
 
 ## Examples
 #### Photos
