@@ -2,48 +2,56 @@
 
 namespace TeleBot\System;
 
+use Exception;
 use TeleBot\System\Messages\Inbound;
+use TeleBot\System\Adapters\FileAdapter;
+use TeleBot\System\Adapters\RedisAdapter;
+use TeleBot\System\Interfaces\ISessionAdapter;
 
 class Session
 {
 
+    /** @var ISessionAdapter|null $adapter */
+    protected static ?ISessionAdapter $adapter = null;
+
     /** @var string|mixed $sessionId */
     protected static string $sessionId;
 
-    /** @var array in-memory session */
-    protected static array $cached;
-
     /**
-     * get session prop value
+     * set session data
      *
-     * @param string $path
-     * @return mixed
+     * @param string $key
+     * @param mixed $value
+     * @return bool
      */
-    protected static function getProp(string $path): mixed
+    public static function set(string $key, mixed $value): bool
     {
-        $tmp = self::$cached;
-        $keys = explode('.', $path);
-        $lastKey = $keys[count($keys) - 1];
+        self::init();
 
-        foreach ($keys as $key) {
-            if (isset($tmp[$key])) {
-                if ($key == $lastKey) return $tmp[$key];
-                $tmp = $tmp[$key];
+        if ($key !== '*') {
+            $data = self::$adapter->read();
+            $keys = explode('.', $key);
+            $current = &$data;
+            foreach ($keys as $key) {
+                $current = &$current[$key];
             }
+
+            $current = $value;
+            $value = $data;
         }
 
-        return null;
+        return self::$adapter->write($value);
     }
 
     /**
-     * initialize session
+     * initialize session adapter
      *
-     * @return Session
+     * @return void
      */
-    public static function start(): Session
+    protected static function init(): void
     {
-        if (empty(self::$sessionId)) {
-            try {
+        try {
+            if (empty(self::$sessionId) || !self::$adapter) {
                 $event = Inbound::event()['data'];
                 foreach (array_keys($event) as $key) {
                     if ($key !== 'update_id') {
@@ -52,53 +60,37 @@ class Session
                     }
                 }
 
-                if (!file_exists('session') && !is_dir('session')) {
-                    mkdir('session');
-                }
-            } catch (\Exception) {}
-        }
-
-        $sessionKey = 'session/' . self::$sessionId . '.json';
-        $session = (new self);
-        if (file_exists($sessionKey)) {
-            $session::$cached = json_decode(file_get_contents($sessionKey), true);
-            return $session;
-        }
-
-        $session::$cached = ['state' => 'started'];
-        file_put_contents($sessionKey, json_encode($session::$cached, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
-        return $session;
+                self::$adapter = match (getenv('SESSION', true)) {
+                    'filesystem' => new FileAdapter(self::$sessionId),
+                    'redis' => new RedisAdapter(self::$sessionId),
+                };
+            }
+        } catch (Exception) {}
     }
 
     /**
-     * get session key value
+     * get session prop value
      *
      * @param string|null $key
      * @return mixed
      */
     public static function get(string $key = null): mixed
     {
-        if (empty(self::$cached)) self::start();
+        self::init();
 
-        return $key ? self::getProp($key) : self::$cached;
-    }
+        $data = self::$adapter->read();
+        if (!$key) return $data;
 
-    /**
-     * set session data
-     *
-     * @param array $data
-     * @param string $state
-     * @return void
-     */
-    public static function set(array $data, string $state = 'started'): void
-    {
-        if (empty(self::$sessionId) || empty(self::$cached)) {
-            self::start();
+        $keys = explode('.', $key);
+        $lastKey = $keys[count($keys) - 1];
+        foreach ($keys as $key) {
+            if (isset($data[$key])) {
+                if ($key == $lastKey) return $data[$key];
+                $data = $data[$key];
+            }
         }
 
-        $sessionKey = 'session/' . self::$sessionId . '.json';
-        self::$cached = ['state' => $state, ...$data];
-        file_put_contents($sessionKey, json_encode(self::$cached, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
+        return null;
     }
 
 }
