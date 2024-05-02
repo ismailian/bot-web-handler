@@ -113,13 +113,14 @@ class Cli
 
         foreach ($updates as $update) {
             foreach ($update['files'] as $file) {
-                $action = match ($file['status']) {
-                    'added' => 'creating',
-                    'modified' => 'updating',
-                    'removed' => 'deleting',
-                    'renamed' => 'renaming'
+                [$action, $color] = match ($file['status']) {
+                    'added' => ['creating', '1;32'],
+                    'modified' => ['updating', '1;33'],
+                    'removed' => ['deleting', '1;31'],
+                    'renamed' => ['renaming', '1;34']
                 };
-                echo "[+] {$action}: {$file['filename']}" . PHP_EOL;
+
+                echo "[+] \033[{$color}m{$action}\033[0m: {$file['filename']}" . PHP_EOL;
                 if ($action == 'deleting') {
                     @unlink($file['filename']);
                 } else {
