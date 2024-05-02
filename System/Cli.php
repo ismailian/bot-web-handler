@@ -122,6 +122,10 @@ class Cli
                 if ($action == 'deleting') {
                     @unlink($file['filename']);
                 } else {
+                    if (!file_exists(dirname($file['filename']))) {
+                        @mkdir(dirname($file['filename']));
+                    }
+                    
                     file_put_contents($file['filename'], file_get_contents($file['url']));
                 }
             }
