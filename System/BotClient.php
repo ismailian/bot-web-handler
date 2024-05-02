@@ -45,8 +45,8 @@ class BotClient
         'delete' => 'deleteMessage',
         'action' => 'sendChatAction',
         'user' => 'getChatMember',
-        'edit' => 'editMessageText',
         'dice' => 'sendDice',
+        'edit' => 'editMessageText',
         'editMedia' => 'editMessageMedia',
     ];
 

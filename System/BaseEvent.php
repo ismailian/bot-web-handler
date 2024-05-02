@@ -2,7 +2,6 @@
 
 namespace TeleBot\System;
 
-use GuzzleHttp\Client;
 use TeleBot\System\Types\Event;
 use TeleBot\System\Messages\Inbound;
 use TeleBot\System\Exceptions\InvalidUpdate;
@@ -17,9 +16,8 @@ class BaseEvent
     /** @var Event|null $event incoming message event */
     public ?Event $event = null;
 
-    protected object $telegram;
-
-    protected Client $client;
+    /** @var BotClient $telegram telegram client */
+    protected BotClient $telegram;
 
     /**
      * default constructor
