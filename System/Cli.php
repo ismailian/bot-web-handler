@@ -116,7 +116,8 @@ class Cli
                 $action = match ($file['status']) {
                     'added' => 'creating',
                     'modified' => 'updating',
-                    'deleted' => 'deleting'
+                    'removed' => 'deleting',
+                    'renamed' => 'renaming'
                 };
                 echo "[+] {$action}: {$file['filename']}" . PHP_EOL;
                 if ($action == 'deleting') {
@@ -125,7 +126,7 @@ class Cli
                     if (!file_exists(dirname($file['filename']))) {
                         @mkdir(dirname($file['filename']));
                     }
-                    
+
                     file_put_contents($file['filename'], file_get_contents($file['url']));
                 }
             }
