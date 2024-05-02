@@ -3,7 +3,7 @@
 namespace TeleBot\System\Filters;
 
 use Attribute;
-use TeleBot\System\SessionManager;
+use TeleBot\System\Session;
 use TeleBot\System\Interfaces\IEvent;
 
 #[Attribute(Attribute::TARGET_METHOD)]
@@ -23,6 +23,6 @@ class Awaits implements IEvent
      */
     public function apply(array $event): bool
     {
-        return SessionManager::get($this->key) == $this->value;
+        return Session::get($this->key) == $this->value;
     }
 }

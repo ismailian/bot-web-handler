@@ -4,7 +4,7 @@ namespace TeleBot\System;
 
 use TeleBot\System\Messages\Inbound;
 
-class SessionManager
+class Session
 {
 
     /** @var string|mixed $sessionId */
@@ -38,9 +38,9 @@ class SessionManager
     /**
      * initialize session
      *
-     * @return SessionManager
+     * @return Session
      */
-    public static function start(): SessionManager
+    public static function start(): Session
     {
         if (empty(self::$sessionId)) {
             try {
