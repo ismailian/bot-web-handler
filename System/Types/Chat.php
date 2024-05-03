@@ -20,6 +20,9 @@ class Chat
     /** @var string|null $lastName last name */
     public ?string $lastName = null;
 
+    /** @var string|null $title chat title */
+    public ?string $title = null;
+
     /**
      * default constructor
      *
@@ -32,6 +35,7 @@ class Chat
         $this->username = $this->chat['username'] ?? null;
         $this->firstName = $this->chat['first_name'] ?? null;
         $this->lastName = $this->chat['last_name'] ?? null;
+        $this->title = $this->chat['title'] ?? null;
     }
 
 }

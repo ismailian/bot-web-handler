@@ -68,10 +68,9 @@ class Message
                 $this->replyTo = new RepliedTo($message['reply_to_message']);
             }
 
-            if (array_key_exists('forward_from', $message)) {
-                $this->forward = new Forward($message['forward_from'], $message['forward_date']);
+            if (array_intersect(['forward_from', 'forward_from_chat'], array_keys($message))) {
+                $this->forward = new Forward($message);
             }
-
         } catch (\Exception $ex) {}
     }
 

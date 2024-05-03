@@ -17,6 +17,9 @@ class From
     /** @var string|null $lastName last name */
     public ?string $lastName = null;
 
+    /** @var bool|null is user bot */
+    public ?bool $isBot = false;
+
     /**
      * default constructor
      *
@@ -28,6 +31,7 @@ class From
         $this->username = $this->from['username'] ?? null;
         $this->firstName = $this->from['first_name'] ?? null;
         $this->lastName = $this->from['last_name'] ?? null;
+        $this->isBot = $this->from['is_bot'] ?? false;
     }
 
 }
