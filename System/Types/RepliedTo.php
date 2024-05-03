@@ -4,7 +4,7 @@ namespace TeleBot\System\Types;
 
 use DateTime;
 
-class ReplyTo
+class RepliedTo
 {
 
     /** @var int $id message id */
@@ -22,15 +22,15 @@ class ReplyTo
     /**
      * default constructor
      *
-     * @param array $replyTo
+     * @param array $repliedTo
      */
-    public function __construct(protected array $replyTo)
+    public function __construct(protected array $repliedTo)
     {
         try {
-            $this->id = (int) $this->replyTo['id'];
-            $this->date = new DateTime(date('Y-m-d H:i:s T', $this->replyTo['date']));
-            $this->text = $this->replyTo['text'] ?? null;
-            $this->chat = new Chat($this->replyTo['chat']);
+            $this->id = (int) $this->repliedTo['id'];
+            $this->date = new DateTime(date('Y-m-d H:i:s T', $this->repliedTo['date']));
+            $this->text = $this->repliedTo['text'] ?? null;
+            $this->chat = new Chat($this->repliedTo['chat']);
         } catch (\Exception) {}
     }
 

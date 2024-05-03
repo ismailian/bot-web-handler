@@ -25,8 +25,8 @@ class Message
     /** @var array|null $entities message entities */
     public ?array $entities = null;
 
-    /** @var ReplyTo|null $replyTo original message of context reply */
-    public ?ReplyTo $replyTo = null;
+    /** @var RepliedTo|null $replyTo original message of context reply */
+    public ?RepliedTo $replyTo = null;
 
     /** @var Forward|null $forward message source */
     public ?Forward $forward = null;
@@ -55,8 +55,7 @@ class Message
             $this->id = (int)$message['message_id'];
             $this->date = new DateTime(date('Y-m-d H:i:s T', $message['date']));
             $this->text = $message['text'] ?? null;
-
-            $this->caption = $message['caption'] || null;
+            $this->caption = $message['caption'] ?? null;
             $this->entities = array_map(
                 fn($e) => new Entity($e['text'] ?? '', $e),
                 ($message['entities'] ?? [])
@@ -66,7 +65,7 @@ class Message
             $this->chat = new Chat($message['chat']);
 
             if (array_key_exists('reply_to_message', $message)) {
-                $this->replyTo = new ReplyTo($message['reply_to_message']);
+                $this->replyTo = new RepliedTo($message['reply_to_message']);
             }
 
             if (array_key_exists('forward_from', $message)) {
