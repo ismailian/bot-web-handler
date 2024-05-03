@@ -4,5 +4,5 @@ vendor
 tmp
 session
 logs
-todos.txt
+tests
 history.json
