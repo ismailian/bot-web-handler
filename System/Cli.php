@@ -99,14 +99,13 @@ class Cli
      */
     public static function update(): void
     {
-        $date = new \DateTime();
-        $lastDate = $date->sub(\DateInterval::createFromDateString('1 day'))->format('Y-m-d\T00:00:00\Z');
+        $lastUpdate = (new \DateTime())->format('Y-m-d\T00:00:00\Z');
         if (file_exists(self::$history)) {
             $history = json_decode(file_get_contents(self::$history), true);
-            $lastDate = $history['date'];
+            $lastUpdate = $history['date'];
         }
 
-        $updates = self::getCommits($lastDate, null, true);
+        $updates = self::getCommits($lastUpdate, null, true);
         if (empty($updates)) {
             die('[+] system is up-to-date!');
         }
@@ -149,14 +148,13 @@ class Cli
      */
     public static function check(): void
     {
-        $date = new \DateTime();
-        $lastDate = $date->sub(\DateInterval::createFromDateString('1 day'))->format('Y-m-d\T00:00:00\Z');
+        $lastUpdate = (new \DateTime())->format('Y-m-d\T00:00:00\Z');
         if (file_exists(self::$history)) {
             $history = json_decode(file_get_contents(self::$history), true);
-            $lastDate = $history['date'];
+            $lastUpdate = $history['date'];
         }
 
-        $updates = self::getCommits($lastDate, null, true);
+        $updates = self::getCommits($lastUpdate, null, true);
         if (empty($updates)) {
             die('[+] system is up-to-date!' . PHP_EOL);
         }
@@ -198,12 +196,9 @@ class Cli
             fwrite($handler, $payload);
             fclose($handler);
 
-            echo "[+] handler created successfully!" . PHP_EOL;
-            return;
-
-        } catch (\Exception) {
-        }
-        echo "[-] failed to create handler!" . PHP_EOL;
+            die("[+] handler created successfully!" . PHP_EOL);
+        } catch (\Exception) {}
+        die("[-] failed to create handler!" . PHP_EOL);
     }
 
     /**
@@ -221,10 +216,10 @@ class Cli
         }
 
         if (@unlink($fullPath)) {
-            echo "[+] handler deleted successfully!" . PHP_EOL;
-        } else {
-            echo "[-] failed to delete handler!" . PHP_EOL;
+            die("[+] handler deleted successfully!" . PHP_EOL);
         }
+
+        die("[-] failed to delete handler!" . PHP_EOL);
     }
 
 }
