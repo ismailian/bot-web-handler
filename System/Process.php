@@ -6,19 +6,6 @@ class Process
 {
 
     /**
-     * get operating system
-     *
-     * @return string
-     */
-    protected static function getOS(): string
-    {
-        return match (PHP_OS) {
-            'WINNT' => 'window',
-            'Linux' => 'linux',
-        };
-    }
-
-    /**
      * execute system command
      *
      * @param mixed ...$args
@@ -40,12 +27,12 @@ class Process
     {
         $command = join(' ', $args);
 
-        if (self::getOS() == 'linux') {
+        if (PHP_OS == 'Linux') {
             $command = "nohup $command > /dev/null 2>&1 &";
             system($command);
         }
 
-        if (self::getOS() == 'windows') {
+        if (PHP_OS == 'WINNT') {
             $shell = new COM("WScript.Shell");
             $shell->run($command, 0, false);
         }
