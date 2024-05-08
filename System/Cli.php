@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 class Cli
 {
 
-    protected static string $payload = "PD9waHAKCm5hbWVzcGFjZSBUZWxlQm90XEFwcFxIYW5kbGVyc1x7e2hhbmRsZXJQYXRofX07Cgp1c2UgVGVsZUJvdFxTeXN0ZW1cQmFzZUV2ZW50OwoKY2xhc3Mge3toYW5kbGVyTmFtZX19IGV4dGVuZHMgQmFzZUV2ZW50IHt9";
+    protected static string $payload = "PD9waHAKCm5hbWVzcGFjZSBUZWxlQm90XEFwcFxIYW5kbGVyc3t7aGFuZGxlclBhdGh9fTsKCnVzZSBUZWxlQm90XFN5c3RlbVxCYXNlRXZlbnQ7CgpjbGFzcyB7e2hhbmRsZXJOYW1lfX0gZXh0ZW5kcyBCYXNlRXZlbnQge30=";
     protected static ?Client $client = null;
     protected static string $owner = 'ismailian';
     protected static string $repo = 'bot-web-handler';
@@ -189,7 +189,12 @@ class Cli
             }
 
             $payload = base64_decode(self::$payload);
-            $payload = str_replace('{{handlerPath}}', dirname(join('\\', $segments)), $payload);
+            $handlerPath = str_replace('.', '', dirname(join('\\', $segments)));
+            if (!empty($handlerPath)) {
+                $handlerPath = '\\' . $handlerPath;
+            }
+
+            $payload = str_replace('{{handlerPath}}', $handlerPath, $payload);
             $payload = str_replace('{{handlerName}}', $fileName, $payload);
 
             $handler = fopen("$fullPath.php", 'w');
