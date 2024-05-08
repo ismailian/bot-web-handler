@@ -33,6 +33,12 @@ return [
     'signature' => getenv('TG_BOT_SIGNATURE', true),
 
     /**
+     * @var array $admins list of bot admins
+     * beneficial for allowing some users elevated access
+     */
+    'admins' => [],
+
+    /**
      * @var array $users allowed users
      */
     'users' => [
