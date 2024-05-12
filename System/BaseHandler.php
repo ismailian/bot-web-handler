@@ -5,6 +5,7 @@ namespace TeleBot\System;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionException;
+use TeleBot\System\Filters\Only;
 use TeleBot\System\Filters\Awaits;
 use TeleBot\System\Messages\Inbound;
 use TeleBot\System\Filesystem\Handler;
@@ -12,7 +13,6 @@ use TeleBot\System\Filesystem\Collector;
 use TeleBot\System\Filesystem\Bootstrap;
 use TeleBot\System\Exceptions\InvalidUpdate;
 use TeleBot\System\Exceptions\InvalidMessage;
-use TeleBot\System\Filters\Only;
 
 class BaseHandler
 {
@@ -45,9 +45,9 @@ class BaseHandler
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
             foreach ($refClass->getMethods() as $method) {
-                if ($this->runTriggers($method, $this->event)) {
+                if ($this->runFilters($method, $this->event)) {
                     foreach ($method->getAttributes() as $attr) {
-                        if (!str_ends_with($attr->getName(), 'Awaits')) {
+                        if (!str_contains($attr->getName(), 'Filters')) {
                             if (($result = $attr->newInstance()?->apply($this->event))) {
                                 $this->handler->setConfig($this->config)->assign(
                                     $refClass->newInstance($attr),
@@ -71,15 +71,15 @@ class BaseHandler
      * @param array $event
      * @return bool
      */
-    private function runTriggers(ReflectionMethod $method, array $event): bool
+    private function runFilters(ReflectionMethod $method, array $event): bool
     {
-        $triggers = [
+        $filters = [
             ...$method->getAttributes(Only::class),
             ...$method->getAttributes(Awaits::class),
         ];
 
-        foreach ($triggers as $trigger) {
-            if (!($trigger->newInstance()->apply($event))) {
+        foreach ($filters as $filter) {
+            if (!($filter->newInstance()->apply($event))) {
                 return false;
             }
         }
