@@ -11,6 +11,7 @@ require_once 'vendor/autoload.php';
  */
 $router = new Router();
 
+$router->add('update:init', fn($args) => Cli::init());
 $router->add('update:check', fn($args) => Cli::check());
 $router->add('update:apply', fn($args) => Cli::update());
 $router->add('handler:make <name>', fn($args) => Cli::makeHandler($args));

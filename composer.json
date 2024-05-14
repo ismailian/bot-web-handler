@@ -9,6 +9,14 @@
       "TeleBot\\App\\": "App/"
     }
   },
+  "scripts": {
+    "cli-init": [
+      "php cli update:init"
+    ],
+    "post-install-cmd": [
+      "@cli-init"
+    ]
+  },
   "authors": [
     {
       "name": "Ismail Aatif",

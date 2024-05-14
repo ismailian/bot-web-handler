@@ -93,6 +93,19 @@ class Cli
     }
 
     /**
+     * initialize update history file
+     *
+     * @return void
+     */
+    public static function init(): void
+    {
+        file_put_contents(self::$history, json_encode([
+            'date' => (new \DateTime())->format('Y-m-d\TH:i:s\Z'),
+            'changes' => [],
+        ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+    }
+
+    /**
      * update system
      *
      * @return void
