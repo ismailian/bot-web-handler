@@ -157,7 +157,7 @@ class Cli
             'changes' => $updates,
         ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 
-        die(PHP_EOL . '[+] all changes have been applied!' . PHP_EOL);
+        die('[+] all changes have been applied!' . PHP_EOL . PHP_EOL);
     }
 
     /**
@@ -184,6 +184,8 @@ class Cli
                 echo "\t* {$file['filename']} [{$file['status']}]" . PHP_EOL;
             }
         }
+
+        echo PHP_EOL;
     }
 
     /**
