@@ -53,7 +53,7 @@ trait QueryBuilder
             'UPDATE' => ' ',
             'DELETE' => ' FROM ',
         };
-        
+
         $sql .= "`{$this->_table}`";
 
         // if update/delete/select check for where clause

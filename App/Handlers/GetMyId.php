@@ -3,6 +3,7 @@
 namespace TeleBot\App\Handlers;
 
 use Exception;
+use TeleBot\App\Models\User;
 use TeleBot\System\BaseEvent;
 use TeleBot\System\Events\Message;
 
@@ -18,7 +19,7 @@ class GetMyId extends BaseEvent
     #[Message]
     public function handle(): void
     {
-        $userId = $this->event['message']['from']['id'];
+        $userId = $this->event->message->from->id;
         $reply = "Your user ID: <strong>{$userId}</strong>\n";
         $reply .= "Current chat ID: <strong>{$userId}</strong>";
 
