@@ -3,9 +3,9 @@
 namespace TeleBot\App\Handlers;
 
 use Exception;
-use TeleBot\App\Models\User;
 use TeleBot\System\BaseEvent;
 use TeleBot\System\Events\Message;
+use GuzzleHttp\Exception\GuzzleException;
 
 class GetMyId extends BaseEvent
 {
@@ -14,7 +14,7 @@ class GetMyId extends BaseEvent
      * handle all incoming messages
      *
      * @return void
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     #[Message]
     public function handle(): void
@@ -23,7 +23,7 @@ class GetMyId extends BaseEvent
         $reply = "Your user ID: <strong>{$userId}</strong>\n";
         $reply .= "Current chat ID: <strong>{$userId}</strong>";
 
-        $this->telegram->sendMessage($reply, false);
+        $this->telegram->sendMessage($reply);
     }
 
 }
