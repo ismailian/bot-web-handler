@@ -2,7 +2,6 @@
 
 namespace TeleBot\System\Filesystem;
 
-use TeleBot\App\Handlers\GetMyId;
 use TeleBot\System\BaseEvent;
 
 class Handler
