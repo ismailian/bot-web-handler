@@ -8,11 +8,6 @@ class Router
 {
 
     /**
-     * default constructor
-     */
-    public function __construct() {}
-
-    /**
      * checks if incoming request matches a defined route
      *
      * @param array $routes
@@ -20,12 +15,16 @@ class Router
      */
     public function matches(array $routes): array|bool
     {
-        if (empty($routes) || empty($routes[HttpRequest::method()])) {
+        if (
+            empty($routes)
+            || empty($routes[HttpRequest::method()])
+            || empty($routes[strtoupper(HttpRequest::method())])) {
             return false;
         }
 
         $uri = HttpRequest::uri();
-        foreach ($routes[HttpRequest::method()] as $route => $handler) {
+        $routes = $routes[HttpRequest::method()] ?? $routes[strtoupper(HttpRequest::method())];
+        foreach ($routes as $route => $handler) {
             if ($this->isDynamic($route)) {
                 $routeMeta = $this->getUrlInfo($uri, $route);
                 if ($routeMeta['valid']) {

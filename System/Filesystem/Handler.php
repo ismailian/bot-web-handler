@@ -2,6 +2,9 @@
 
 namespace TeleBot\System\Filesystem;
 
+use TeleBot\App\Handlers\GetMyId;
+use TeleBot\System\BaseEvent;
+
 class Handler
 {
 
@@ -42,7 +45,9 @@ class Handler
         $this->method = $method;
         $this->args = $args;
 
-        $this->instance->config = $this->config;
+        if (is_subclass_of($instance::class, BaseEvent::class)) {
+            $this->instance->config = $this->config;
+        }
 
         return $this;
     }

@@ -22,23 +22,6 @@ class HttpRequest
     protected static ?array $event;
 
     /**
-     * default constructor
-     */
-    public function __construct() {}
-
-    /**
-     * check for json data
-     *
-     * @return bool
-     */
-    protected static function hasJson(): bool
-    {
-        return (
-            strlen(self::$_json = file_get_contents('php://input')) > 0
-        );
-    }
-
-    /**
      * return request headers
      *
      * @param string|null $key
@@ -74,6 +57,16 @@ class HttpRequest
     }
 
     /**
+     * get request method (lowercase)
+     *
+     * @return string
+     */
+    public static function method(): string
+    {
+        return strtolower($_SERVER['REQUEST_METHOD']);
+    }
+
+    /**
      * get query parameters
      *
      * @return array
@@ -81,43 +74,6 @@ class HttpRequest
     public static function query(): array
     {
         return self::$_query ?? (self::$_query = $_POST);
-    }
-
-    /**
-     * get json body
-     *
-     * @return array
-     */
-    public static function json(): array
-    {
-        if (($json = json_decode(file_get_contents('php://input'),true)))
-            return $json;
-
-        return [];
-    }
-
-    /**
-     * get form-data body
-     *
-     * @return array
-     */
-    public static function body(): array
-    {
-        $body = self::$_body ?? (self::$_body = $_POST);
-        return [
-            ...$body,
-            ...self::json()
-        ];
-    }
-
-    /**
-     * get request data
-     *
-     * @return array
-     */
-    public static function context(): array
-    {
-        return self::hasJson() ? self::json() : self::body();
     }
 
     /**
@@ -136,13 +92,52 @@ class HttpRequest
     }
 
     /**
-     * get request method (lowercase)
+     * get request data
      *
-     * @return string
+     * @return array
      */
-    public static function method(): string
+    public static function context(): array
     {
-        return strtolower($_SERVER['REQUEST_METHOD']);
+        return self::hasJson() ? self::json() : self::body();
+    }
+
+    /**
+     * check for json data
+     *
+     * @return bool
+     */
+    protected static function hasJson(): bool
+    {
+        return (
+            strlen(self::$_json = file_get_contents('php://input')) > 0
+        );
+    }
+
+    /**
+     * get json body
+     *
+     * @return array
+     */
+    public static function json(): array
+    {
+        if (($json = json_decode(file_get_contents('php://input'), true)))
+            return $json;
+
+        return [];
+    }
+
+    /**
+     * get form-data body
+     *
+     * @return array
+     */
+    public static function body(): array
+    {
+        $body = self::$_body ?? (self::$_body = $_POST);
+        return [
+            ...$body,
+            ...self::json()
+        ];
     }
 
 }
