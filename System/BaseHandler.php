@@ -7,7 +7,7 @@ use ReflectionMethod;
 use ReflectionException;
 use TeleBot\System\Filters\Only;
 use TeleBot\System\Filters\Awaits;
-use TeleBot\System\Messages\Inbound;
+use TeleBot\System\Messages\HttpRequest;
 use TeleBot\System\Filesystem\Handler;
 use TeleBot\System\Filesystem\Collector;
 use TeleBot\System\Filesystem\Bootstrap;
@@ -38,7 +38,7 @@ class BaseHandler
     public function init(): bool
     {
         (new Bootstrap())->setup();
-        $this->event = Inbound::event();
+        $this->event = HttpRequest::event();
         $this->handler = new Handler();
 
         $handlers = Collector::getNamespacedFiles('App/Handlers');

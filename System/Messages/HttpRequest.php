@@ -2,12 +2,15 @@
 
 namespace TeleBot\System\Messages;
 
-use TeleBot\System\Exceptions\InvalidMessage;
-use TeleBot\System\Exceptions\InvalidUpdate;
 use TeleBot\System\UpdateParser;
+use TeleBot\System\Exceptions\InvalidUpdate;
+use TeleBot\System\Exceptions\InvalidMessage;
 
-class Inbound
+class HttpRequest
 {
+
+    /** @var array|null $_query */
+    protected static ?array $_query;
 
     /** @var ?string $_json */
     protected static ?string $_json;
@@ -71,11 +74,21 @@ class Inbound
     }
 
     /**
+     * get query parameters
+     *
+     * @return array
+     */
+    public static function query(): array
+    {
+        return self::$_query ?? (self::$_query = $_POST);
+    }
+
+    /**
      * get json body
      *
      * @return array
      */
-    protected static function json(): array
+    public static function json(): array
     {
         if (($json = json_decode(file_get_contents('php://input'),true)))
             return $json;
@@ -88,9 +101,13 @@ class Inbound
      *
      * @return array
      */
-    protected static function body(): array
+    public static function body(): array
     {
-        return self::$_body ?? (self::$_body = $_POST);
+        $body = self::$_body ?? (self::$_body = $_POST);
+        return [
+            ...$body,
+            ...self::json()
+        ];
     }
 
     /**

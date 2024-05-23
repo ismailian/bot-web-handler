@@ -4,8 +4,8 @@ namespace TeleBot\System\Filesystem;
 
 use TeleBot\System\Router;
 use TeleBot\System\UpdateParser;
-use TeleBot\System\Messages\Inbound;
-use TeleBot\System\Messages\Outbound;
+use TeleBot\System\Messages\HttpRequest;
+use TeleBot\System\Messages\HttpResponse;
 
 class Bootstrap
 {
@@ -48,17 +48,17 @@ class Bootstrap
 
         # unauthorized source
         if (!$allowedIp || !$validSignature || !$allowedRoute) {
-            Outbound::setStatusCode(401)->end();
+            HttpResponse::setStatusCode(401)->end();
         }
         
         # blacklisted user or invalid payload
         if (!$validPayload || !$validUser) {
-            Outbound::setStatusCode(200)->end();
+            HttpResponse::setStatusCode(200)->end();
         }
 
         if (!empty(($async = getenv('ASYNC')))) {
             if ($async == 'true') {
-                Outbound::close();
+                HttpResponse::close();
             }
         }
     }
@@ -87,7 +87,7 @@ class Bootstrap
     private function verifyIP(): bool
     {
         if (!empty(($sourceIp = self::$config['ip']))) {
-            return hash_equals($sourceIp, Inbound::ip());
+            return hash_equals($sourceIp, HttpRequest::ip());
         }
 
         return true;
@@ -101,7 +101,7 @@ class Bootstrap
     private function verifySignature(): bool
     {
         if (!empty(($signature = self::$config['signature']))) {
-            return hash_equals($signature, Inbound::headers('X-Telegram-Bot-Api-Secret-Token'));
+            return hash_equals($signature, HttpRequest::headers('X-Telegram-Bot-Api-Secret-Token'));
         }
 
         return true;
@@ -116,7 +116,7 @@ class Bootstrap
     {
         if (!empty(($routes = self::$config['routes']))) {
             if (!empty($routes['telegram'])) {
-                return in_array(Inbound::uri(), $routes);
+                return in_array(HttpRequest::uri(), $routes);
             }
         }
 
@@ -130,7 +130,7 @@ class Bootstrap
      */
     private function verifyPayload(): bool
     {
-        $payload = Inbound::context();
+        $payload = HttpRequest::context();
         if (isset($payload['update_id'])) {
             if (!empty(array_intersect(UpdateParser::$updates, array_keys($payload)))) {
                 return true;
@@ -147,7 +147,7 @@ class Bootstrap
      */
     private function verifyUserId(): bool
     {
-        $payload = Inbound::context();
+        $payload = HttpRequest::context();
         unset($payload['update_id']);
         $keys = array_keys($payload);
         $userId = $payload[$keys[0]]['from']['id'];

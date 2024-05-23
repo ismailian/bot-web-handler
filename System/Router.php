@@ -2,7 +2,7 @@
 
 namespace TeleBot\System;
 
-use TeleBot\System\Messages\Inbound;
+use TeleBot\System\Messages\HttpRequest;
 
 class Router
 {
@@ -20,12 +20,12 @@ class Router
      */
     public function matches(array $routes): array|bool
     {
-        if (empty($routes) || empty($routes[Inbound::method()])) {
+        if (empty($routes) || empty($routes[HttpRequest::method()])) {
             return false;
         }
 
-        $uri = Inbound::uri();
-        foreach ($routes[Inbound::method()] as $route => $handler) {
+        $uri = HttpRequest::uri();
+        foreach ($routes[HttpRequest::method()] as $route => $handler) {
             if ($this->isDynamic($route)) {
                 $routeMeta = $this->getUrlInfo($uri, $route);
                 if ($routeMeta['valid']) {

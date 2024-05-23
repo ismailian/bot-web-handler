@@ -3,7 +3,7 @@
 namespace TeleBot\System;
 
 use Exception;
-use TeleBot\System\Messages\Inbound;
+use TeleBot\System\Messages\HttpRequest;
 use TeleBot\System\Adapters\FileAdapter;
 use TeleBot\System\Adapters\RedisAdapter;
 use TeleBot\System\Interfaces\ISessionAdapter;
@@ -52,7 +52,7 @@ class Session
     {
         try {
             if (empty(self::$sessionId) || !self::$adapter) {
-                $event = Inbound::event()['data'];
+                $event = HttpRequest::event()['data'];
                 foreach (array_keys($event) as $key) {
                     if ($key !== 'update_id') {
                         self::$sessionId = $event[$key]['from']['id'];

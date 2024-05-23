@@ -4,7 +4,7 @@ namespace TeleBot\System\Messages;
 
 use Exception;
 
-class Outbound
+class HttpResponse
 {
 
     /**

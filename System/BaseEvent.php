@@ -3,7 +3,7 @@
 namespace TeleBot\System;
 
 use TeleBot\System\Types\Event;
-use TeleBot\System\Messages\Inbound;
+use TeleBot\System\Messages\HttpRequest;
 use TeleBot\System\Exceptions\InvalidUpdate;
 use TeleBot\System\Exceptions\InvalidMessage;
 
@@ -27,7 +27,7 @@ class BaseEvent
     public function __construct()
     {
         $userId = null;
-        $event = Inbound::event()['data'];
+        $event = HttpRequest::event()['data'];
         foreach (array_keys($event) as $key) {
             if ($key !== 'update_id') {
                 $userId = $event[$key]['from']['id'];
