@@ -2,7 +2,7 @@
 
 namespace TeleBot\System;
 
-use TeleBot\System\Messages\HttpRequest;
+use TeleBot\System\Http\HttpRequest;
 
 class Router
 {
@@ -16,9 +16,10 @@ class Router
     public function matches(array $routes): array|bool
     {
         if (
-            empty($routes)
-            || empty($routes[HttpRequest::method()])
-            || empty($routes[strtoupper(HttpRequest::method())])) {
+            empty($routes) || (
+                empty($routes[HttpRequest::method()])
+                && empty($routes[strtoupper(HttpRequest::method())])
+            )) {
             return false;
         }
 
