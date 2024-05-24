@@ -9,7 +9,7 @@ use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Filesystem\Handler;
 use TeleBot\System\Filesystem\Collector;
 use TeleBot\System\Filesystem\Bootstrap;
-use Telebot\System\Telegram\Filters\Chat;
+use TeleBot\System\Telegram\Filters\Chat;
 use TeleBot\System\Telegram\Filters\Only;
 use TeleBot\System\Telegram\Filters\Awaits;
 use TeleBot\System\Exceptions\InvalidUpdate;

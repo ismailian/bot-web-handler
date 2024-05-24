@@ -1,6 +1,6 @@
 <?php
 
-namespace Telebot\System\Telegram\Events;
+namespace TeleBot\System\Telegram\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;

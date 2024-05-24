@@ -1,6 +1,6 @@
 <?php
 
-namespace Telebot\System\Telegram\Types;
+namespace TeleBot\System\Telegram\Types;
 
 class Thumbnail extends File
 {

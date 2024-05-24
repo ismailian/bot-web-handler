@@ -1,6 +1,6 @@
 <?php
 
-namespace Telebot\System\Telegram\Filters;
+namespace TeleBot\System\Telegram\Filters;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
