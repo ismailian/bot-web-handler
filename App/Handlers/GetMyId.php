@@ -3,11 +3,11 @@
 namespace TeleBot\App\Handlers;
 
 use Exception;
-use TeleBot\System\BaseEvent;
-use TeleBot\System\Events\Message;
+use TeleBot\System\IncomingEvent;
 use GuzzleHttp\Exception\GuzzleException;
+use Telebot\System\Telegram\Events\Message;
 
-class GetMyId extends BaseEvent
+class GetMyId extends IncomingEvent
 {
 
     /**
