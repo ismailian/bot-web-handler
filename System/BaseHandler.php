@@ -41,6 +41,7 @@ class BaseHandler
         (new Bootstrap())->setup();
         $this->event = HttpRequest::event();
         $this->handler = new Handler();
+        $this->config = Bootstrap::$config;
 
         $handlers = Collector::getNamespacedFiles('App/Handlers');
         foreach ($handlers as $handler) {
