@@ -5,12 +5,13 @@ namespace TeleBot\System;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionException;
-use TeleBot\System\Filters\Only;
-use TeleBot\System\Filters\Awaits;
-use TeleBot\System\Messages\HttpRequest;
+use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Filesystem\Handler;
 use TeleBot\System\Filesystem\Collector;
 use TeleBot\System\Filesystem\Bootstrap;
+use Telebot\System\Telegram\Filters\Chat;
+use TeleBot\System\Telegram\Filters\Only;
+use TeleBot\System\Telegram\Filters\Awaits;
 use TeleBot\System\Exceptions\InvalidUpdate;
 use TeleBot\System\Exceptions\InvalidMessage;
 
@@ -61,6 +62,7 @@ class BaseHandler
             }
         }
 
+        $this->handler->setConfig($this->config)->fallback();
         return false;
     }
 
@@ -74,6 +76,7 @@ class BaseHandler
     private function runFilters(ReflectionMethod $method, array $event): bool
     {
         $filters = [
+            ...$method->getAttributes(Chat::class),
             ...$method->getAttributes(Only::class),
             ...$method->getAttributes(Awaits::class),
         ];

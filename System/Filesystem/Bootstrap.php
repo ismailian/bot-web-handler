@@ -3,9 +3,9 @@
 namespace TeleBot\System\Filesystem;
 
 use TeleBot\System\Router;
-use TeleBot\System\UpdateParser;
-use TeleBot\System\Messages\HttpRequest;
-use TeleBot\System\Messages\HttpResponse;
+use TeleBot\System\Telegram\Parser;
+use TeleBot\System\Http\HttpRequest;
+use TeleBot\System\Http\HttpResponse;
 
 class Bootstrap
 {
@@ -40,19 +40,13 @@ class Bootstrap
             }
         }
 
-        $allowedIp = $this->verifyIP();
-        $validSignature = $this->verifySignature();
-        $allowedRoute = $this->verifyRoute();
-        $validPayload = $this->verifyPayload();
-        $validUser = $this->verifyUserId();
+        $this->verifyIP()
+            ->verifySignature()
+            ->verifyRoute()
+            ->verifyPayload();
 
-        # unauthorized source
-        if (!$allowedIp || !$validSignature || !$allowedRoute) {
-            HttpResponse::setStatusCode(401)->end();
-        }
-        
         # blacklisted user or invalid payload
-        if (!$validPayload || !$validUser) {
+        if (!$this->verifyUserId()) {
             HttpResponse::setStatusCode(200)->end();
         }
 
@@ -80,67 +74,6 @@ class Bootstrap
     }
 
     /**
-     * verify source IP address
-     *
-     * @return bool
-     */
-    private function verifyIP(): bool
-    {
-        if (!empty(($sourceIp = self::$config['ip']))) {
-            return hash_equals($sourceIp, HttpRequest::ip());
-        }
-
-        return true;
-    }
-
-    /**
-     * verify request signature
-     *
-     * @return bool
-     */
-    private function verifySignature(): bool
-    {
-        if (!empty(($signature = self::$config['signature']))) {
-            return hash_equals($signature, HttpRequest::headers('X-Telegram-Bot-Api-Secret-Token'));
-        }
-
-        return true;
-    }
-
-    /**
-     * verify request route
-     *
-     * @return bool
-     */
-    private function verifyRoute(): bool
-    {
-        if (!empty(($routes = self::$config['routes']))) {
-            if (!empty($routes['telegram'])) {
-                return in_array(HttpRequest::uri(), $routes);
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * verify payload
-     *
-     * @return bool
-     */
-    private function verifyPayload(): bool
-    {
-        $payload = HttpRequest::context();
-        if (isset($payload['update_id'])) {
-            if (!empty(array_intersect(UpdateParser::$updates, array_keys($payload)))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * verify user id
      *
      * @return bool
@@ -159,6 +92,69 @@ class Bootstrap
         if (!empty($blacklist)) return !in_array($userId, $blacklist);
 
         return true;
+    }
+
+    /**
+     * verify payload
+     *
+     * @return void
+     */
+    private function verifyPayload(): void
+    {
+        $payload = HttpRequest::context();
+        if (!isset($payload['update_id']) || empty(array_intersect(Parser::$updates, array_keys($payload)))) {
+            HttpResponse::setStatusCode(401)->end();
+        }
+    }
+
+    /**
+     * verify request route
+     *
+     * @return Bootstrap
+     */
+    private function verifyRoute(): self
+    {
+        if (!empty(($routes = self::$config['routes']))) {
+            if (!empty($routes['telegram'])) {
+                if (!in_array(HttpRequest::uri(), $routes)) {
+                    HttpResponse::setStatusCode(401)->end();
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * verify request signature
+     *
+     * @return Bootstrap
+     */
+    private function verifySignature(): self
+    {
+        if (!empty(($signature = self::$config['signature']))) {
+            if (!hash_equals($signature, HttpRequest::headers('X-Telegram-Bot-Api-Secret-Token'))) {
+                HttpResponse::setStatusCode(401)->end();
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * verify source IP address
+     *
+     * @return Bootstrap
+     */
+    private function verifyIP(): self
+    {
+        if (!empty(($sourceIp = self::$config['ip']))) {
+            if (!hash_equals($sourceIp, HttpRequest::ip())) {
+                HttpResponse::setStatusCode(401)->end();
+            }
+        }
+
+        return $this;
     }
 
 }

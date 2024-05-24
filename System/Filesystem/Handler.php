@@ -2,7 +2,7 @@
 
 namespace TeleBot\System\Filesystem;
 
-use TeleBot\System\BaseEvent;
+use TeleBot\System\IncomingEvent;
 
 class Handler
 {
@@ -44,7 +44,7 @@ class Handler
         $this->method = $method;
         $this->args = $args;
 
-        if (is_subclass_of($instance::class, BaseEvent::class)) {
+        if (is_subclass_of($instance::class, IncomingEvent::class)) {
             $this->instance->config = $this->config;
         }
 
@@ -61,6 +61,21 @@ class Handler
         call_user_func_array(
             [$this->instance, $this->method], [$this->args]
         );
+    }
+
+    /**
+     * handle fallback
+     *
+     * @return void
+     */
+    public function fallback(): void
+    {
+        if (!empty($this->config['fallback'])) {
+            [$class, $method] = explode('::', $this->config['fallback']);
+            call_user_func_array(
+                [new (Collector::getNamespacedFile($class)), $method], []
+            );
+        }
     }
 
 }
