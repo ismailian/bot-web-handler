@@ -55,4 +55,9 @@ return [
         'blacklist' => [],
     ],
 
+    /**
+     * @var string $fallback fallback property for unhandled telegram events
+     */
+    'fallback' => null,
+
 ];
