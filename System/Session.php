@@ -3,7 +3,7 @@
 namespace TeleBot\System;
 
 use Exception;
-use TeleBot\System\Messages\HttpRequest;
+use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Adapters\FileAdapter;
 use TeleBot\System\Adapters\RedisAdapter;
 use TeleBot\System\Interfaces\ISessionAdapter;

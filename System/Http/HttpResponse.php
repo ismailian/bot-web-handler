@@ -1,6 +1,6 @@
 <?php
 
-namespace TeleBot\System\Messages;
+namespace TeleBot\System\Http;
 
 use Exception;
 

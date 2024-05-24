@@ -1,8 +1,8 @@
 <?php
 
-namespace TeleBot\System\Messages;
+namespace TeleBot\System\Http;
 
-use TeleBot\System\UpdateParser;
+use TeleBot\System\Telegram\Parser;
 use TeleBot\System\Exceptions\InvalidUpdate;
 use TeleBot\System\Exceptions\InvalidMessage;
 
@@ -25,16 +25,18 @@ class HttpRequest
      * return request headers
      *
      * @param string|null $key
-     * @return array|string
+     * @return array|string|null
      */
-    public static function headers(string $key = null): array|string
+    public static function headers(string $key = null): array|string|null
     {
         if (!$key) return getallheaders();
-        foreach (getallheaders() as $hkey => $hvalue)
-            if (strtolower($hkey) == strtolower($key))
-                return $hvalue;
+        foreach (getallheaders() as $k => $v) {
+            if (strtolower($k) == strtolower($key)) {
+                return $v;
+            }
+        }
 
-        return '';
+        return null;
     }
 
     /**
@@ -85,7 +87,7 @@ class HttpRequest
     public static function event(): array
     {
         if (empty(self::$event)) {
-            self::$event = UpdateParser::parseUpdate(self::context());
+            self::$event = Parser::parseUpdate(self::context());
         }
 
         return self::$event;
