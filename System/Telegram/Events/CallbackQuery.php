@@ -4,7 +4,7 @@ namespace TeleBot\System\Telegram\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
-use TeleBot\System\Types\IncomingCallbackQuery;
+use TeleBot\System\Telegram\Types\IncomingCallbackQuery;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class CallbackQuery implements IEvent

@@ -5,7 +5,7 @@ namespace TeleBot\System\Telegram;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Utils;
-use TeleBot\System\Types\IncomingDice;
+use TeleBot\System\Telegram\Types\IncomingDice;
 use GuzzleHttp\Exception\GuzzleException;
 
 class BotClient

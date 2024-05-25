@@ -5,7 +5,7 @@ namespace TeleBot\System\Telegram\Events;
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
 use TeleBot\System\Interfaces\IValidator;
-use TeleBot\System\Types\IncomingInlineQuery;
+use TeleBot\System\Telegram\Types\IncomingInlineQuery;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class InlineQuery implements IEvent

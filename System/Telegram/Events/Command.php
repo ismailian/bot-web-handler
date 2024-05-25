@@ -4,7 +4,7 @@ namespace TeleBot\System\Telegram\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
-use TeleBot\System\Types\IncomingCommand;
+use TeleBot\System\Telegram\Types\IncomingCommand;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Command implements IEvent

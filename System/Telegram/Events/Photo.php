@@ -4,7 +4,7 @@ namespace TeleBot\System\Telegram\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
-use TeleBot\System\Types\IncomingPhoto;
+use TeleBot\System\Telegram\Types\IncomingPhoto;
 use TeleBot\System\Interfaces\IValidator;
 
 #[Attribute(Attribute::TARGET_METHOD)]
