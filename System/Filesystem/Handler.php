@@ -43,10 +43,7 @@ class Handler
         $this->instance = $instance;
         $this->method = $method;
         $this->args = $args;
-
-        if (is_subclass_of($instance::class, IncomingEvent::class)) {
-            $this->instance->config = $this->config;
-        }
+        $this->instance->config = $this->config;
 
         return $this;
     }
