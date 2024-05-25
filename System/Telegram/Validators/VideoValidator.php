@@ -1,6 +1,6 @@
 <?php
 
-namespace TeleBot\System\Validators;
+namespace TeleBot\System\Telegram\Validators;
 
 use TeleBot\System\Interfaces\IValidator;
 
