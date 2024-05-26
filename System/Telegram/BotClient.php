@@ -5,8 +5,11 @@ namespace TeleBot\System\Telegram;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Utils;
-use TeleBot\System\Telegram\Types\IncomingDice;
 use GuzzleHttp\Exception\GuzzleException;
+use TeleBot\System\Telegram\Types\IncomingDice;
+use TeleBot\System\Telegram\Types\IncomingPhoto;
+use TeleBot\System\Telegram\Types\IncomingVideo;
+use TeleBot\System\Telegram\Types\IncomingDocument;
 
 class BotClient
 {
@@ -198,10 +201,10 @@ class BotClient
      * @param string $imagePath image path
      * @param string|null $caption caption to send with image
      * @param bool $withAction send action indicator
-     * @return bool returns true on success, otherwise false
+     * @return IncomingPhoto|bool returns IncomingPhoto on success, otherwise false
      * @throws Exception|GuzzleException
      */
-    public function sendPhoto(string $imagePath, string $caption = null, bool $withAction = false, bool $asUrl = false): bool
+    public function sendPhoto(string $imagePath, string $caption = null, bool $withAction = false, bool $asUrl = false): IncomingPhoto|bool
     {
         if ($withAction) $this->sendAction('upload_photo');
         $data = $this->post('photo', [
@@ -210,7 +213,7 @@ class BotClient
             'parse_mode' => $this->mode
         ]);
 
-        return $data && $data['ok'] == true;
+        return ($data && $data['ok']) ? new IncomingPhoto($data['result']['photo']) : false;
     }
 
     /**
@@ -220,10 +223,10 @@ class BotClient
      * @param string|null $caption caption to send with image
      * @param bool $withAction send action indicator
      * @param bool $asUrl weather the provider video is an ID or Url
-     * @return bool returns true on success, otherwise false
+     * @return IncomingVideo|bool returns IncomingVideo on success, otherwise false
      * @throws Exception|GuzzleException
      */
-    public function sendVideo(string $videoPath, string $caption = null, bool $withAction = false, bool $asUrl = false): bool
+    public function sendVideo(string $videoPath, string $caption = null, bool $withAction = false, bool $asUrl = false): IncomingVideo|bool
     {
         if ($withAction) $this->sendAction('upload_video');
         $data = $this->post('video', [
@@ -232,7 +235,7 @@ class BotClient
             'parse_mode' => $this->mode
         ]);
 
-        return $data && $data['ok'] == true;
+        return ($data && $data['ok']) ? new IncomingVideo($data['result']['video']) : false;
     }
 
     /**
@@ -242,10 +245,10 @@ class BotClient
      * @param string|null $caption caption to send with image
      * @param bool $withAction send action indicator
      * @param bool $asUrl
-     * @return bool returns true on success, otherwise false
+     * @return IncomingDocument|bool returns IncomingDocument on success, otherwise false
      * @throws Exception|GuzzleException
      */
-    public function sendDocument(string $fileUrl, string $caption = null, bool $withAction = false, bool $asUrl = false): bool
+    public function sendDocument(string $fileUrl, string $caption = null, bool $withAction = false, bool $asUrl = false): IncomingDocument|bool
     {
         if ($withAction) $this->sendAction('upload_document');
         $data = $this->post('document', [
@@ -254,7 +257,7 @@ class BotClient
             'parse_mode' => $this->mode
         ]);
 
-        return $data && $data['ok'] == true;
+        return ($data && $data['ok']) ? new IncomingDocument($data['result']['document']) : false;
     }
 
     /**
