@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 class Cli
 {
 
-    protected static string $payload = "PD9waHAKCm5hbWVzcGFjZSBUZWxlQm90XEFwcFxIYW5kbGVyc3t7aGFuZGxlclBhdGh9fTsKCnVzZSBUZWxlQm90XFN5c3RlbVxCYXNlRXZlbnQ7CgpjbGFzcyB7e2hhbmRsZXJOYW1lfX0gZXh0ZW5kcyBCYXNlRXZlbnQge30=";
+    protected static string $payload = "PD9waHAKCm5hbWVzcGFjZSBUZWxlQm90XEFwcFxIYW5kbGVyc3t7aGFuZGxlclBhdGh9fTsKCnVzZSBUZWxlQm90XFN5c3RlbVxJbmNvbWluZ0V2ZW50OwoKY2xhc3Mge3toYW5kbGVyTmFtZX19IGV4dGVuZHMgSW5jb21pbmdFdmVudCB7fQ==";
     protected static ?Client $client = null;
     protected static string $owner = 'ismailian';
     protected static string $repo = 'bot-web-handler';
@@ -79,11 +79,16 @@ class Cli
         try {
             $uri = '/repos/' . self::$owner . '/' . self::$repo . '/commits/' . $commit;
             $response = self::getClient()->get($uri)->getBody();
+            $files = array_filter(
+                json_decode($response, true)['files'],
+                fn($f) => !str_starts_with($f['filename'], 'App')
+            );
+
             return array_map(fn($file) => ([
                 'status' => $file['status'],
                 'filename' => $file['filename'],
                 'url' => $file['raw_url'],
-            ]), json_decode($response, true)['files']);
+            ]), $files);
         } catch (GuzzleException $e) {
             if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
                 die('[!] Rate limit exceeded, please wait before trying again!');
