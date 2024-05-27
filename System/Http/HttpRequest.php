@@ -55,7 +55,7 @@ class HttpRequest
      */
     public static function uri(): string
     {
-        return $_SERVER['REQUEST_URI'];
+        return $_SERVER['REDIRECT_URL'];
     }
 
     /**
@@ -75,7 +75,7 @@ class HttpRequest
      */
     public static function query(): array
     {
-        return self::$_query ?? (self::$_query = $_POST);
+        return self::$_query ?? (self::$_query = $_GET);
     }
 
     /**
