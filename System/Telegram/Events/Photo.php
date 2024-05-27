@@ -4,8 +4,8 @@ namespace TeleBot\System\Telegram\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
-use TeleBot\System\Telegram\Types\IncomingPhoto;
 use TeleBot\System\Interfaces\IValidator;
+use TeleBot\System\Telegram\Types\IncomingPhoto;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Photo implements IEvent

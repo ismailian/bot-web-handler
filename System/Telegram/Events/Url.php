@@ -4,8 +4,8 @@ namespace TeleBot\System\Telegram\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
-use TeleBot\System\Telegram\Types\IncomingUrl;
 use TeleBot\System\Interfaces\IValidator;
+use TeleBot\System\Telegram\Types\IncomingUrl;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Url implements IEvent

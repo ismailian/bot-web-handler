@@ -4,8 +4,8 @@ namespace TeleBot\System\Telegram\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
-use TeleBot\System\Telegram\Types\IncomingDice;
 use TeleBot\System\Interfaces\IValidator;
+use TeleBot\System\Telegram\Types\IncomingDice;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Dice implements IEvent
