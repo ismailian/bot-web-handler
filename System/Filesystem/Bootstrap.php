@@ -133,7 +133,8 @@ class Bootstrap
     private function verifySignature(): self
     {
         if (!empty(($signature = self::$config['signature']))) {
-            if (!hash_equals($signature, HttpRequest::headers('X-Telegram-Bot-Api-Secret-Token'))) {
+            $value = HttpRequest::headers('X-Telegram-Bot-Api-Secret-Token');
+            if (empty($value) || !hash_equals($signature, $value)) {
                 HttpResponse::setStatusCode(401)->end();
             }
         }
