@@ -2,9 +2,9 @@
 
 namespace TeleBot\System;
 
-use TeleBot\System\Telegram\Types\Event;
-use TeleBot\System\Telegram\BotClient;
 use TeleBot\System\Http\HttpRequest;
+use TeleBot\System\Telegram\BotClient;
+use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Exceptions\InvalidUpdate;
 use TeleBot\System\Exceptions\InvalidMessage;
 

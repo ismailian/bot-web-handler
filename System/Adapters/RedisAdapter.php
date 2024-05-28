@@ -48,7 +48,8 @@ class RedisAdapter implements ISessionAdapter
     public function read(): array
     {
         if (empty($this->cache)) {
-            if (($json = json_decode($this->client->get("{$this->prefix}:{$this->sessionId}"), true))) {
+            $data = $this->client->get("{$this->prefix}:{$this->sessionId}");
+            if (!empty($data) && ($json = json_decode($data, true))) {
                 $this->cache = $json;
             }
         }
