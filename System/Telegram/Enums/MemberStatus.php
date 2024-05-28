@@ -6,4 +6,6 @@ enum MemberStatus
 {
     const MEMBER = 'member';
     const KICKED = 'kicked';
+    const LEFT = 'left';
+    const ADMIN = 'administrator';
 }

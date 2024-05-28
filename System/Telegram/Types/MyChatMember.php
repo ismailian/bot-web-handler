@@ -28,7 +28,7 @@ class MyChatMember
      */
     public function __construct(protected array $myChatMember)
     {
-        $this->date = new DateTime($this->myChatMember['date']);
+        $this->date = new DateTime(date('Y-m-d H:i:s T', $this->myChatMember['date']));
         $this->chat = new Chat($this->myChatMember['chat']);
         $this->from = new From($this->myChatMember['from']);
 
