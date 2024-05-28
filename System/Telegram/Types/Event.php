@@ -2,6 +2,8 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use Exception;
+
 class Event
 {
 
@@ -20,10 +22,14 @@ class Event
     /** @var object|null $chosenInlineQuery chosen inline query event */
     public ?object $chosenInlineQuery = null;
 
+    /** @var MyChatMember|null $myChatMember context chat member event */
+    public ?MyChatMember $myChatMember = null;
+
     /**
      * default constructor
      *
      * @param array $event
+     * @throws Exception
      */
     public function __construct(protected array $event)
     {
@@ -47,6 +53,11 @@ class Event
         /** <ChosenInlineQuery> */
         if (array_key_exists('chosen_inline_query', $this->event)) {
             $this->chosenInlineQuery = null;
+        }
+
+        /** <MyChatMember> */
+        if (array_key_exists('my_chat_member', $this->event)) {
+            $this->myChatMember = new MyChatMember($this->event['my_chat_member']);
         }
     }
 }
