@@ -16,8 +16,8 @@ class Event
     /** @var object|null $callbackQuery callback query event */
     public ?object $callbackQuery = null;
 
-    /** @var object|null $inlineQuery inline query event */
-    public ?object $inlineQuery = null;
+    /** @var InlineQuery|null $inlineQuery inline query event */
+    public ?InlineQuery $inlineQuery = null;
 
     /** @var object|null $chosenInlineQuery chosen inline query event */
     public ?object $chosenInlineQuery = null;
@@ -47,7 +47,7 @@ class Event
 
         /** <InlineQuery> */
         if (array_key_exists('inline_query', $this->event)) {
-            $this->inlineQuery = null;
+            $this->inlineQuery = new InlineQuery($this->event['inline_query']);
         }
 
         /** <ChosenInlineQuery> */
