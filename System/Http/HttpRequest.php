@@ -55,7 +55,20 @@ class HttpRequest
      */
     public static function uri(): string
     {
-        return $_SERVER['REDIRECT_URL'];
+        if (array_key_exists('REDIRECT_URL', $_SERVER)) {
+            return $_SERVER['REDIRECT_URL'];
+        }
+
+        /**
+         * most likely nginx
+         * must remove the query string from the uri
+         */
+        $requestUri = $_SERVER['REQUEST_URI'];
+        if (str_contains($requestUri, '?')) {
+            $requestUri = substr($requestUri, 0, strpos($requestUri, '?'));
+        }
+
+        return $requestUri;
     }
 
     /**
