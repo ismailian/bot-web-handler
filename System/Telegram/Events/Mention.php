@@ -14,7 +14,12 @@ class Mention implements IEvent
      *
      * @param string|null $username username to check for mentions
      */
-    public function __construct(public ?string $username = null) {}
+    public function __construct(public ?string $username = null)
+    {
+        if ($this->username == 'me') {
+            $this->username = getenv('TG_BOT_USERNAME', true);
+        }
+    }
 
     /**
      * @inheritDoc
