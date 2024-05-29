@@ -18,6 +18,8 @@ class AppHandler extends BaseHandler
             if ($this->init()) {
                 $this->handler->run();
             }
+
+            $this->handler->fallback();
         } catch (Exception $ex) {}
     }
 

@@ -43,6 +43,7 @@ class BaseHandler
         $this->handler = new Handler();
         $this->config = Bootstrap::$config;
 
+        $handled = false;
         $handlers = Collector::getNamespacedFiles('App/Handlers');
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
@@ -55,20 +56,21 @@ class BaseHandler
                                     $refClass->newInstance($attr),
                                     $method->name, $result
                                 );
-                                return true;
                             }
+
+                            $handled = (bool)$result;
                         }
                     }
                 }
             }
         }
 
-        $this->handler->setConfig($this->config)->fallback();
-        return false;
+        $this->handler->setConfig($this->config);
+        return $handled;
     }
 
     /**
-     * evaluate triggers
+     * evaluate filters
      *
      * @param ReflectionMethod $method
      * @param array $event
