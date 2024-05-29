@@ -27,11 +27,11 @@ class IncomingEvent
      */
     public function __construct()
     {
-        $userId = null;
+        $chatId = null;
         $event = HttpRequest::event()['data'];
         foreach (array_keys($event) as $key) {
             if ($key !== 'update_id') {
-                $userId = $event[$key]['from']['id'];
+                $chatId = $event[$key]['chat']['id'];
                 break;
             }
         }
@@ -39,7 +39,7 @@ class IncomingEvent
         $this->event = new Event($event);
         $this->telegram = (new BotClient())
             ->setToken(getenv('TG_BOT_TOKEN'))
-            ->setChatId($userId);
+            ->setChatId($chatId);
     }
 
 }
