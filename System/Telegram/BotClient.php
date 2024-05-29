@@ -6,6 +6,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Exception\GuzzleException;
+use TeleBot\System\Telegram\Types\Message;
 use TeleBot\System\Telegram\Types\IncomingDice;
 use TeleBot\System\Telegram\Types\IncomingPhoto;
 use TeleBot\System\Telegram\Types\IncomingVideo;
@@ -105,7 +106,7 @@ class BotClient
      */
     public function withOptions(array $options): BotClient
     {
-        $this->options = $options;
+        $this->options = [...$this->options, ...$options];
         return $this;
     }
 
@@ -274,6 +275,22 @@ class BotClient
         ]);
 
         return ($data && $data['ok']) ? new IncomingDice($data['result']['dice']) : false;
+    }
+
+    /**
+     * set message to reply to
+     *
+     * @param Message $message
+     * @return $this
+     */
+    public function replyTo(Message $message): self
+    {
+        $this->options['reply_parameters'] = [
+            'message_id' => $message->id,
+            'chat_id' => $message->chat->id,
+        ];
+
+        return $this;
     }
 
     /**
