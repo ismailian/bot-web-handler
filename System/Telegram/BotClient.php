@@ -280,15 +280,16 @@ class BotClient
     /**
      * set message to reply to
      *
-     * @param Message $message
+     * @param int $messageId
+     * @param string|null $chatId
      * @return $this
      */
-    public function replyTo(Message $message): self
+    public function replyTo(int $messageId, string $chatId = null): self
     {
-        $this->options['reply_parameters'] = [
-            'message_id' => $message->id,
-            'chat_id' => $message->chat->id,
-        ];
+        $this->options['reply_parameters']['message_id'] = $messageId;
+        if ($chatId) {
+            $this->options['reply_parameters']['chat_id'] = $chatId;
+        }
 
         return $this;
     }
