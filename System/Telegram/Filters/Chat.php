@@ -12,6 +12,7 @@ class Chat implements IEvent
     const PRIVATE = 'private';
     const CHANNEL = 'channel';
     const GROUP = 'group';
+    const SUPERGROUP = 'supergroup';
 
     /**
      * default constructor
