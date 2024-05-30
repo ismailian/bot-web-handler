@@ -2,6 +2,7 @@
 
 namespace TeleBot\System;
 
+use Exception;
 use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Telegram\BotClient;
 use TeleBot\System\Telegram\Types\Event;
@@ -22,24 +23,16 @@ class IncomingEvent
 
     /**
      * default constructor
-     *
-     * @throws InvalidUpdate|InvalidMessage
+     * @throws InvalidMessage
+     * @throws InvalidUpdate
+     * @throws Exception
      */
     public function __construct()
     {
-        $chatId = null;
-        $event = HttpRequest::event()['data'];
-        foreach (array_keys($event) as $key) {
-            if ($key !== 'update_id') {
-                $chatId = $event[$key]['chat']['id'];
-                break;
-            }
-        }
-
-        $this->event = new Event($event);
+        $this->event = new Event(HttpRequest::json());
         $this->telegram = (new BotClient())
             ->setToken(getenv('TG_BOT_TOKEN'))
-            ->setChatId($chatId);
+            ->setChatId($this->event->chat->id);
     }
 
 }
