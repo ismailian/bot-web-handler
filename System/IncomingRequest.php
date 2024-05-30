@@ -18,6 +18,9 @@ class IncomingRequest
     /** @var BotClient $telegram telegram client */
     protected BotClient $telegram;
 
+    /** @var array $config */
+    public array $config = [];
+
     /**
      * default constructor
      */
