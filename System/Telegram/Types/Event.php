@@ -10,6 +10,12 @@ class Event
     /** @var string update id */
     public string $id;
 
+    /** @var Chat|null $chat event Chat */
+    public ?Chat $chat = null;
+
+    /** @var From|null $from event From */
+    public ?From $from = null;
+
     /** @var Message|null $message message event */
     public ?Message $message = null;
 
@@ -34,6 +40,7 @@ class Event
     public function __construct(protected array $event)
     {
         $this->id = $this->event['update_id'];
+        unset($this->event['update_id']);
 
         /** <Message | EditedMessage> */
         if (array_intersect(['message', 'edited_message'], array_keys($this->event))) {
@@ -59,5 +66,25 @@ class Event
         if (array_key_exists('my_chat_member', $this->event)) {
             $this->myChatMember = new MyChatMember($this->event['my_chat_member']);
         }
+
+        $this->setProps(match (array_keys($this->event)[0]) {
+            'message' => $this->message,
+            'callback_query' => $this->callbackQuery,
+            'inline_query' => $this->inlineQuery,
+            'chosen_inline_query' => $this->chosenInlineQuery,
+            'my_chat_member' => $this->myChatMember,
+        });
+    }
+
+    /**
+     * set Chat and From values
+     *
+     * @param Message|CallbackQuery|InlineQuery|MyChatMember $update
+     * @return void
+     */
+    protected function setProps(Message|CallbackQuery|InlineQuery|MyChatMember $update): void
+    {
+        $this->from = $update?->from;
+        $this->chat = $update?->chat;
     }
 }
