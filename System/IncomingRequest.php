@@ -25,8 +25,9 @@ class IncomingRequest
     {
         $this->request = new HttpRequest();
         $this->response = new HttpResponse();
-
         $this->telegram = (new BotClient())->setToken(getenv('TG_BOT_TOKEN'));
+
+        $this->response::close();
     }
 
 }
