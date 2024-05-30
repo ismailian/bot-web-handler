@@ -39,11 +39,11 @@ class BaseHandler
     public function init(): bool
     {
         (new Bootstrap())->setup();
-        $this->event = HttpRequest::event();
-        $this->handler = new Handler();
         $this->config = Bootstrap::$config;
+        $this->event = HttpRequest::event();
+        $this->handler = (new Handler())->setConfig($this->config);
 
-        $handled = false;
+        $result = false;
         $handlers = Collector::getNamespacedFiles('App/Handlers');
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
@@ -57,16 +57,15 @@ class BaseHandler
                                     $method->name, $result
                                 );
                             }
-
-                            $handled = (bool)$result;
                         }
                     }
+
+                    if ($result) return (bool) $result;
                 }
             }
         }
 
-        $this->handler->setConfig($this->config);
-        return $handled;
+        return false;
     }
 
     /**

@@ -17,6 +17,7 @@ class AppHandler extends BaseHandler
         try {
             if ($this->init()) {
                 $this->handler->run();
+                return;
             }
 
             $this->handler->fallback();
