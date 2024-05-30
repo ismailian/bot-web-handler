@@ -9,7 +9,7 @@ class Chat
     public string $id;
 
     /** @var string $chat type */
-    public string $type = 'type';
+    public string $type = 'private';
 
     /** @var string|null $username unique username */
     public ?string $username = null;

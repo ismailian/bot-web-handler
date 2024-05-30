@@ -43,24 +43,16 @@ class BaseHandler
         $this->event = HttpRequest::event();
         $this->handler = (new Handler())->setConfig($this->config);
 
-        $result = false;
         $handlers = Collector::getNamespacedFiles('App/Handlers');
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
-            foreach ($refClass->getMethods() as $method) {
-                if ($this->runFilters($method, $this->event)) {
-                    foreach ($method->getAttributes() as $attr) {
-                        if (!str_contains($attr->getName(), 'Filters')) {
-                            if (($result = $attr->newInstance()?->apply($this->event))) {
-                                $this->handler->setConfig($this->config)->assign(
-                                    $refClass->newInstance($attr),
-                                    $method->name, $result
-                                );
-                            }
+            if ($refClass->isSubclassOf(IncomingEvent::class)) {
+                foreach ($refClass->getMethods() as $refMethod) {
+                    if (!empty($refMethod->getAttributes())) {
+                        if ($this->runFilters($refMethod, $this->event) && $this->runEvents($refClass, $refMethod)) {
+                            return true;
                         }
                     }
-
-                    if ($result) return (bool) $result;
                 }
             }
         }
@@ -90,6 +82,34 @@ class BaseHandler
         }
 
         return true;
+    }
+
+    /**
+     * evaluate events
+     *
+     * @param ReflectionClass $refClass
+     * @param ReflectionMethod $method
+     * @return bool
+     * @throws ReflectionException
+     */
+    private function runEvents(ReflectionClass $refClass, ReflectionMethod $method): bool
+    {
+        $eventResult = null;
+        foreach ($method->getAttributes() as $attr) {
+            if ($refClass->getName() == 'url') {
+                echo $attr->getName() . PHP_EOL;
+            }
+
+            if (!str_contains($attr->getName(), 'Filters')) {
+                $eventResult = $attr->newInstance()->apply($this->event);
+                if (!$eventResult) return false;
+            }
+        }
+
+        return (bool)$this->handler->assign(
+            $refClass->newInstance(),
+            $method->name, $eventResult
+        );
     }
 
 }
