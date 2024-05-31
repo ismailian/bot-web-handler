@@ -1,0 +1,19 @@
+#!/bin/php
+<?php
+
+use TeleBot\System\Filesystem\Dotenv;
+use TeleBot\System\Interfaces\IScript;
+
+require __DIR__ . '/vendor/autoload.php';
+
+if (count($argv) < 2) return;
+
+/**
+ * initialize and run procedure
+ */
+$procedure = $argv[1];
+$procedure = "TeleBot\App\Scripts\\$procedure";
+if (is_subclass_of($procedure, IScript::class)) {
+    Dotenv::load();
+    (new $procedure())->run();
+}
