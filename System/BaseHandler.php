@@ -96,10 +96,6 @@ class BaseHandler
     {
         $eventResult = null;
         foreach ($method->getAttributes() as $attr) {
-            if ($refClass->getName() == 'url') {
-                echo $attr->getName() . PHP_EOL;
-            }
-
             if (!str_contains($attr->getName(), 'Filters')) {
                 $eventResult = $attr->newInstance()->apply($this->event);
                 if (!$eventResult) return false;
