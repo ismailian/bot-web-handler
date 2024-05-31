@@ -2,6 +2,7 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use DateTime;
 use Exception;
 
 class Event
@@ -9,6 +10,9 @@ class Event
 
     /** @var string update id */
     public string $id;
+
+    /** @var DateTime|null $date update date */
+    public ?DateTime $date = null;
 
     /** @var Chat|null $chat event Chat */
     public ?Chat $chat = null;
@@ -84,6 +88,7 @@ class Event
      */
     protected function setProps(Message|CallbackQuery|InlineQuery|MyChatMember $update): void
     {
+        $this->date ??= $update->date;
         $this->from = $update?->from;
         $this->chat = $update?->chat;
     }
