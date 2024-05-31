@@ -13,9 +13,6 @@ class Bootstrap
     /** @var array $config */
     public static array $config;
 
-    /** @var string $envFilename */
-    protected string $envFilename = '.env';
-
     /** @var Router $router */
     protected Router $router;
 
@@ -26,7 +23,7 @@ class Bootstrap
      */
     public function setup(): void
     {
-        $this->__env();
+        Dotenv::load();
         $this->router = new Router();
         self::$config = require_once 'config.php';
 
@@ -53,22 +50,6 @@ class Bootstrap
         if (!empty(($async = getenv('ASYNC')))) {
             if ($async == 'true') {
                 HttpResponse::close();
-            }
-        }
-    }
-
-    /**
-     * load env configurations
-     *
-     * @return void
-     */
-    protected function __env(): void
-    {
-        if (file_exists($this->envFilename) && is_file($this->envFilename)) {
-            $envFile = new \SplFileObject($this->envFilename);
-            while (!$envFile->eof()) {
-                $validLine = preg_match('/^(?<key>[!a-zA-Z]\S+)=(?<value>.+)?$/', ($line = trim($envFile->fgets())));
-                if ($validLine) putenv(str_replace('"', '', $line));
             }
         }
     }
