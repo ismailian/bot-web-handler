@@ -52,6 +52,8 @@ class BotClient
         'dice' => 'sendDice',
         'edit' => 'editMessageText',
         'editMedia' => 'editMessageMedia',
+        'invoice' => 'sendInvoice',
+        'checkout' => 'answerPreCheckoutQuery',
     ];
 
     /**
@@ -262,7 +264,7 @@ class BotClient
     }
 
     /**
-     * send a dice message
+     * send a die message
      *
      * @param string $emoji
      * @return IncomingDice|bool
@@ -426,6 +428,55 @@ class BotClient
                 'media' => 'attach://media_file',
             ]),
             'media_file' => $asUrl ? $mediaPath : Utils::tryFopen($mediaPath, 'r'),
+        ]);
+
+        return $data && $data['ok'] == true;
+    }
+
+    /**
+     * send invoice
+     *
+     * @param string $title
+     * @param string $description
+     * @param string $payload
+     * @param array $prices
+     * @param string $currency
+     * @param string $startParameter
+     * @param string|null $providerToken
+     * @param string|null $photoUrl
+     * @return bool
+     * @throws GuzzleException
+     */
+    public function sendInvoice(string $title, string $description, string $payload, array $prices, string $currency = 'USD', string $startParameter = 'single-chat', string $providerToken = null, string $photoUrl = null): bool
+    {
+        $data = $this->post($this->endpoints['invoice'], [
+            'title' => $title,
+            'description' => $description,
+            'payload' => $payload,
+            'start_parameter' => $startParameter,
+            'provider_token' => $providerToken,
+            'currency' => $currency,
+            'prices' => json_encode($prices),
+        ]);
+
+        return $data && $data['ok'] == true;
+    }
+
+    /**
+     * answer a pre-checkout query
+     *
+     * @param string $queryId
+     * @param bool $ok
+     * @param string|null $errorMessage
+     * @throws GuzzleException
+     * @return bool
+     */
+    public function answerPreCheckoutQuery(string $queryId, bool $ok, string $errorMessage = null): bool
+    {
+        $data = $this->post($this->endpoints['checkout'], [
+            'ok' => $ok,
+            'pre_checkout_query_id' => $queryId,
+            ...($errorMessage ? ['error_message' => $errorMessage] : [])
         ]);
 
         return $data && $data['ok'] == true;
