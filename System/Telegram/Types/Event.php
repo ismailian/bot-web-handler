@@ -35,6 +35,9 @@ class Event
     /** @var MyChatMember|null $myChatMember context chat member event */
     public ?MyChatMember $myChatMember = null;
 
+    /** @var PreCheckoutQuery|null $preCheckoutQuery pre checkout query */
+    public ?PreCheckoutQuery $preCheckoutQuery = null;
+
     /**
      * default constructor
      *
@@ -71,12 +74,18 @@ class Event
             $this->myChatMember = new MyChatMember($this->event['my_chat_member']);
         }
 
+        /** <PreCheckoutQuery> */
+        if (array_key_exists('pre_checkout_query', $this->event)) {
+            $this->preCheckoutQuery = new PreCheckoutQuery($this->event['pre_checkout_query']);
+        }
+
         $this->setProps(match (array_keys($this->event)[0]) {
             'message' => $this->message,
             'callback_query' => $this->callbackQuery,
             'inline_query' => $this->inlineQuery,
             'chosen_inline_query' => $this->chosenInlineQuery,
             'my_chat_member' => $this->myChatMember,
+            'pre_checkout_query' => $this->preCheckoutQuery,
         });
     }
 
