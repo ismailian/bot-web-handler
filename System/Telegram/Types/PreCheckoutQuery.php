@@ -28,7 +28,7 @@ class PreCheckoutQuery
     public function __construct(protected array $preCheckoutQuery)
     {
         $this->id = $preCheckoutQuery['id'];
-        $this->from = $preCheckoutQuery['from'];
+        $this->from = new From($preCheckoutQuery['from']);
         $this->currency = $preCheckoutQuery['currency'];
         $this->amount = $preCheckoutQuery['total_amount'];
         $this->invoicePayload = $preCheckoutQuery['invoice_payload'];

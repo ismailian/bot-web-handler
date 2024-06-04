@@ -51,7 +51,9 @@ class BotClient
         'dice' => 'sendDice',
         'edit' => 'editMessageText',
         'editMedia' => 'editMessageMedia',
-        'sendMediaGroup' => 'sendMediaGroup'
+        'sendMediaGroup' => 'sendMediaGroup',
+        'invoice' => 'sendInvoice',
+        'checkout' => 'answerPreCheckoutQuery',
     ];
 
     /**
@@ -480,7 +482,7 @@ class BotClient
      */
     public function sendInvoice(string $title, string $description, string $payload, array $prices, string $currency = 'USD', string $startParameter = 'single-chat', string $providerToken = null, string $photoUrl = null): bool
     {
-        $data = $this->post($this->endpoints['invoice'], [
+        $data = $this->post('invoice', [
             'title' => $title,
             'description' => $description,
             'payload' => $payload,
@@ -504,7 +506,7 @@ class BotClient
      */
     public function answerPreCheckoutQuery(string $queryId, bool $ok, string $errorMessage = null): bool
     {
-        $data = $this->post($this->endpoints['checkout'], [
+        $data = $this->post('checkout', [
             'ok' => $ok,
             'pre_checkout_query_id' => $queryId,
             ...($errorMessage ? ['error_message' => $errorMessage] : [])

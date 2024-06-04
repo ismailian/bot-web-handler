@@ -101,13 +101,13 @@ class Event
     /**
      * set Chat and From values
      *
-     * @param Message|CallbackQuery|InlineQuery|ChatMember $update
+     * @param mixed $update
      * @return void
      */
-    protected function setProps(Message|CallbackQuery|InlineQuery|ChatMember $update): void
+    protected function setProps(mixed $update): void
     {
-        $this->date ??= $update->date;
-        $this->from = $update?->from;
-        $this->chat = $update?->chat;
+        $this->date = $update->date ?? null;
+        $this->from = $update?->from ?? null;
+        $this->chat = $update?->chat ?? null;
     }
 }
