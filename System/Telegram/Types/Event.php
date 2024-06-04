@@ -32,8 +32,11 @@ class Event
     /** @var object|null $chosenInlineQuery chosen inline query event */
     public ?object $chosenInlineQuery = null;
 
-    /** @var MyChatMember|null $myChatMember context chat member event */
-    public ?MyChatMember $myChatMember = null;
+    /** @var ChatMember|null $myChatMember my chat member updated */
+    public ?ChatMember $myChatMember = null;
+
+    /** @var ChatMember|null $chatMember chat member updated */
+    public ?ChatMember $chatMember = null;
 
     /** @var PreCheckoutQuery|null $preCheckoutQuery pre checkout query */
     public ?PreCheckoutQuery $preCheckoutQuery = null;
@@ -71,7 +74,12 @@ class Event
 
         /** <MyChatMember> */
         if (array_key_exists('my_chat_member', $this->event)) {
-            $this->myChatMember = new MyChatMember($this->event['my_chat_member']);
+            $this->myChatMember = new ChatMember($this->event['my_chat_member']);
+        }
+
+        /** <ChatMember> */
+        if (array_key_exists('chat_member', $this->event)) {
+            $this->chatMember = new ChatMember($this->event['chat_member']);
         }
 
         /** <PreCheckoutQuery> */
@@ -85,6 +93,7 @@ class Event
             'inline_query' => $this->inlineQuery,
             'chosen_inline_query' => $this->chosenInlineQuery,
             'my_chat_member' => $this->myChatMember,
+            'chat_member' => $this->chatMember,
             'pre_checkout_query' => $this->preCheckoutQuery,
         });
     }
@@ -92,10 +101,10 @@ class Event
     /**
      * set Chat and From values
      *
-     * @param Message|CallbackQuery|InlineQuery|MyChatMember $update
+     * @param Message|CallbackQuery|InlineQuery|ChatMember $update
      * @return void
      */
-    protected function setProps(Message|CallbackQuery|InlineQuery|MyChatMember $update): void
+    protected function setProps(Message|CallbackQuery|InlineQuery|ChatMember $update): void
     {
         $this->date ??= $update->date;
         $this->from = $update?->from;

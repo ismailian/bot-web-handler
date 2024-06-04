@@ -3,6 +3,8 @@
 namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
+use DateTimeZone;
+use Exception;
 use TeleBot\System\Telegram\Enums\MemberStatus;
 
 class ChatMemberStatus
@@ -13,6 +15,9 @@ class ChatMemberStatus
 
     /** @var DateTime|null $until in current state until */
     public ?DateTime $until = null;
+
+    /** @var string|null $customTitle custom title */
+    public ?string $customTitle = null;
 
     /** @var bool $canBeEdited */
     public bool $canBeEdited = false;
@@ -61,17 +66,24 @@ class ChatMemberStatus
      *
      * @param array $oldChatMember
      * @param array $newChatMember
+     * @throws Exception
      */
     public function __construct(protected array $oldChatMember, protected array $newChatMember)
     {
-        $this->until = $this->newChatMember['until'] ?? null;
+        if (($until = $this->newChatMember['until_date']) && $until > 0) {
+            $this->until = new DateTime(
+                date('Y-m-d H:i:s', strtotime($this->newChatMember['until_date']))
+            );
+        }
+
         $this->status = match ($this->newChatMember['status']) {
-            'member' => MemberStatus::MEMBER,
-            'kicked' => MemberStatus::KICKED,
-            'left' => MemberStatus::LEFT,
+            'creator' => MemberStatus::OWNER,
             'administrator' => MemberStatus::ADMIN,
+            'member' => MemberStatus::MEMBER,
+            'restricted' => MemberStatus::RESTRICTED,
+            'kicked' => MemberStatus::BANNED,
+            'left' => MemberStatus::LEFT,
         };
     }
 
 }
-

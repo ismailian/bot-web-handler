@@ -5,7 +5,7 @@ namespace TeleBot\System\Telegram\Types;
 use DateTime;
 use Exception;
 
-class MyChatMember
+class ChatMember
 {
 
     /** @var DateTime $date event date */

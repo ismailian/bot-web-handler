@@ -5,7 +5,7 @@ namespace TeleBot\System\Telegram\Events;
 use Attribute;
 use Exception;
 use TeleBot\System\Interfaces\IEvent;
-use TeleBot\System\Telegram\Types\MyChatMember as ChatMember;
+use TeleBot\System\Telegram\Types\ChatMember;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class MyChatMember implements IEvent
