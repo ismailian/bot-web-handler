@@ -22,7 +22,8 @@ class Parser
     static array $messageTypes = [
         'text', 'photo', 'video', 'audio', 'voice',
         'animation', 'document', 'contact', 'location',
-        'poll', 'dice', 'sticker', 'game'
+        'poll', 'dice', 'sticker', 'game',
+        'successful_payment'
     ];
 
     /**
