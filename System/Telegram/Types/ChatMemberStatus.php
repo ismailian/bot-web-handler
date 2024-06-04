@@ -70,10 +70,12 @@ class ChatMemberStatus
      */
     public function __construct(protected array $oldChatMember, protected array $newChatMember)
     {
-        if (($until = $this->newChatMember['until_date']) && $until > 0) {
-            $this->until = new DateTime(
-                date('Y-m-d H:i:s', strtotime($this->newChatMember['until_date']))
-            );
+        if (array_key_exists('until_date', $this->newChatMember)) {
+            if ($this->newChatMember['until_date'] > 0) {
+                $this->until = new DateTime(
+                    date('Y-m-d H:i:s', strtotime($this->newChatMember['until_date']))
+                );
+            }
         }
 
         $this->status = match ($this->newChatMember['status']) {
