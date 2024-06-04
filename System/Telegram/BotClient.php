@@ -6,7 +6,6 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Exception\GuzzleException;
-use TeleBot\System\Telegram\Types\Message;
 use TeleBot\System\Telegram\Types\IncomingDice;
 use TeleBot\System\Telegram\Types\IncomingPhoto;
 use TeleBot\System\Telegram\Types\IncomingVideo;
@@ -52,8 +51,7 @@ class BotClient
         'dice' => 'sendDice',
         'edit' => 'editMessageText',
         'editMedia' => 'editMessageMedia',
-        'invoice' => 'sendInvoice',
-        'checkout' => 'answerPreCheckoutQuery',
+        'sendMediaGroup' => 'sendMediaGroup'
     ];
 
     /**
@@ -163,7 +161,8 @@ class BotClient
             $endpoint = str_replace('{token}', $this->token, $endpoint);
 
             /** use [multipart] when uploading */
-            if (in_array($action, ['photo', 'video', 'audio', 'document', 'voice', 'editMedia'])) {
+            $withBuffer = ['photo', 'video', 'audio', 'document', 'voice', 'editMedia', 'sendMediaGroup'];
+            if (in_array($action, $withBuffer)) {
                 $ak = fn($arr) => array_keys($arr);
                 $av = fn($arr) => array_values($arr);
                 $jsonify = fn($input) => is_array($input) ? json_encode($input) : $input;
@@ -264,7 +263,7 @@ class BotClient
     }
 
     /**
-     * send a die message
+     * send a dice message
      *
      * @param string $emoji
      * @return IncomingDice|bool
@@ -434,49 +433,32 @@ class BotClient
     }
 
     /**
-     * send invoice
+     * send photo album
      *
-     * @param string $title
-     * @param string $description
-     * @param string $payload
-     * @param array $prices
-     * @param string $currency
-     * @param string $startParameter
-     * @param string|null $providerToken
-     * @param string|null $photoUrl
+     * @param string $type
+     * @param array $files
+     * @param string|null $caption
+     * @param bool $asUrl
      * @return bool
      * @throws GuzzleException
      */
-    public function sendInvoice(string $title, string $description, string $payload, array $prices, string $currency = 'USD', string $startParameter = 'single-chat', string $providerToken = null, string $photoUrl = null): bool
+    public function sendMediaGroup(string $type, array $files, string $caption = null, bool $asUrl = false): bool
     {
-        $data = $this->post($this->endpoints['invoice'], [
-            'title' => $title,
-            'description' => $description,
-            'payload' => $payload,
-            'start_parameter' => $startParameter,
-            'provider_token' => $providerToken,
-            'currency' => $currency,
-            'prices' => json_encode($prices),
-        ]);
+        $media = [];
+        $attachments = [];
+        foreach ($files as $index => $file) {
+            $attachments["{$type}_$index"] = $asUrl ? $file : Utils::tryFopen($file, 'r');
+            $media[] = [
+                'type' => $type,
+                'media' => "attach://{$type}_$index",
+                'caption' => $caption ?? ''
+            ];
+        }
 
-        return $data && $data['ok'] == true;
-    }
-
-    /**
-     * answer a pre-checkout query
-     *
-     * @param string $queryId
-     * @param bool $ok
-     * @param string|null $errorMessage
-     * @throws GuzzleException
-     * @return bool
-     */
-    public function answerPreCheckoutQuery(string $queryId, bool $ok, string $errorMessage = null): bool
-    {
-        $data = $this->post($this->endpoints['checkout'], [
-            'ok' => $ok,
-            'pre_checkout_query_id' => $queryId,
-            ...($errorMessage ? ['error_message' => $errorMessage] : [])
+        $data = $this->post('sendMediaGroup', [
+            'media' => json_encode($media),
+            ...$attachments,
+            'caption' => 'Monthly Overview For May 2024'
         ]);
 
         return $data && $data['ok'] == true;
