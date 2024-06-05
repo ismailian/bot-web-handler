@@ -15,7 +15,11 @@ class Parser
         'shipping_query', 'pre_checkout_query',
         'channel_post', 'edited_channel_post',
         'poll', 'poll_answer',
-        'my_chat_member', 'chat_member', 'chat_join_request'
+        'my_chat_member', 'chat_member', 'chat_join_request',
+        'business_connection', 'business_message',
+        'edited_business_message', 'deleted_business_messages',
+        'message_reaction', 'message_reaction_count',
+        'chat_boost', 'removed_chat_boost'
     ];
 
     /** @var array list of message types */
