@@ -49,6 +49,9 @@ class Message
     /** @var IncomingVideo|null $video video message */
     public ?IncomingVideo $video = null;
 
+    /** @var IncomingVideoNote|null $videoNote video note message */
+    public ?IncomingVideoNote $videoNote = null;
+
     /** @var IncomingAudio|null $audio audio message */
     public ?IncomingAudio $audio = null;
 
@@ -60,6 +63,36 @@ class Message
 
     /** @var IncomingContact|null $contact contact message */
     public ?IncomingContact $contact = null;
+
+    /** @var IncomingAnimation|null $animation animation message */
+    public ?IncomingAnimation $animation = null;
+
+    /** @var IncomingLocation|null $location location message */
+    public ?IncomingLocation $location = null;
+
+    /** @var IncomingDice|null $dice dice message */
+    public ?IncomingDice $dice = null;
+
+    /** @var IncomingSticker|null $sticker sticker message */
+    public ?IncomingSticker $sticker = null;
+
+    /** @var IncomingStory|null $story story message */
+    public ?IncomingStory $story = null;
+
+    /** @var IncomingGame|null $game game message */
+    public ?IncomingGame $game = null;
+
+    /** @var IncomingPoll|null $poll poll message */
+    public ?IncomingPoll $poll = null;
+
+    /** @var IncomingVenue|null $venue venue message */
+    public ?IncomingVenue $venue = null;
+
+    /** @var IncomingInvoice|null $invoice invoice message */
+    public ?IncomingInvoice $invoice = null;
+
+    /** @var IncomingSuccessfulPayment|null $successfulPayment */
+    public ?IncomingSuccessfulPayment $successfulPayment = null;
 
     /**
      * default constructor
