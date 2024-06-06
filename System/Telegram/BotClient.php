@@ -35,7 +35,7 @@ class BotClient
         ]);
 
         if ($data && array_key_exists('result', $data)) {
-            return new Message($data['result']['text']);
+            return new Message($data['result']);
         }
 
         return false;
