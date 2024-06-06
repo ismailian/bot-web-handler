@@ -19,9 +19,8 @@ class GetMyId extends IncomingEvent
     #[Message]
     public function handle(): void
     {
-        $userId = $this->event->message->from->id;
-        $reply = "Your user ID: <strong>{$userId}</strong>\n";
-        $reply .= "Current chat ID: <strong>{$userId}</strong>";
+        $reply = "Your user ID: <strong>{$this->event->from->id}</strong>\n";
+        $reply .= "Current chat ID: <strong>{$this->event->chat->id}</strong>";
 
         $this->telegram->sendMessage($reply);
     }

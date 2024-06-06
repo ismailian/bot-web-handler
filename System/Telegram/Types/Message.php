@@ -114,7 +114,7 @@ class Message
             $this->chat = new Chat($message['chat']);
 
             /** <From> */
-            if (array_key_exists('from', $message['from'])) {
+            if (array_key_exists('from', $message)) {
                 $this->from = new From($message['from']);
             }
 
