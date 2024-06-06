@@ -5,55 +5,40 @@ namespace TeleBot\System\Telegram\Types;
 class IncomingDocument extends File
 {
 
-    /**
-     * get file id
-     *
-     * @return string
-     */
-    public function getFileId(): string
-    {
-        return $this->file['file_id'];
-    }
+    /** @var string|null $fileName file name */
+    public ?string $fileName = null;
+
+    /** @var string|null $mimeType mime type */
+    public ?string $mimeType = null;
+
+    /** @var PhotoSize|null $thumbnail file thumbnail */
+    public ?PhotoSize $thumbnail = null;
 
     /**
-     * get document file name
+     * default constructor
      *
-     * @return string
+     * @param array $incomingDocument
      */
-    public function getFilename(): string
+    public function __construct(protected array $incomingDocument)
     {
-        return $this->file['file_name'];
-    }
+        $this->fileId = $this->incomingDocument['file_id'];
+        $this->fileUniqueId = $this->incomingDocument['file_unique_id'];
 
-    /**
-     * get document mime type
-     *
-     * @return string
-     */
-    public function getMimeType(): string
-    {
-        return $this->file['mime_type'];
-    }
+        if (array_key_exists('file_name', $this->incomingDocument)) {
+            $this->fileName = $this->incomingDocument['file_name'];
+        }
 
-    /**
-     * get document thumbnail
-     *
-     * @return Thumbnail
-     */
-    public function getThumbnail(): Thumbnail
-    {
-        return new Thumbnail($this->file['thumbnail']);
-    }
+        if (array_key_exists('mime_type', $this->incomingDocument)) {
+            $this->mimeType = $this->incomingDocument['mime_type'];
+        }
 
-    /**
-     * download document
-     *
-     * @return string|null returns stored file name
-     */
-    public function save(): ?string
-    {
-        $this->getLink($this->getFileId());
-        return $this->saveAs();
+        if (array_key_exists('file_size', $this->incomingDocument)) {
+            $this->fileSize = $this->incomingDocument['file_size'];
+        }
+
+        if (array_key_exists('thumbnail', $this->incomingDocument)) {
+            $this->thumbnail = new PhotoSize($this->incomingDocument['thumbnail']);
+        }
     }
 
 }

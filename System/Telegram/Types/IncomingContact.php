@@ -5,52 +5,42 @@ namespace TeleBot\System\Telegram\Types;
 class IncomingContact
 {
 
-    /** @var array $contact */
-    protected array $contact;
+    /** @var string $phoneNumber contact's phone number */
+    public string $phoneNumber;
 
-    public function __construct(array $contact)
-    {
-        $this->contact = $contact;
-    }
+    /** @var string $firstName contact's first name */
+    public string $firstName;
 
-    /**
-     * get contact phone number
-     *
-     * @return string
-     */
-    public function getPhoneNumber(): string
-    {
-        return $this->contact['phone_number'];
-    }
+    /** @var string|null $lastName contact's last name */
+    public ?string $lastName = null;
+
+    /** @var string|null $userId contact's user id */
+    public ?string $userId = null;
+
+    /** @var string|null $vcard additional contact data */
+    public ?string $vcard = null;
 
     /**
-     * get contact first name
+     * default constructor
      *
-     * @return string|null
+     * @param array $incomingContact
      */
-    public function getFirstName(): ?string
+    public function __construct(protected array $incomingContact)
     {
-        return $this->contact['first_name'] ?? null;
-    }
+        $this->phoneNumber = $this->incomingContact['phone_number'];
+        $this->firstName = $this->incomingContact['first_name'];
 
-    /**
-     * get contact last name
-     *
-     * @return string|null
-     */
-    public function getLastName(): ?string
-    {
-        return $this->contact['last_name'] ?? null;
-    }
+        if (array_key_exists('last_name', $this->incomingContact)) {
+            $this->lastName = $this->incomingContact['last_name'];
+        }
 
-    /**
-     * get contact vcard
-     *
-     * @return string
-     */
-    public function getVCard(): string
-    {
-        return $this->contact['vcard'];
+        if (array_key_exists('user_id', $this->incomingContact)) {
+            $this->userId = $this->incomingContact['user_id'];
+        }
+
+        if (array_key_exists('vcard', $this->incomingContact)) {
+            $this->vcard = $this->incomingContact['vcard'];
+        }
     }
 
 }

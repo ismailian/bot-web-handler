@@ -4,32 +4,22 @@ namespace TeleBot\System\Telegram\Types;
 
 class IncomingDice
 {
-    
-    /** @var array $dice */
-    protected array $dice;
-    
-    public function __construct(array $dice)
-    {
-        $this->dice = $dice;
-    }
+
+    /** @var string $emoji emoji used in dice */
+    public string $emoji;
+
+    /** @var int $value dice value */
+    public int $value;
 
     /**
-     * get dice emoji
-     * @return string
-     */
-    public function getEmoji(): string
-    {
-        return $this->dice['emoji'];
-    }
-
-    /**
-     * get dice value
+     * default constructor
      *
-     * @return int
+     * @param array $incomingDice
      */
-    public function getValue(): int
+    public function __construct(protected array $incomingDice)
     {
-        return $this->dice['value'];
+        $this->emoji = $this->incomingDice['emoji'];
+        $this->value = $this->incomingDice['value'];
     }
-    
+
 }
