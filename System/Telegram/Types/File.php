@@ -2,94 +2,40 @@
 
 namespace TeleBot\System\Telegram\Types;
 
-use GuzzleHttp\Client;
-use TeleBot\System\Interfaces\IFile;
-use GuzzleHttp\Exception\GuzzleException;
+use TeleBot\System\Telegram\Traits\Downloadable;
 
-class File implements IFile
+class File
 {
 
-    /** @var string $resourceUrl */
-    private string $resourceUrl = 'https://api.telegram.org/file/bot{token}/{path}?file_id={file_id}';
+    use Downloadable;
 
-    /** @var string $downloadUrl */
-    private string $downloadUrl = '';
+    /** @var string $fileId file id */
+    public string $fileId;
 
-    /** @var array $file */
-    protected array $file;
+    /** @var string $fileUniqueId unique file id */
+    public string $fileUniqueId;
 
-    /** @var Client $client */
-    private Client $client;
+    /** @var int|null $fileSize */
+    public ?int $fileSize = null;
+
+    /** @var string|null $filePath file path */
+    public ?string $filePath = null;
 
     /**
-     * default constructor
+     * convert byte file size to human-readable format
      *
-     * @param array $file
+     * @return string|null human-readable file size
      */
-    public function __construct(array $file)
+    public function toHumanReadable(): ?string
     {
-        $this->file = $file;
-        $this->client = new Client([
-            'verify' => false,
-            'base_uri' => 'https://api.telegram.org'
-        ]);
-    }
+        if (!$this->fileSize) return null;
 
-    /**
-     * @inheritDoc
-     */
-    public function getLink(string|int $idOrIndex): ?string
-    {
-        try {
-            $endpoint = '/bot' . getenv('TG_BOT_TOKEN', true) . '/getFile';
-            $response = $this->client->get($endpoint, [
-                'query' => [
-                    'file_id' => is_numeric($idOrIndex) ? $this->file[$idOrIndex]['file_id'] : $idOrIndex
-                ]
-            ]);
-
-            $response = json_decode($response->getBody(), true);
-            $this->downloadUrl = str_replace('{token}', getenv('TG_BOT_TOKEN', true), $this->resourceUrl);
-            $this->downloadUrl = str_replace('{path}', $response['result']['file_path'], $this->downloadUrl);
-            $this->downloadUrl = str_replace('{file_id}', $response['result']['file_id'], $this->downloadUrl);
-
-            return $this->downloadUrl;
-        } catch (GuzzleException $ex) {};
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function saveAs(string $filename = null): ?string
-    {
-        try {
-            if (!$filename) {
-                $urlPath = parse_url($this->downloadUrl, PHP_URL_PATH);
-                $filename = md5((uniqid('file_') . time()));
-                $filename .= '.' . pathinfo($urlPath, PATHINFO_EXTENSION);
-            }
-
-            $response = $this->client->get($this->downloadUrl);
-            $saved = (bool)file_put_contents("tmp/{$filename}", $response->getBody());
-            if ($saved) return $filename;
-        } catch (GuzzleException $ex) {}
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getSize(bool $readable = false): int|string
-    {
-        if (!$readable) return $this->file['file_size'];
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $fileSize = $this->file['file_size'];
         $n = 0;
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        while ($this->fileSize >= 1024 && $n++ < count($units)) {
+            $this->fileSize /= 1024;
+        }
 
-        while ($fileSize >= 1024 && $n++ < count($units))
-            $fileSize /= 1024;
-
-        return join(' ', [number_format($fileSize, 2), $units[$n]]);
+        return join(' ', [number_format((float) $this->fileSize, 2), $units[$n]]);
     }
 }
