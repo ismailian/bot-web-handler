@@ -2,41 +2,23 @@
 
 namespace TeleBot\System\Telegram\Types;
 
-class IncomingPhoto extends File
+class IncomingPhoto
 {
 
-    /**
-     * get file ids
-     *
-     * @return array
-     */
-    public function getFileIds(): array
-    {
-        return array_map(fn($variant) => $variant['file_id'], $this->file);
-    }
+    /** @var PhotoSize[] $photos */
+    public array $photos;
 
     /**
-     * get file id by index
+     * default constructor
      *
-     * @param int $index
-     * @return string|null
+     * @param array $incomingPhoto
      */
-    public function getFileId(int $index): ?string
+    public function __construct(protected array $incomingPhoto)
     {
-        return $this->file[$index]['file_id'] ?? null;
-    }
-
-    /**
-     * download the highest quality photo
-     *
-     * @return string|null
-     */
-    public function save(): ?string
-    {
-        usort($this->file, fn($a, $b) => $a['file_size'] > $b['file_size'] ? $a : $b);
-        $this->getLink(0);
-
-        return $this->saveAs();
+        $this->photos = array_map(
+            fn($photoSize) => new PhotoSize($photoSize),
+            $this->incomingPhoto
+        );
     }
 
 }

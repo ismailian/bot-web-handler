@@ -5,55 +5,52 @@ namespace TeleBot\System\Telegram\Types;
 class IncomingVideo extends File
 {
 
-    /**
-     * get file id by index
-     *
-     * @return string
-     */
-    public function getFileId(): string
-    {
-        return $this->file['file_id'];
-    }
+    /** @var int $width video width */
+    public int $width;
+
+    /** @var int $height video height */
+    public int $height;
+
+    /** @var int $duration video duration */
+    public int $duration;
+
+    /** @var PhotoSize|null $thumbnail */
+    public ?PhotoSize $thumbnail = null;
+
+    /** @var string|null $fileName */
+    public ?string $fileName = null;
+
+    /** @var string|null $mimeType video mime type */
+    public ?string $mimeType = null;
 
     /**
-     * get video duration in seconds
+     * default constructor
      *
-     * @return int
+     * @param array $incomingVideo
      */
-    public function getDuration(): int
+    public function __construct(protected array $incomingVideo)
     {
-        return $this->file['duration'];
-    }
+        $this->fileId = $this->incomingVideo['file_id'];
+        $this->fileUniqueId = $this->incomingVideo['file_unique_id'];
+        $this->width = $this->incomingVideo['width'];
+        $this->height = $this->incomingVideo['height'];
+        $this->duration = $this->incomingVideo['duration'];
 
-    /**
-     * get video resolution
-     *
-     * @return string
-     */
-    public function getResolution(): string
-    {
-        return $this->file['height'];
-    }
+        if (array_key_exists('thumbnail', $this->incomingVideo)) {
+            $this->thumbnail = new PhotoSize($this->incomingVideo['thumbnail']);
+        }
 
-    /**
-     * get video mime type
-     *
-     * @return string
-     */
-    public function getMimeType(): string
-    {
-        return $this->file['mime_type'];
-    }
+        if (array_key_exists('file_name', $this->incomingVideo)) {
+            $this->fileName = $this->incomingVideo['file_name'];
+        }
 
-    /**
-     * download video
-     *
-     * @return string|null returns stored file name
-     */
-    public function save(): ?string
-    {
-        $this->getLink($this->getFileId());
-        return $this->saveAs();
+        if (array_key_exists('mime_type', $this->incomingVideo)) {
+            $this->mimeType = $this->incomingVideo['mime_type'];
+        }
+
+        if (array_key_exists('file_size', $this->incomingVideo)) {
+            $this->fileSize = $this->incomingVideo['file_size'];
+        }
     }
 
 }
