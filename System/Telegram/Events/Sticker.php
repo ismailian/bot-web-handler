@@ -4,6 +4,7 @@ namespace TeleBot\System\Telegram\Events;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
+use TeleBot\System\Telegram\Types\IncomingSticker;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Sticker implements IEvent
@@ -12,9 +13,9 @@ class Sticker implements IEvent
     /**
      * @inheritDoc
      */
-    public function apply(array $event): bool
+    public function apply(array $event): IncomingSticker|bool
     {
         $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        return isset($event['data'][$key]['sticker']);
+        return new IncomingSticker($event['data'][$key]['sticker']);
     }
 }
