@@ -24,7 +24,7 @@ class Parser
 
     /** @var array list of message types */
     static array $messageTypes = [
-        'text', 'photo', 'video', 'audio', 'voice',
+        'text', 'photo', 'video', 'video_note', 'audio', 'voice',
         'animation', 'document', 'contact', 'location',
         'poll', 'dice', 'sticker', 'game',
         'successful_payment'

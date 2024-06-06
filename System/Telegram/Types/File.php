@@ -15,8 +15,8 @@ class File
     /** @var string $fileUniqueId unique file id */
     public string $fileUniqueId;
 
-    /** @var int|null $fileSize */
-    public ?int $fileSize = null;
+    /** @var float|null $fileSize */
+    public ?float $fileSize = null;
 
     /** @var string|null $filePath file path */
     public ?string $filePath = null;
