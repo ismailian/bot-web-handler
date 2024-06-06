@@ -12,8 +12,6 @@ use TeleBot\System\Filesystem\Bootstrap;
 use TeleBot\System\Telegram\Filters\Chat;
 use TeleBot\System\Telegram\Filters\Only;
 use TeleBot\System\Telegram\Filters\Awaits;
-use TeleBot\System\Exceptions\InvalidUpdate;
-use TeleBot\System\Exceptions\InvalidMessage;
 
 class BaseHandler
 {
@@ -34,13 +32,12 @@ class BaseHandler
      * initialize handler
      *
      * @throws ReflectionException
-     * @throws InvalidUpdate|InvalidMessage
      */
     public function init(): bool
     {
         (new Bootstrap())->setup();
         $this->config = Bootstrap::$config;
-        $this->event = HttpRequest::event();
+        $this->event = HttpRequest::json();
         $this->handler = (new Handler())->setConfig($this->config);
 
         $handlers = Collector::getNamespacedFiles('App/Handlers');
@@ -49,7 +46,7 @@ class BaseHandler
             if ($refClass->isSubclassOf(IncomingEvent::class)) {
                 foreach ($refClass->getMethods() as $refMethod) {
                     if (!empty($refMethod->getAttributes())) {
-                        if ($this->runFilters($refMethod, $this->event) && $this->runEvents($refClass, $refMethod)) {
+                        if ($this->runFilters($refMethod) && $this->runEvents($refClass, $refMethod)) {
                             return true;
                         }
                     }
@@ -64,10 +61,9 @@ class BaseHandler
      * evaluate filters
      *
      * @param ReflectionMethod $method
-     * @param array $event
      * @return bool
      */
-    private function runFilters(ReflectionMethod $method, array $event): bool
+    private function runFilters(ReflectionMethod $method): bool
     {
         $filters = [
             ...$method->getAttributes(Chat::class),
@@ -76,7 +72,7 @@ class BaseHandler
         ];
 
         foreach ($filters as $filter) {
-            if (!($filter->newInstance()->apply($event))) {
+            if (!($filter->newInstance()->apply($this->event))) {
                 return false;
             }
         }

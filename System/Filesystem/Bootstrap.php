@@ -61,7 +61,7 @@ class Bootstrap
      */
     private function verifyUserId(): bool
     {
-        $payload = HttpRequest::context();
+        $payload = HttpRequest::json();
         unset($payload['update_id']);
         $keys = array_keys($payload);
         $userId = $payload[$keys[0]]['from']['id'];
@@ -82,7 +82,7 @@ class Bootstrap
      */
     private function verifyPayload(): void
     {
-        $payload = HttpRequest::context();
+        $payload = HttpRequest::json();
         if (!isset($payload['update_id']) || empty(array_intersect(Parser::$updates, array_keys($payload)))) {
             HttpResponse::setStatusCode(401)->end();
         }

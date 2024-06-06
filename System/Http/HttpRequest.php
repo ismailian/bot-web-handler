@@ -2,10 +2,6 @@
 
 namespace TeleBot\System\Http;
 
-use TeleBot\System\Telegram\Parser;
-use TeleBot\System\Exceptions\InvalidUpdate;
-use TeleBot\System\Exceptions\InvalidMessage;
-
 class HttpRequest
 {
 
@@ -89,43 +85,6 @@ class HttpRequest
     public static function query(): array
     {
         return self::$_query ?? (self::$_query = $_GET);
-    }
-
-    /**
-     * get Event object
-     *
-     * @return array
-     * @throws InvalidUpdate|InvalidMessage
-     */
-    public static function event(): array
-    {
-        if (empty(self::$event)) {
-            self::$event = Parser::parseUpdate(self::context());
-        }
-
-        return self::$event;
-    }
-
-    /**
-     * get request data
-     *
-     * @return array
-     */
-    public static function context(): array
-    {
-        return self::hasJson() ? self::json() : self::body();
-    }
-
-    /**
-     * check for json data
-     *
-     * @return bool
-     */
-    protected static function hasJson(): bool
-    {
-        return (
-            strlen(self::$_json = file_get_contents('php://input')) > 0
-        );
     }
 
     /**

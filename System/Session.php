@@ -52,7 +52,7 @@ class Session
     {
         try {
             if (empty(self::$sessionId) || !self::$adapter) {
-                $event = HttpRequest::event()['data'];
+                $event = HttpRequest::json();
                 foreach (array_keys($event) as $key) {
                     if ($key !== 'update_id') {
                         self::$sessionId = $event[$key]['from']['id'];
