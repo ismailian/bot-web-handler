@@ -15,10 +15,10 @@ class Document implements IEvent
      */
     public function apply(array $event): IncomingDocument|bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $isDocument = isset($event['data'][$key]['document']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $isDocument = isset($event[$key]['document']);
         if (!$isDocument) return false;
 
-        return new IncomingDocument($event['data'][$key]['document']);
+        return new IncomingDocument($event[$key]['document']);
     }
 }

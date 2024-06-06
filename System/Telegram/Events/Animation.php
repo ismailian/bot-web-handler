@@ -15,7 +15,7 @@ class Animation implements IEvent
      */
     public function apply(array $event): IncomingAnimation|bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        return new IncomingAnimation($event['data'][$key]['animation']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        return new IncomingAnimation($event[$key]['animation']);
     }
 }

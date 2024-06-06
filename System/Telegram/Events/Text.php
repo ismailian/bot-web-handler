@@ -23,16 +23,16 @@ class Text implements IEvent
      */
     public function apply(array $event): bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $isMessage = isset($event['data'][$key]);
-        $hasText = isset($event['data'][$key]['text']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $isMessage = isset($event[$key]);
+        $hasText = isset($event[$key]['text']);
         if (!$isMessage || !$hasText) return false;
 
         $isCleanText = !$this->cleanText || !count(array_filter(
-                $event['data'][$key]['entities'] ?? [],
+                $event[$key]['entities'] ?? [],
                 fn($entity) => in_array($entity['type'], ['bot_command', 'url', 'mention'])
             ));
 
-        return $isCleanText && (!$this->Validator || $this->Validator->isValid($event['data'][$key]['text']));
+        return $isCleanText && (!$this->Validator || $this->Validator->isValid($event[$key]['text']));
     }
 }

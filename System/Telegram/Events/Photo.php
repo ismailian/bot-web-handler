@@ -23,11 +23,11 @@ class Photo implements IEvent
      */
     public function apply(array $event): IncomingPhoto|bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $isPhoto = isset($event['data'][$key]['photo']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $isPhoto = isset($event[$key]['photo']);
         if (!$isPhoto) return false;
 
-        if ($this->Validator && !$this->Validator->isValid($event['data'][$key]['photo'])) return false;
-        return new IncomingPhoto($event['data'][$key]['photo']);
+        if ($this->Validator && !$this->Validator->isValid($event[$key]['photo'])) return false;
+        return new IncomingPhoto($event[$key]['photo']);
     }
 }

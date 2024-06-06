@@ -26,16 +26,16 @@ class Mention implements IEvent
      */
     public function apply(array $event): bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $isMessage = isset($event['data'][$key]);
-        $hasText = isset($event['data'][$key]['text']);
-        $hasEntities = !empty($event['data'][$key]['entities']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $isMessage = isset($event[$key]);
+        $hasText = isset($event[$key]['text']);
+        $hasEntities = !empty($event[$key]['entities']);
 
         if (!$isMessage || !$hasText || !$hasEntities) return false;
-        foreach ($event['data'][$key]['entities'] as $entity) {
+        foreach ($event[$key]['entities'] as $entity) {
             if (isset($entity['type']) && $entity['type'] == 'mention') {
                 return !$this->username || substr(
-                    $event['data'][$key]['text'], $entity['offset'], $entity['length']
+                    $event[$key]['text'], $entity['offset'], $entity['length']
                 ) == $this->username;
             }
         }

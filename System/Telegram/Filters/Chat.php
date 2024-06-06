@@ -26,9 +26,9 @@ class Chat implements IEvent
      */
     public function apply(array $event): bool
     {
-        unset($event['data']['update_id']);
-        $keys = array_keys($event['data']);
-        $chatType = $event['data'][$keys[0]]['chat']['type'];
+        unset($event['update_id']);
+        $keys = array_keys($event);
+        $chatType = $event[$keys[0]]['chat']['type'];
 
         return $chatType === $this->chatType;
     }

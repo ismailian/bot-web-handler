@@ -23,15 +23,15 @@ class Url implements IEvent
      */
     public function apply(array $event): bool|IncomingUrl
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $isMessage = isset($event['data'][$key]);
-        $hasText = isset($event['data'][$key]['text']);
-        $hasEntities = !empty($event['data'][$key]['entities']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $isMessage = isset($event[$key]);
+        $hasText = isset($event[$key]['text']);
+        $hasEntities = !empty($event[$key]['entities']);
 
         if (!$isMessage || !$hasText || !$hasEntities) return false;
-        foreach ($event['data'][$key]['entities'] as $entity) {
+        foreach ($event[$key]['entities'] as $entity) {
             if ($entity['type'] == 'url') {
-                $url = new IncomingUrl($event['data'][$key]['text'], $entity);
+                $url = new IncomingUrl($event[$key]['text'], $entity);
                 if (!$this->Validator || $this->Validator->isValid($url)) {
                     return $url;
                 }

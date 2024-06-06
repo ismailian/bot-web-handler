@@ -15,10 +15,10 @@ class Audio implements IEvent
      */
     public function apply(array $event): IncomingAudio|bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $isAudio = isset($event['data'][$key]['audio']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $isAudio = isset($event[$key]['audio']);
         if (!$isAudio) return false;
 
-        return new IncomingAudio($event['data'][$key]['audio']);
+        return new IncomingAudio($event[$key]['audio']);
     }
 }

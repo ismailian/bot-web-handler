@@ -15,10 +15,10 @@ class Voice implements IEvent
      */
     public function apply(array $event): IncomingVoice|bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $isVoice = isset($event['data'][$key]['voice']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $isVoice = isset($event[$key]['voice']);
         if (!$isVoice) return false;
 
-        return new IncomingVoice($event['data'][$key]['voice']);
+        return new IncomingVoice($event[$key]['voice']);
     }
 }

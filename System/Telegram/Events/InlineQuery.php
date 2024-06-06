@@ -24,14 +24,14 @@ class InlineQuery implements IEvent
      */
     public function apply(array $event): bool|IncomingInlineQuery
     {
-        if (!isset($event['data']['inline_query'])) return false;
-        if (!$this->allowEmpty && empty($event['data']['inline_query']['query'])) return false;
-        if ($this->Validator && !$this->Validator->isValid($event['data']['inline_query']['query'])) return false;
+        if (!isset($event['inline_query'])) return false;
+        if (!$this->allowEmpty && empty($event['inline_query']['query'])) return false;
+        if ($this->Validator && !$this->Validator->isValid($event['inline_query']['query'])) return false;
 
         return new IncomingInlineQuery(
-            $event['data']['inline_query']['id'],
-            $event['data']['inline_query']['query'],
-            $event['data']['inline_query']['offset']
+            $event['inline_query']['id'],
+            $event['inline_query']['query'],
+            $event['inline_query']['offset']
         );
     }
 }

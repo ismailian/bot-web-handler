@@ -15,7 +15,7 @@ class Sticker implements IEvent
      */
     public function apply(array $event): IncomingSticker|bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        return new IncomingSticker($event['data'][$key]['sticker']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        return new IncomingSticker($event[$key]['sticker']);
     }
 }

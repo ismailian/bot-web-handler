@@ -23,11 +23,11 @@ class Video implements IEvent
      */
     public function apply(array $event): IncomingVideo|bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $isVideo = isset($event['data'][$key]['video']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $isVideo = isset($event[$key]['video']);
         if (!$isVideo) return false;
 
-        if ($this->Validator && !$this->Validator->isValid($event['data'][$key]['video'])) return false;
-        return new IncomingVideo($event['data'][$key]['video']);
+        if ($this->Validator && !$this->Validator->isValid($event[$key]['video'])) return false;
+        return new IncomingVideo($event[$key]['video']);
     }
 }

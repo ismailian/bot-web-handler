@@ -23,11 +23,11 @@ class CallbackQuery implements IEvent
      */
     public function apply(array $event): IncomingCallbackQuery|bool
     {
-        if (isset($event['data']['callback_query'])) {
+        if (isset($event['callback_query'])) {
             if (!$this->key && !$this->value) return true;
-            if (!empty(($data = $event['data']['callback_query']['data']))) {
+            if (!empty(($data = $event['callback_query']['data']))) {
                 if (($data = json_decode($data, true))) {
-                    $messageId = $event['data']['callback_query']['message']['message_id'];
+                    $messageId = $event['callback_query']['message']['message_id'];
                     if (array_key_exists($this->key, $data))
                         if (!$this->value || $data[$this->key] == $this->value)
                             return new IncomingCallbackQuery($messageId, $data);

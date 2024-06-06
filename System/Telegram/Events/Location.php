@@ -14,7 +14,7 @@ class Location implements IEvent
      */
     public function apply(array $event): bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        return isset($event['data'][$key]['location']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        return isset($event[$key]['location']);
     }
 }

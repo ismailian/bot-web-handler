@@ -25,9 +25,9 @@ class Only implements IEvent
      */
     public function apply(array $event): bool
     {
-        unset($event['data']['update_id']);
-        $keys = array_keys($event['data']);
-        $userId = $event['data'][$keys[0]]['from']['id'];
+        unset($event['update_id']);
+        $keys = array_keys($event);
+        $userId = $event[$keys[0]]['from']['id'];
 
         if (($this->userId && $this->userId != $userId)
             || ($this->userIds && !in_array($userId, $this->userIds))

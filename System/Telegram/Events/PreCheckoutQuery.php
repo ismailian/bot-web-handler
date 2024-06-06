@@ -19,6 +19,6 @@ class PreCheckoutQuery implements IEvent
      */
     public function apply(array $event): bool
     {
-        return isset($event['data']['pre_checkout_query']);
+        return isset($event['pre_checkout_query']);
     }
 }

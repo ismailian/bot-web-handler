@@ -15,10 +15,10 @@ class Contact implements IEvent
      */
     public function apply(array $event): IncomingContact|bool
     {
-        $key = isset($event['data']['edited_message']) ? 'edited_message' : 'message';
-        $isContact = isset($event['data'][$key]['contact']);
+        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $isContact = isset($event[$key]['contact']);
         if (!$isContact) return false;
 
-        return new IncomingContact($event['data'][$key]['contact']);
+        return new IncomingContact($event[$key]['contact']);
     }
 }
