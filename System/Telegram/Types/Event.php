@@ -23,11 +23,11 @@ class Event
     /** @var Message|null $message message event */
     public ?Message $message = null;
 
-    /** @var object|null $callbackQuery callback query event */
-    public ?object $callbackQuery = null;
+    /** @var IncomingCallbackQuery|null $callbackQuery callback query event */
+    public ?IncomingCallbackQuery $callbackQuery = null;
 
-    /** @var InlineQuery|null $inlineQuery inline query event */
-    public ?InlineQuery $inlineQuery = null;
+    /** @var IncomingInlineQuery|null $inlineQuery inline query event */
+    public ?IncomingInlineQuery $inlineQuery = null;
 
     /** @var object|null $chosenInlineQuery chosen inline query event */
     public ?object $chosenInlineQuery = null;
@@ -59,12 +59,12 @@ class Event
 
         /** <CallbackQuery> */
         if (array_key_exists('callback_query', $this->event)) {
-            $this->callbackQuery = new CallbackQuery($this->event['callback_query']);
+            $this->callbackQuery = new IncomingCallbackQuery($this->event['callback_query']);
         }
 
         /** <InlineQuery> */
         if (array_key_exists('inline_query', $this->event)) {
-            $this->inlineQuery = new InlineQuery($this->event['inline_query']);
+            $this->inlineQuery = new IncomingInlineQuery($this->event['inline_query']);
         }
 
         /** <ChosenInlineQuery> */

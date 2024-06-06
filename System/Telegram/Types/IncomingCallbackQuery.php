@@ -5,39 +5,38 @@ namespace TeleBot\System\Telegram\Types;
 class IncomingCallbackQuery
 {
 
-    /** @var array $callbackQuery */
-    protected mixed $callbackQuery;
+    /** @var string $id callback id */
+    public string $id;
+
+    /** @var string $chatInstance chat instance */
+    public string $chatInstance;
+
+    /** @var From $from sender */
+    public From $from;
+
+    /** @var Message $message callback message */
+    public Message $message;
+
+    /** @var mixed query data */
+    public mixed $data;
 
     /**
      * default constructor
      *
-     * @param int $messageId
-     * @param mixed $callbackQuery
+     * @param array $callback
      */
-    public function __construct(public int $messageId, mixed $callbackQuery)
+    public function __construct(protected array $callback)
     {
-        $this->callbackQuery = $callbackQuery;
-        if (!is_array($callbackQuery) && !empty($json = json_decode($callbackQuery, true))) {
-            $this->callbackQuery = $json;
+        $this->id = $this->callback['id'];
+        $this->chatInstance = $this->callback['chat_instance'];
+
+        $this->from = new From($this->callback['from']);
+        $this->message = new Message($this->callback['message']);
+        $this->data = $this->callback['data'];
+
+        if (($json = json_decode($this->data, true))) {
+            $this->data = $json;
         }
-    }
-
-    /**
-     * get query data
-     *
-     * @param string|null $key
-     * @return string|array
-     */
-    public function __invoke(string $key = null): string|array
-    {
-        if (!is_array($this->callbackQuery))
-            return $this->callbackQuery;
-
-        if ($key && isset($this->callbackQuery[$key])) {
-            return $this->callbackQuery[$key];
-        }
-
-        return $this->callbackQuery;
     }
 
 }

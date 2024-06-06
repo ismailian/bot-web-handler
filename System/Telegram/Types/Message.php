@@ -99,33 +99,83 @@ class Message
      *
      * @param array $message
      */
-    public function __construct(array $message)
+    public function __construct(protected array $message)
     {
         try {
-            $this->id = (int)$message['message_id'];
-            $this->date = new DateTime(date('Y-m-d H:i:s T', $message['date']));
-            $this->text = $message['text'] ?? null;
-            $this->caption = $message['caption'] ?? null;
+            $this->id = (int)$this->message['message_id'];
+            $this->date = new DateTime(date('Y-m-d H:i:s T', $this->message['date']));
+            $this->text = $this->message['text'] ?? null;
+            $this->caption = $this->message['caption'] ?? null;
             $this->entities = array_map(
                 fn($e) => new Entity($e['text'] ?? '', $e),
-                ($message['entities'] ?? [])
+                ($this->message['entities'] ?? [])
             );
 
-            $this->chat = new Chat($message['chat']);
+            $this->chat = new Chat($this->message['chat']);
 
             /** <From> */
-            if (array_key_exists('from', $message)) {
-                $this->from = new From($message['from']);
+            if (array_key_exists('from', $this->message)) {
+                $this->from = new From($this->message['from']);
             }
 
             /** <ReplyToMessage> */
-            if (array_key_exists('reply_to_message', $message)) {
-                $this->replyTo = new RepliedTo($message['reply_to_message']);
+            if (array_key_exists('reply_to_message', $this->message)) {
+                $this->replyTo = new RepliedTo($this->message['reply_to_message']);
             }
 
             /** <FrowardFrom|ForwardFromChat> */
-            if (array_intersect(['forward_from', 'forward_from_chat'], array_keys($message))) {
-                $this->forward = new Forward($message);
+            if (array_intersect(['forward_from', 'forward_from_chat'], array_keys($this->message))) {
+                $this->forward = new Forward($this->message);
+            }
+
+            /** <Photo> */
+            if (array_key_exists('photo', $this->message)) {
+                $this->photo = new IncomingPhoto($this->message['photo']);
+            }
+
+            /** <Video> */
+            if (array_key_exists('video', $this->message)) {
+                $this->video = new IncomingVideo($this->message['video']);
+            }
+
+            /** <VideoNote> */
+            if (array_key_exists('video_note', $this->message)) {
+                $this->videoNote = new IncomingVideoNote($this->message['video_note']);
+            }
+
+            /** <Voice> */
+            if (array_key_exists('voice', $this->message)) {
+                $this->voice = new IncomingVoice($this->message['voice']);
+            }
+
+            /** <Audio> */
+            if (array_key_exists('audio', $this->message)) {
+                $this->audio = new IncomingAudio($this->message['audio']);
+            }
+
+            /** <Document> */
+            if (array_key_exists('document', $this->message)) {
+                $this->document = new IncomingDocument($this->message['document']);
+            }
+
+            /** <Contact> */
+            if (array_key_exists('contact', $this->message)) {
+                $this->contact = new IncomingContact($this->message['contact']);
+            }
+
+            /** <Dice> */
+            if (array_key_exists('dice', $this->message)) {
+                $this->dice = new IncomingDice($this->message['dice']);
+            }
+
+            /** <Animation> */
+            if (array_key_exists('animation', $this->message)) {
+                $this->animation = new IncomingAnimation($this->message['animation']);
+            }
+
+            /** <Sticker> */
+            if (array_key_exists('sticker', $this->message)) {
+                $this->sticker = new IncomingSticker($this->message['sticker']);
             }
         } catch (\Exception $ex) {}
     }
