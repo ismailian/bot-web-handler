@@ -21,6 +21,7 @@ trait HttpClient
         'message' => 'sendMessage',
         'photo' => 'sendPhoto',
         'video' => 'sendVideo',
+        'audio' => 'sendAudio',
         'document' => 'sendDocument',
         'delete' => 'deleteMessage',
         'action' => 'sendChatAction',

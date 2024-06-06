@@ -5,6 +5,7 @@ namespace TeleBot\System\Telegram;
 use Exception;
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Exception\GuzzleException;
+use TeleBot\System\Telegram\Types\IncomingAudio;
 use TeleBot\System\Telegram\Types\Message;
 use TeleBot\System\Telegram\Traits\Extensions;
 use TeleBot\System\Telegram\Traits\HttpClient;
@@ -102,6 +103,41 @@ class BotClient
         if ($data && array_key_exists('result', $data)) {
             if (array_key_exists('video', $data['result'])) {
                 return new IncomingVideo($data['result']['video']);
+            }
+
+            return new Message($data['result']);
+        }
+
+        return false;
+    }
+
+    /**
+     * send audio file
+     *
+     * @param string $audioFile
+     * @param string|null $caption
+     * @param bool $withAction
+     * @param bool $asUrl
+     * @return IncomingAudio|Message|bool
+     * @throws GuzzleException
+     */
+    public function sendAudio(
+        string $audioFile,
+        string $caption = null,
+        bool   $withAction = false,
+        bool   $asUrl = false
+    ): IncomingAudio|Message|bool
+    {
+        if ($withAction) $this->withAction('upload_audio');
+        $data = $this->post('audio', [
+            'audio' => $asUrl ? $audioFile : Utils::tryFopen($audioFile, 'r'),
+            'caption' => $caption ?? '',
+            'parse_mode' => $this->mode
+        ]);
+
+        if ($data && array_key_exists('result', $data)) {
+            if (array_key_exists('audio', $data['result'])) {
+                return new IncomingAudio($data['result']['audio']);
             }
 
             return new Message($data['result']);
