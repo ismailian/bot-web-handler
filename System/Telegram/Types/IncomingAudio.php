@@ -5,75 +5,58 @@ namespace TeleBot\System\Telegram\Types;
 class IncomingAudio extends File
 {
 
-    /**
-     * get file id by index
-     *
-     * @return string
-     */
-    public function getFileId(): string
-    {
-        return $this->file['file_id'];
-    }
+    /** @var int $duration audio duration */
+    public int $duration;
+
+    /** @var string|null $performer audio performer */
+    public ?string $performer = null;
+
+    /** @var string|null $title audio title */
+    public ?string $title = null;
+
+    /** @var string|null $fileName audio file name */
+    public ?string $fileName = null;
+
+    /** @var string|null $mimeType mime type */
+    public ?string $mimeType = null;
+
+    /** @var PhotoSize|null $thumbnail audio thumbnail */
+    public ?PhotoSize $thumbnail = null;
 
     /**
-     * get file name
+     * default constructor
      *
-     * @return string
+     * @param array $incomingAudio
      */
-    public function getFilename(): string
+    public function __construct(protected array $incomingAudio)
     {
-        return $this->file['file_name'];
-    }
+        $this->fileId = $this->incomingAudio['file_id'];
+        $this->fileUniqueId = $this->incomingAudio['file_unique_id'];
+        $this->duration = $this->incomingAudio['duration'];
 
-    /**
-     * get audio title
-     *
-     * @return string|null
-     */
-    public function getTitle(): ?string
-    {
-        return $this->file['title'] ?? null;
-    }
+        if (array_key_exists('performer', $this->incomingAudio)) {
+            $this->performer = $this->incomingAudio['performer'];
+        }
 
-    /**
-     * get audio performer
-     *
-     * @return string|null
-     */
-    public function getPerformer(): ?string
-    {
-        return $this->file['performer'] ?? null;
-    }
+        if (array_key_exists('title', $this->incomingAudio)) {
+            $this->title = $this->incomingAudio['title'];
+        }
 
-    /**
-     * get audio duration in seconds
-     *
-     * @return int
-     */
-    public function getDuration(): int
-    {
-        return $this->file['duration'];
-    }
+        if (array_key_exists('file_name', $this->incomingAudio)) {
+            $this->fileName = $this->incomingAudio['file_name'];
+        }
 
-    /**
-     * get audio mime type
-     *
-     * @return string
-     */
-    public function getMimeType(): string
-    {
-        return $this->file['mime_type'];
-    }
+        if (array_key_exists('mime_type', $this->incomingAudio)) {
+            $this->mimeType = $this->incomingAudio['mime_type'];
+        }
 
-    /**
-     * download audio
-     *
-     * @return string|null returns stored file name
-     */
-    public function save(): ?string
-    {
-        $this->getLink($this->getFileId());
-        return $this->saveAs();
+        if (array_key_exists('file_size', $this->incomingAudio)) {
+            $this->fileSize = $this->incomingAudio['file_size'];
+        }
+
+        if (array_key_exists('thumbnail', $this->incomingAudio)) {
+            $this->thumbnail = new PhotoSize($this->incomingAudio['thumbnail']);
+        }
     }
 
 }

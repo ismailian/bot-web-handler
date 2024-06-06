@@ -5,45 +5,29 @@ namespace TeleBot\System\Telegram\Types;
 class IncomingVoice extends File
 {
 
-    /**
-     * get file id by index
-     *
-     * @return string
-     */
-    public function getFileId(): string
-    {
-        return $this->file['file_id'];
-    }
+    /** @var int $duration audio duration */
+    public int $duration;
+
+    /** @var string|null $mimeType mime type */
+    public ?string $mimeType = null;
 
     /**
-     * get voice duration in seconds
+     * default constructor
      *
-     * @return int
+     * @param array $incomingVoice
      */
-    public function getDuration(): int
+    public function __construct(protected array $incomingVoice)
     {
-        return $this->file['duration'];
-    }
+        $this->fileId = $this->incomingVoice['file_id'];
+        $this->fileUniqueId = $this->incomingVoice['file_unique_id'];
+        $this->duration = $this->incomingVoice['duration'];
 
-    /**
-     * get voice mime type
-     *
-     * @return string
-     */
-    public function getMimeType(): string
-    {
-        return $this->file['mime_type'];
-    }
+        if (array_key_exists('mime_type', $this->incomingVoice)) {
+            $this->mimeType = $this->incomingVoice['mime_type'];
+        }
 
-    /**
-     * download voice
-     *
-     * @return string|null returns stored file name
-     */
-    public function save(): ?string
-    {
-        $this->getLink($this->getFileId());
-        return $this->saveAs();
+        if (array_key_exists('file_size', $this->incomingVoice)) {
+            $this->fileSize = $this->incomingVoice['file_size'];
+        }
     }
-
 }
