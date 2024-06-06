@@ -85,9 +85,12 @@ class Parser
         array_map(function($k) use (&$data) { unset($data[$k]); }, $unset);
 
         /** determine message type */
-        $keys = array_keys($data);
-        $messageType = $keys[0];
+        $results = array_values(array_intersect(self::$messageTypes, array_keys($data)));
+        if (empty($results)) {
+            throw new InvalidMessage('Unrecognized message type');
+        }
 
+        $messageType = $results[0];
         if (empty($messageType) || !in_array($messageType, self::$messageTypes)) {
             throw new InvalidMessage('Unrecognized message type: ' . $messageType);
         }
