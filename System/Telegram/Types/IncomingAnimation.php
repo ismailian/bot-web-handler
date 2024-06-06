@@ -2,14 +2,8 @@
 
 namespace TeleBot\System\Telegram\Types;
 
-class IncomingAnimation
+class IncomingAnimation extends File
 {
-
-    /** @var string $fileId file id */
-    public string $fileId;
-
-    /** @var string $fileUniqueId file unique id */
-    public string $fileUniqueId;
 
     /** @var int $width video width */
     public int $width;
@@ -20,16 +14,43 @@ class IncomingAnimation
     /** @var int $duration video duration */
     public int $duration;
 
-    /** @var Thumbnail|null $thumbnail animation thumbnail */
-    public ?Thumbnail $thumbnail = null;
+    /** @var PhotoSize|null $thumbnail animation thumbnail */
+    public ?PhotoSize $thumbnail = null;
 
     /** @var string|null $fileName animation file name */
     public ?string $fileName;
 
-    /** @var int|null $fileSize animation file size */
-    public ?int $fileSize;
-
     /** @var string|null $mimeType file mime type */
     public ?string $mimeType = null;
+
+    /**
+     * default constructor
+     *
+     * @param array $incomingAnimation
+     */
+    public function __construct(protected array $incomingAnimation)
+    {
+        $this->fileId = $this->incomingAnimation['file_id'];
+        $this->fileUniqueId = $this->incomingAnimation['file_unique_id'];
+        $this->duration = $this->incomingAnimation['duration'];
+        $this->width = $this->incomingAnimation['width'];
+        $this->height = $this->incomingAnimation['height'];
+
+        if (array_key_exists('file_name', $this->incomingAnimation)) {
+            $this->fileName = $this->incomingAnimation['file_name'];
+        }
+
+        if (array_key_exists('file_size', $this->incomingAnimation)) {
+            $this->fileSize = $this->incomingAnimation['file_size'];
+        }
+
+        if (array_key_exists('mime_type', $this->incomingAnimation)) {
+            $this->mimeType = $this->incomingAnimation['mime_type'];
+        }
+
+        if (array_key_exists('thumbnail', $this->incomingAnimation)) {
+            $this->thumbnail = new PhotoSize($this->incomingAnimation['thumbnail']);
+        }
+    }
 
 }
