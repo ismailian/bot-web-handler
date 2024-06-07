@@ -3,7 +3,6 @@
 namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
-use DateTimeZone;
 use Exception;
 use TeleBot\System\Telegram\Enums\MemberStatus;
 
@@ -70,6 +69,22 @@ class ChatMemberStatus
      */
     public function __construct(protected array $oldChatMember, protected array $newChatMember)
     {
+        $this->customTitle = $this->newChatMember['custom_title'] ?? null;
+        $this->canBeEdited = $this->newChatMember['can_be_edited'] ?? false;
+        $this->canManageChat = $this->newChatMember['can_manage_chat'] ?? false;
+        $this->canChangeInfo = $this->newChatMember['can_change_info'] ?? false;
+        $this->canDeleteMessages = $this->newChatMember['can_delete_messages'] ?? false;
+        $this->canInviteUsers = $this->newChatMember['can_invite_users'] ?? false;
+        $this->canRestrictMembers = $this->newChatMember['can_restrict_members'] ?? false;
+        $this->canPinMessages = $this->newChatMember['can_pin_messages'] ?? false;
+        $this->canPromoteMembers = $this->newChatMember['can_promote_members'] ?? false;
+        $this->canManageVideoChats = $this->newChatMember['can_manage_video_chats'] ?? false;
+        $this->canPostStories = $this->newChatMember['can_post_stories'] ?? false;
+        $this->canEditStories = $this->newChatMember['can_edit_stories'] ?? false;
+        $this->canDeleteStories = $this->newChatMember['can_delete_stories'] ?? false;
+        $this->canManageVoiceChats = $this->newChatMember['can_manage_voice_chats'] ?? false;
+        $this->isAnonymous = $this->newChatMember['is_anonymous'] ?? false;
+
         if (array_key_exists('until_date', $this->newChatMember)) {
             if ($this->newChatMember['until_date'] > 0) {
                 $this->until = new DateTime(

@@ -5,13 +5,13 @@ namespace TeleBot\System\Telegram;
 use Exception;
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Exception\GuzzleException;
-use TeleBot\System\Telegram\Types\IncomingAudio;
 use TeleBot\System\Telegram\Types\Message;
 use TeleBot\System\Telegram\Traits\Extensions;
 use TeleBot\System\Telegram\Traits\HttpClient;
 use TeleBot\System\Telegram\Types\IncomingDice;
 use TeleBot\System\Telegram\Types\IncomingPhoto;
 use TeleBot\System\Telegram\Types\IncomingVideo;
+use TeleBot\System\Telegram\Types\IncomingAudio;
 use TeleBot\System\Telegram\Types\IncomingDocument;
 
 class BotClient

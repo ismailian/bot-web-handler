@@ -11,4 +11,15 @@ class IncomingStory
     /** @var Chat $chat story chat */
     public Chat $chat;
 
+    /**
+     * default constructor
+     *
+     * @param array $incomingStory
+     */
+    public function __construct(protected array $incomingStory)
+    {
+        $this->id = $this->incomingStory['id'];
+        $this->chat = $this->incomingStory['chat'];
+    }
+
 }
