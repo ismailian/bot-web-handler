@@ -2,8 +2,8 @@
 
 namespace TeleBot\System\Telegram\Types;
 
-use TeleBot\System\Telegram\Enums\PollType;
-use TeleBot\System\Telegram\Events\PollAnswer;
+use DateTime;
+use Exception;
 
 class IncomingPoll
 {
@@ -47,14 +47,46 @@ class IncomingPoll
     /** @var int|null $openPeriod amount of time poll will be opened */
     public ?int $openPeriod = null;
 
-    /** @var int|null $closeDate  */
-    public ?int $closeDate = null;
+    /** @var DateTime|null $closeDate  */
+    public ?DateTime $closeDate = null;
 
     /**
      * default constructor
+     *
+     * @param array $incomingPoll
+     * @throws Exception
      */
-    public function __construct()
+    public function __construct(protected array $incomingPoll)
     {
-        // todo: fill properties
+        $this->id = $this->incomingPoll['id'];
+        $this->question = $this->incomingPoll['question'];
+
+        if (array_key_exists('question_entities', $this->incomingPoll)) {
+            $this->questionEntities = array_map(
+                fn($e) => new Entity($this->question, $e),
+                $this->incomingPoll['question_entities']
+            );
+        }
+
+        $this->options = array_map(fn($o) => new PollOption($o), $this->incomingPoll['options']);
+        $this->type = $this->incomingPoll['type'];
+        $this->isClosed = $this->incomingPoll['is_closed'];
+        $this->isAnonymous = $this->incomingPoll['is_anonymous'];
+        $this->openPeriod = $this->incomingPoll['open_period'] ?? null;
+        $this->totalVoterCount = $this->incomingPoll['total_voter_count'];
+        $this->correctOptionId = $this->incomingPoll['correct_option_id'] ?? null;
+        $this->allowMultipleAnswers = $this->incomingPoll['allow_multiple_answers'];
+
+        if (array_key_exists('explanation', $this->incomingPoll)) {
+            $this->explanation = $this->incomingPoll['explanation'];
+            $this->explanationEntities = array_map(
+                fn($e) => new Entity($this->explanation, $e),
+                $incomingPoll['explanation_entities']
+            );
+        }
+
+        if (array_key_exists('close_date', $this->incomingPoll)) {
+            $this->closeDate = new DateTime(date('Y-m-d H:i:s', strtotime($this->incomingPoll['close_date'])));
+        }
     }
 }
