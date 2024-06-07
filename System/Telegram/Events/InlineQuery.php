@@ -28,10 +28,6 @@ class InlineQuery implements IEvent
         if (!$this->allowEmpty && empty($event['inline_query']['query'])) return false;
         if ($this->Validator && !$this->Validator->isValid($event['inline_query']['query'])) return false;
 
-        return new IncomingInlineQuery(
-            $event['inline_query']['id'],
-            $event['inline_query']['query'],
-            $event['inline_query']['offset']
-        );
+        return new IncomingInlineQuery($event['inline_query']);
     }
 }

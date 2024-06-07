@@ -14,6 +14,6 @@ class Message implements IEvent
      */
     public function apply(array $event): bool
     {
-        return isset($event['message']);
+        return array_key_exists('message', $event);
     }
 }

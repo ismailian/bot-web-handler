@@ -24,9 +24,8 @@ class Text implements IEvent
     public function apply(array $event): bool
     {
         $key = isset($event['edited_message']) ? 'edited_message' : 'message';
-        $isMessage = isset($event[$key]);
-        $hasText = isset($event[$key]['text']);
-        if (!$isMessage || !$hasText) return false;
+        if (!array_key_exists($key, $event)) return false;
+        if (!array_key_exists('text', $event[$key])) return false;
 
         $isCleanText = !$this->cleanText || !count(array_filter(
                 $event[$key]['entities'] ?? [],

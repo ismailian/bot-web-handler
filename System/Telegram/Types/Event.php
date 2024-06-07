@@ -20,11 +20,11 @@ class Event
     /** @var From|null $from event From */
     public ?From $from = null;
 
-    /** @var Message|null $message message update */
-    public ?Message $message = null;
+    /** @var IncomingMessage|null $message message update */
+    public ?IncomingMessage $message = null;
 
-    /** @var Message|null $editedMessage edited message update */
-    public ?Message $editedMessage = null;
+    /** @var IncomingMessage|null $editedMessage edited message update */
+    public ?IncomingMessage $editedMessage = null;
 
     /** @var IncomingCallbackQuery|null $callbackQuery callback query update */
     public ?IncomingCallbackQuery $callbackQuery = null;
@@ -32,8 +32,8 @@ class Event
     /** @var IncomingInlineQuery|null $inlineQuery inline query update */
     public ?IncomingInlineQuery $inlineQuery = null;
 
-    /** @var IncomingChosenInlineQuery|null $chosenInlineQuery chosen inline query update */
-    public ?IncomingChosenInlineQuery $chosenInlineQuery = null;
+    /** @var IncomingChosenInlineResult|null $chosenInlineQuery chosen inline query update */
+    public ?IncomingChosenInlineResult $chosenInlineQuery = null;
 
     /** @var IncomingChatMember|null $myChatMember my chat member update */
     public ?IncomingChatMember $myChatMember = null;
@@ -47,20 +47,20 @@ class Event
     /** @var IncomingShippingQuery|null $shippingQuery shipping query */
     public ?IncomingShippingQuery $shippingQuery = null;
 
-    /** @var Message|null $channelPost channel post update */
-    public ?Message $channelPost = null;
+    /** @var IncomingMessage|null $channelPost channel post update */
+    public ?IncomingMessage $channelPost = null;
 
-    /** @var Message|null $editedChannelPost edited channel post update */
-    public ?Message $editedChannelPost = null;
+    /** @var IncomingMessage|null $editedChannelPost edited channel post update */
+    public ?IncomingMessage $editedChannelPost = null;
 
     /** @var IncomingBusinessConnection|null $businessConnection business connection update */
     public ?IncomingBusinessConnection $businessConnection = null;
 
-    /** @var Message|null $businessMessage business message update */
-    public ?Message $businessMessage = null;
+    /** @var IncomingMessage|null $businessMessage business message update */
+    public ?IncomingMessage $businessMessage = null;
 
-    /** @var Message|null $editedBusinessMessage edited business message update */
-    public ?Message $editedBusinessMessage = null;
+    /** @var IncomingMessage|null $editedBusinessMessage edited business message update */
+    public ?IncomingMessage $editedBusinessMessage = null;
 
     /** @var IncomingBusinessMessageDeleted|null $deletedBusinessMessage deleted business message update */
     public ?IncomingBusinessMessageDeleted $deletedBusinessMessage = null;
@@ -111,7 +111,7 @@ class Event
             'business_message', 'edited_business_message',
         ];
         if (!empty($result = array_intersect($messages, array_keys($this->event)))) {
-            $update = new Message($this->event[$result[0]]);
+            $update = new IncomingMessage($this->event[$result[0]]);
             switch ($result[0]) {
                 case 'message': $this->message = $update; break;
                 case 'edited_message': $this->editedMessage = $update; break;
@@ -136,9 +136,9 @@ class Event
             $this->setProps($this->inlineQuery);
         }
 
-        /** <ChosenInlineQuery> */
-        if (array_key_exists('chosen_inline_query', $this->event)) {
-            $this->chosenInlineQuery = new IncomingChosenInlineQuery($this->event['chosen_inline_query']);
+        /** <ChosenInlineResult> */
+        if (array_key_exists('chosen_inline_result', $this->event)) {
+            $this->chosenInlineQuery = new IncomingChosenInlineResult($this->event['chosen_inline_result']);
             $this->setProps($this->chosenInlineQuery);
         }
 

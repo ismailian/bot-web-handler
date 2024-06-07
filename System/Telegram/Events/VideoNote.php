@@ -24,8 +24,7 @@ class VideoNote implements IEvent
     public function apply(array $event): IncomingVideoNote|bool
     {
         $key = isset($event['edited_message']) ? 'edited_message' : 'message';
-        $isVideo = isset($event[$key]['video_note']);
-        if (!$isVideo) return false;
+        if (!array_key_exists('video_note', $event[$key])) return false;
 
         if ($this->Validator && !$this->Validator->isValid($event[$key]['video_note'])) return false;
         return new IncomingVideoNote($event[$key]['video_note']);

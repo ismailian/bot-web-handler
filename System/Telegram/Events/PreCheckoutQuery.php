@@ -10,11 +10,6 @@ class PreCheckoutQuery implements IEvent
 {
 
     /**
-     * default constructor
-     */
-    public function __construct() {}
-
-    /**
      * @inheritDoc
      */
     public function apply(array $event): bool

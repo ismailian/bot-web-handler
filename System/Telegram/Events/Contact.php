@@ -16,8 +16,7 @@ class Contact implements IEvent
     public function apply(array $event): IncomingContact|bool
     {
         $key = isset($event['edited_message']) ? 'edited_message' : 'message';
-        $isContact = isset($event[$key]['contact']);
-        if (!$isContact) return false;
+        if (!array_key_exists('contact', $event[$key])) return false;
 
         return new IncomingContact($event[$key]['contact']);
     }

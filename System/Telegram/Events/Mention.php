@@ -27,11 +27,11 @@ class Mention implements IEvent
     public function apply(array $event): bool
     {
         $key = isset($event['edited_message']) ? 'edited_message' : 'message';
-        $isMessage = isset($event[$key]);
-        $hasText = isset($event[$key]['text']);
-        $hasEntities = !empty($event[$key]['entities']);
+        if (!array_key_exists($key, $event)) return false;
+        if (!array_key_exists('text', $event[$key])) return false;
+        if (!array_key_exists('entities', $event[$key])) return false;
+        if (empty($event[$key]['entities'])) return false;
 
-        if (!$isMessage || !$hasText || !$hasEntities) return false;
         foreach ($event[$key]['entities'] as $entity) {
             if (isset($entity['type']) && $entity['type'] == 'mention') {
                 return !$this->username || substr(

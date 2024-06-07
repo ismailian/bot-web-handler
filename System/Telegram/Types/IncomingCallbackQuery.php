@@ -14,8 +14,8 @@ class IncomingCallbackQuery
     /** @var From $from sender */
     public From $from;
 
-    /** @var Message $message callback message */
-    public Message $message;
+    /** @var IncomingMessage $message callback message */
+    public IncomingMessage $message;
 
     /** @var mixed query data */
     public mixed $data;
@@ -31,7 +31,7 @@ class IncomingCallbackQuery
         $this->chatInstance = $this->callback['chat_instance'];
 
         $this->from = new From($this->callback['from']);
-        $this->message = new Message($this->callback['message']);
+        $this->message = new IncomingMessage($this->callback['message']);
         $this->data = $this->callback['data'];
 
         if (($json = json_decode($this->data, true))) {

@@ -4,7 +4,7 @@ namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
 
-class Message
+class IncomingMessage
 {
 
     /** @var int $id message id */

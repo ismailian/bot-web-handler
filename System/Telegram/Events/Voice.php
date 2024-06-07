@@ -16,8 +16,7 @@ class Voice implements IEvent
     public function apply(array $event): IncomingVoice|bool
     {
         $key = isset($event['edited_message']) ? 'edited_message' : 'message';
-        $isVoice = isset($event[$key]['voice']);
-        if (!$isVoice) return false;
+        if (!array_key_exists('voice', $event[$key])) return false;
 
         return new IncomingVoice($event[$key]['voice']);
     }

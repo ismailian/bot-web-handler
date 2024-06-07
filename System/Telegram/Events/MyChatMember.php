@@ -25,6 +25,7 @@ class MyChatMember implements IEvent
     public function apply(array $event): bool
     {
         if (!array_key_exists('my_chat_member', $event)) return false;
-        return !$this->status || (new IncomingChatMember($event['my_chat_member']))->memberStatus->status == $this->status;
+        return !$this->status
+            || (new IncomingChatMember($event['my_chat_member']))->memberStatus->status == $this->status;
     }
 }

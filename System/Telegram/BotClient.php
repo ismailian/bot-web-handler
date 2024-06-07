@@ -5,7 +5,7 @@ namespace TeleBot\System\Telegram;
 use Exception;
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Exception\GuzzleException;
-use TeleBot\System\Telegram\Types\Message;
+use TeleBot\System\Telegram\Types\IncomingMessage;
 use TeleBot\System\Telegram\Traits\Extensions;
 use TeleBot\System\Telegram\Traits\HttpClient;
 use TeleBot\System\Telegram\Types\IncomingDice;
@@ -24,10 +24,10 @@ class BotClient
      *
      * @param string $text text message to send
      * @param bool $withAction send action
-     * @return Message|bool returns true on success, otherwise false
+     * @return IncomingMessage|bool returns true on success, otherwise false
      * @throws Exception|GuzzleException
      */
-    public function sendMessage(string $text, bool $withAction = false): Message|bool
+    public function sendMessage(string $text, bool $withAction = false): IncomingMessage|bool
     {
         if ($withAction) $this->withAction('typing');
         $data = $this->post('message', [
@@ -36,7 +36,7 @@ class BotClient
         ]);
 
         if ($data && array_key_exists('result', $data)) {
-            return new Message($data['result']);
+            return new IncomingMessage($data['result']);
         }
 
         return false;
@@ -48,7 +48,7 @@ class BotClient
      * @param string $imagePath image path
      * @param string|null $caption caption to send with image
      * @param bool $withAction send action indicator
-     * @return IncomingPhoto|Message|bool returns IncomingPhoto on success, otherwise false
+     * @return IncomingPhoto|IncomingMessage|bool returns IncomingPhoto on success, otherwise false
      * @throws Exception|GuzzleException
      */
     public function sendPhoto(
@@ -56,7 +56,7 @@ class BotClient
         string $caption = null,
         bool   $withAction = false,
         bool   $asUrl = false
-    ): IncomingPhoto|Message|bool
+    ): IncomingPhoto|IncomingMessage|bool
     {
         if ($withAction) $this->withAction('upload_photo');
         $data = $this->post('photo', [
@@ -70,7 +70,7 @@ class BotClient
                 return new IncomingPhoto($data['result']['photo']);
             }
 
-            return new Message($data['result']);
+            return new IncomingMessage($data['result']);
         }
 
         return false;
@@ -83,7 +83,7 @@ class BotClient
      * @param string|null $caption caption to send with image
      * @param bool $withAction send action indicator
      * @param bool $asUrl weather the provider video is an ID or Url
-     * @return IncomingVideo|Message|bool returns IncomingVideo on success, otherwise false
+     * @return IncomingVideo|IncomingMessage|bool returns IncomingVideo on success, otherwise false
      * @throws Exception|GuzzleException
      */
     public function sendVideo(
@@ -91,7 +91,7 @@ class BotClient
         string $caption = null,
         bool   $withAction = false,
         bool   $asUrl = false
-    ): IncomingVideo|Message|bool
+    ): IncomingVideo|IncomingMessage|bool
     {
         if ($withAction) $this->withAction('upload_video');
         $data = $this->post('video', [
@@ -105,7 +105,7 @@ class BotClient
                 return new IncomingVideo($data['result']['video']);
             }
 
-            return new Message($data['result']);
+            return new IncomingMessage($data['result']);
         }
 
         return false;
@@ -118,7 +118,7 @@ class BotClient
      * @param string|null $caption
      * @param bool $withAction
      * @param bool $asUrl
-     * @return IncomingAudio|Message|bool
+     * @return IncomingAudio|IncomingMessage|bool
      * @throws GuzzleException
      */
     public function sendAudio(
@@ -126,7 +126,7 @@ class BotClient
         string $caption = null,
         bool   $withAction = false,
         bool   $asUrl = false
-    ): IncomingAudio|Message|bool
+    ): IncomingAudio|IncomingMessage|bool
     {
         if ($withAction) $this->withAction('upload_audio');
         $data = $this->post('audio', [
@@ -140,7 +140,7 @@ class BotClient
                 return new IncomingAudio($data['result']['audio']);
             }
 
-            return new Message($data['result']);
+            return new IncomingMessage($data['result']);
         }
 
         return false;
@@ -153,7 +153,7 @@ class BotClient
      * @param string|null $caption caption to send with image
      * @param bool $withAction send action indicator
      * @param bool $asUrl
-     * @return IncomingDocument|Message|bool returns IncomingDocument on success, otherwise false
+     * @return IncomingDocument|IncomingMessage|bool returns IncomingDocument on success, otherwise false
      * @throws Exception|GuzzleException
      */
     public function sendDocument(
@@ -161,7 +161,7 @@ class BotClient
         string $caption = null,
         bool   $withAction = false,
         bool   $asUrl = false
-    ): IncomingDocument|Message|bool
+    ): IncomingDocument|IncomingMessage|bool
     {
         if ($withAction) $this->withAction('upload_document');
         $data = $this->post('document', [
@@ -175,7 +175,7 @@ class BotClient
                 return new IncomingDocument($data['result']['document']);
             }
 
-            return new Message($data['result']);
+            return new IncomingMessage($data['result']);
         }
 
         return false;
