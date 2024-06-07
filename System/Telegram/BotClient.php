@@ -5,13 +5,14 @@ namespace TeleBot\System\Telegram;
 use Exception;
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Exception\GuzzleException;
-use TeleBot\System\Telegram\Types\IncomingMessage;
+use TeleBot\System\Telegram\Types\User;
 use TeleBot\System\Telegram\Traits\Extensions;
 use TeleBot\System\Telegram\Traits\HttpClient;
 use TeleBot\System\Telegram\Types\IncomingDice;
 use TeleBot\System\Telegram\Types\IncomingPhoto;
 use TeleBot\System\Telegram\Types\IncomingVideo;
 use TeleBot\System\Telegram\Types\IncomingAudio;
+use TeleBot\System\Telegram\Types\IncomingMessage;
 use TeleBot\System\Telegram\Types\IncomingDocument;
 
 class BotClient
@@ -218,14 +219,14 @@ class BotClient
      *
      * @param string $userId
      * @param bool $withPicture
-     * @return array|null
+     * @return User|null
      */
-    public function getUser(string $userId, bool $withPicture = false): ?array
+    public function getUser(string $userId, bool $withPicture = false): ?User
     {
         $data = $this->get('user', ['user_id' => $userId]);
-        if (empty($data)) return null;
+        if (empty($data) || !array_key_exists('user', $data['result'])) return null;
 
-        return $data['result']['user'] ?? null;
+        return new User($data['result']['user']);
     }
 
 
