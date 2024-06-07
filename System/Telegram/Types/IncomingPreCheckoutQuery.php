@@ -2,7 +2,7 @@
 
 namespace TeleBot\System\Telegram\Types;
 
-class PreCheckoutQuery
+class IncomingPreCheckoutQuery
 {
 
     /** @var string $id query id */
