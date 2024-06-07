@@ -104,14 +104,28 @@ class IncomingMessage
         try {
             $this->id = (int)$this->message['message_id'];
             $this->date = new DateTime(date('Y-m-d H:i:s T', $this->message['date']));
-            $this->text = $this->message['text'] ?? null;
-            $this->caption = $this->message['caption'] ?? null;
-            $this->entities = array_map(
-                fn($e) => new Entity($e['text'] ?? '', $e),
-                ($this->message['entities'] ?? [])
-            );
+            $this->messageThreadId = $this->message['message_thread_id'] ?? null;
 
-            $this->chat = new Chat($this->message['chat']);
+            $this->text = $this->message['text'] ?? null;
+            if (array_key_exists('text', $this->message)) {
+                $this->entities = array_map(
+                    fn($e) => new Entity($this->text, $e),
+                    ($this->message['entities'] ?? [])
+                );
+            }
+
+            $this->caption = $this->message['caption'] ?? null;
+            if (array_key_exists('caption', $this->message)) {
+                $this->captionEntities = array_map(
+                    fn($e) => new Entity($this->caption, $e),
+                    ($this->message['caption_entities'] ?? [])
+                );
+            }
+
+            /** <Chat> */
+            if (array_key_exists('chat', $this->message)) {
+                $this->chat = new Chat($this->message['chat']);
+            }
 
             /** <From> */
             if (array_key_exists('from', $this->message)) {
@@ -177,6 +191,42 @@ class IncomingMessage
             if (array_key_exists('sticker', $this->message)) {
                 $this->sticker = new IncomingSticker($this->message['sticker']);
             }
+
+            /** <Location> */
+            if (array_key_exists('location', $this->message)) {
+                $this->location = new IncomingLocation($this->message['location']);
+            }
+
+            /** <Venue> */
+            if (array_key_exists('venue', $this->message)) {
+                $this->venue = new IncomingVenue($this->message['venue']);
+            }
+
+            /** <Invoice> */
+            if (array_key_exists('invoice', $this->message)) {
+                $this->invoice = new IncomingInvoice($this->message['invoice']);
+            }
+
+            /** <Story> */
+            if (array_key_exists('story', $this->message)) {
+                $this->story = new IncomingStory($this->message['story']);
+            }
+
+            /** <Game> */
+            if (array_key_exists('game', $this->message)) {
+                $this->game = new IncomingGame($this->message['game']);
+            }
+
+            /** <Poll> */
+            if (array_key_exists('poll', $this->message)) {
+                $this->poll = new IncomingPoll($this->message['poll']);
+            }
+
+            /** <SuccessfulPayment> */
+            if (array_key_exists('successful_payment', $this->message)) {
+                $this->successfulPayment = new IncomingSuccessfulPayment($this->message['successful_payment']);
+            }
+
         } catch (\Exception $ex) {}
     }
 
