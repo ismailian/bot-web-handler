@@ -23,6 +23,7 @@ trait HttpClient
         'video' => 'sendVideo',
         'audio' => 'sendAudio',
         'document' => 'sendDocument',
+        'animation' => 'sendAnimation',
         'delete' => 'deleteMessage',
         'action' => 'sendChatAction',
         'user' => 'getChatMember',

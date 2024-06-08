@@ -4,8 +4,8 @@ namespace TeleBot\System\Telegram;
 
 use Exception;
 use GuzzleHttp\Psr7\Utils;
-use GuzzleHttp\Exception\GuzzleException;
 use TeleBot\System\Telegram\Types\User;
+use GuzzleHttp\Exception\GuzzleException;
 use TeleBot\System\Telegram\Traits\Extensions;
 use TeleBot\System\Telegram\Traits\HttpClient;
 use TeleBot\System\Telegram\Types\IncomingDice;
@@ -14,6 +14,7 @@ use TeleBot\System\Telegram\Types\IncomingVideo;
 use TeleBot\System\Telegram\Types\IncomingAudio;
 use TeleBot\System\Telegram\Types\IncomingMessage;
 use TeleBot\System\Telegram\Types\IncomingDocument;
+use TeleBot\System\Telegram\Types\IncomingAnimation;
 
 class BotClient
 {
@@ -148,6 +149,35 @@ class BotClient
     }
 
     /**
+     * send animation
+     *
+     * @param string $filePath
+     * @param bool $withAction
+     * @param bool $asUrl
+     * @return IncomingAnimation|IncomingMessage|bool
+     * @throws GuzzleException
+     */
+    public function sendAnimation(string $filePath, bool $withAction = false, bool $asUrl = false): IncomingAnimation|IncomingMessage|bool
+    {
+        if ($withAction) $this->withAction('choose_sticker');
+        $data = $this->post('animation', [
+            'animation' => $asUrl ? $filePath : Utils::tryFopen($filePath, 'r'),
+            'caption' => $caption ?? '',
+            'parse_mode' => $this->mode
+        ]);
+
+        if ($data && array_key_exists('result', $data)) {
+            if (array_key_exists('animation', $data['result'])) {
+                return new IncomingAnimation($data['result']['animation']);
+            }
+
+            return new IncomingMessage($data['result']);
+        }
+
+        return false;
+    }
+
+    /**
      * send a document message with caption
      *
      * @param string $fileUrl
@@ -201,7 +231,7 @@ class BotClient
     /**
      * delete a message
      *
-     * @param string $messageId id of message to delete
+     * @param string $messageId id of a message to delete
      * @return bool
      * @throws Exception|GuzzleException
      */
