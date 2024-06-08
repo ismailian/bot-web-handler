@@ -152,12 +152,13 @@ class BotClient
      * send animation
      *
      * @param string $filePath
+     * @param string|null $caption
      * @param bool $withAction
      * @param bool $asUrl
      * @return IncomingAnimation|IncomingMessage|bool
      * @throws GuzzleException
      */
-    public function sendAnimation(string $filePath, bool $withAction = false, bool $asUrl = false): IncomingAnimation|IncomingMessage|bool
+    public function sendAnimation(string $filePath, string $caption = null, bool $withAction = false, bool $asUrl = false): IncomingAnimation|IncomingMessage|bool
     {
         if ($withAction) $this->withAction('choose_sticker');
         $data = $this->post('animation', [
