@@ -111,6 +111,7 @@ class Event
             'business_message', 'edited_business_message',
         ];
         if (!empty($result = array_intersect($messages, array_keys($this->event)))) {
+            $result = array_values($result);
             $update = new IncomingMessage($this->event[$result[0]]);
             switch ($result[0]) {
                 case 'message': $this->message = $update; break;
@@ -147,6 +148,7 @@ class Event
          * <MyChatMember>
          */
         if (!empty($result = array_intersect(['chat_member', 'my_chat_member'], array_keys($this->event)))) {
+            $result = array_values($result);
             $update = new IncomingChatMember($this->event[$result[0]]);
             switch ($result[0]) {
                 case 'chat_member': $this->chatMember = $update; break;

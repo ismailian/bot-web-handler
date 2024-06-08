@@ -23,7 +23,10 @@ class Url implements IEvent
      */
     public function apply(array $event): bool|IncomingUrl
     {
-        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        $updates = ['message', 'edited_message'];
+        if (empty($result = array_intersect($updates, array_keys($event)))) return false;
+        
+        $key = array_values($result)[0];
         if (!array_key_exists('text', $event[$key])) return false;
         if (!array_key_exists('entities', $event[$key])) return false;
         if (empty($event[$key]['entities'])) return false;
