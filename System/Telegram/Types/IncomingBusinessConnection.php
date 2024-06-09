@@ -23,7 +23,7 @@ class IncomingBusinessConnection
     /** @var bool $canReply can act on behalf of business */
     public bool $canReply;
 
-    /** @var bool $isEnabled is connection active */
+    /** @var bool $isEnabled is connection active? */
     public bool $isEnabled;
 
     /**
@@ -39,7 +39,7 @@ class IncomingBusinessConnection
         $this->userChatId = $incomingBusinessConnection['userChatId'];
         $this->canReply = $incomingBusinessConnection['canReply'] ?? false;
         $this->isEnabled = $incomingBusinessConnection['isEnabled'] ?? false;
-        $this->date = new DateTime(date('Y-m-d', strtotime($incomingBusinessConnection['date'])));
+        $this->date = new DateTime(date('Y-m-d H:i:s', $incomingBusinessConnection['date']));
     }
 
 }

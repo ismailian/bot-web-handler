@@ -1,32 +1,28 @@
 <?php
 
-namespace TeleBot\System\Telegram\Events;
+namespace TeleBot\System\Telegram\Events\Messages;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
-use TeleBot\System\Interfaces\IValidator;
+use TeleBot\System\Telegram\Traits\Messageable;
 use TeleBot\System\Telegram\Types\IncomingVideoNote;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class VideoNote implements IEvent
 {
 
-    /**
-     * default constructor
-     *
-     * @param IValidator|null $Validator
-     */
-    public function __construct(public ?IValidator $Validator = null) {}
+    use Messageable;
 
     /**
      * @inheritDoc
      */
     public function apply(array $event): IncomingVideoNote|bool
     {
-        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        if (!$this->isMessage(array_keys($event))) return false;
+
+        $key = $this->first(array_keys($event));
         if (!array_key_exists('video_note', $event[$key])) return false;
 
-        if ($this->Validator && !$this->Validator->isValid($event[$key]['video_note'])) return false;
         return new IncomingVideoNote($event[$key]['video_note']);
     }
 }

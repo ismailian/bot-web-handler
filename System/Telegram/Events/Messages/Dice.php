@@ -1,15 +1,18 @@
 <?php
 
-namespace TeleBot\System\Telegram\Events;
+namespace TeleBot\System\Telegram\Events\Messages;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
 use TeleBot\System\Interfaces\IValidator;
+use TeleBot\System\Telegram\Traits\Messageable;
 use TeleBot\System\Telegram\Types\IncomingDice;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Dice implements IEvent
 {
+
+    use Messageable;
 
     /**
      * default constructor
@@ -23,7 +26,9 @@ class Dice implements IEvent
      */
     public function apply(array $event): IncomingDice|bool
     {
-        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        if (!$this->isMessage(array_keys($event))) return false;
+        $key = $this->first(array_keys($event));
+
         if (!array_key_exists('dice', $event[$key])) return false;
         if ($this->Validator && !$this->Validator->isValid($event[$key]['dice']))
             return false;

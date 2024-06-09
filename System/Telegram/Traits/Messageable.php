@@ -1,0 +1,40 @@
+<?php
+
+namespace TeleBot\System\Telegram\Traits;
+
+trait Messageable
+{
+
+    /** @var array|string[] $updates list of message updates */
+    protected array $updates = [
+        'message', 'edited_message',
+        'channel_post', 'edited_channel_post',
+        'business_message', 'edited_business_message',
+    ];
+
+    /**
+     * checks if a message update exists
+     *
+     * @param array $keys
+     * @return bool
+     */
+    public function isMessage(array $keys): bool
+    {
+        return !empty(array_intersect($this->updates, $keys));
+    }
+
+    /**
+     * get the first update key that exists in the provided list
+     *
+     * @param array $keys
+     * @return string|null
+     */
+    public function first(array $keys): ?string
+    {
+        $result = array_intersect($this->updates, $keys);
+        if (empty($result)) return null;
+
+        return array_values($result)[0];
+    }
+
+}

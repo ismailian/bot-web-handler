@@ -1,14 +1,17 @@
 <?php
 
-namespace TeleBot\System\Telegram\Events;
+namespace TeleBot\System\Telegram\Events\Messages;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
 use TeleBot\System\Interfaces\IValidator;
+use TeleBot\System\Telegram\Traits\Messageable;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Text implements IEvent
 {
+
+    use Messageable;
 
     /**
      * default constructor
@@ -23,8 +26,9 @@ class Text implements IEvent
      */
     public function apply(array $event): bool
     {
-        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
-        if (!array_key_exists($key, $event)) return false;
+        if (!$this->isMessage(array_keys($event))) return false;
+
+        $key = $this->first(array_keys($event));
         if (!array_key_exists('text', $event[$key])) return false;
 
         $isCleanText = !$this->cleanText || !count(array_filter(

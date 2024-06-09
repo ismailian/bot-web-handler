@@ -2,7 +2,7 @@
 
 namespace TeleBot\System\Telegram\Types;
 
-class IncomingBusinessMessageDeleted
+class IncomingBusinessMessagesDeleted
 {
 
     /** @var string $businessConnectionId business connection id */

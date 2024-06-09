@@ -13,7 +13,7 @@ use TeleBot\System\Telegram\Filters\Chat;
 use TeleBot\System\Telegram\Filters\Only;
 use TeleBot\System\Telegram\Filters\Awaits;
 
-class BaseHandler
+class EventMapper
 {
 
     /** @var array $config */

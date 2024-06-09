@@ -75,7 +75,7 @@ class IncomingPoll
         $this->openPeriod = $this->incomingPoll['open_period'] ?? null;
         $this->totalVoterCount = $this->incomingPoll['total_voter_count'];
         $this->correctOptionId = $this->incomingPoll['correct_option_id'] ?? null;
-        $this->allowMultipleAnswers = $this->incomingPoll['allow_multiple_answers'];
+        $this->allowMultipleAnswers = $this->incomingPoll['allows_multiple_answers'];
 
         if (array_key_exists('explanation', $this->incomingPoll)) {
             $this->explanation = $this->incomingPoll['explanation'];

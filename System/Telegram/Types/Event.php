@@ -62,8 +62,8 @@ class Event
     /** @var IncomingMessage|null $editedBusinessMessage edited business message update */
     public ?IncomingMessage $editedBusinessMessage = null;
 
-    /** @var IncomingBusinessMessageDeleted|null $deletedBusinessMessage deleted business message update */
-    public ?IncomingBusinessMessageDeleted $deletedBusinessMessage = null;
+    /** @var IncomingBusinessMessagesDeleted|null $deletedBusinessMessages deleted business message update */
+    public ?IncomingBusinessMessagesDeleted $deletedBusinessMessages = null;
 
     /** @var IncomingMessageReactionUpdated|null $messageReaction message reaction update */
     public ?IncomingMessageReactionUpdated $messageReaction = null;
@@ -219,9 +219,9 @@ class Event
         }
 
         /** <DeletedBusinessMessage> */
-        if (array_key_exists('deleted_business_message', $this->event)) {
-            $this->deletedBusinessMessage = new IncomingBusinessMessageDeleted($this->event['deleted_business_message']);
-            $this->setProps($this->deletedBusinessMessage);
+        if (array_key_exists('deleted_business_messages', $this->event)) {
+            $this->deletedBusinessMessages = new IncomingBusinessMessagesDeleted($this->event['deleted_business_messages']);
+            $this->setProps($this->deletedBusinessMessages);
         }
     }
 

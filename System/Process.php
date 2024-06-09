@@ -17,25 +17,4 @@ class Process
         return system($command);
     }
 
-    /**
-     * execute system command asynchronously
-     *
-     * @param mixed ...$args
-     * @return void
-     */
-    public static function runAsync(...$args): void
-    {
-        $command = join(' ', $args);
-
-        if (PHP_OS == 'Linux') {
-            $command = "nohup $command > /dev/null 2>&1 &";
-            system($command);
-        }
-
-        if (PHP_OS == 'WINNT') {
-            $shell = new COM("WScript.Shell");
-            $shell->run($command, 0, false);
-        }
-    }
-
 }

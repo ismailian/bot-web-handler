@@ -1,14 +1,17 @@
 <?php
 
-namespace TeleBot\System\Telegram\Events;
+namespace TeleBot\System\Telegram\Events\Messages;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
+use TeleBot\System\Telegram\Traits\Messageable;
 use TeleBot\System\Telegram\Types\IncomingCommand;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Command implements IEvent
 {
+
+    use Messageable;
 
     /**
      * default constructor
@@ -22,7 +25,8 @@ class Command implements IEvent
      */
     public function apply(array $event): IncomingCommand|bool
     {
-        $key = isset($event['edited_message']) ? 'edited_message' : 'message';
+        if (!$this->isMessage(array_keys($event))) return false;
+        $key = $this->first(array_keys($event));
         if (!empty($this->command))
             $this->command = str_starts_with($this->command, '/') ? '' : "/{$this->command}";
 

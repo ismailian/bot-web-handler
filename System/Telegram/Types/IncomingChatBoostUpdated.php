@@ -2,6 +2,8 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use Exception;
+
 class IncomingChatBoostUpdated
 {
 
@@ -15,6 +17,7 @@ class IncomingChatBoostUpdated
      * default constructor
      *
      * @param array $incomingChatBoostUpdated
+     * @throws Exception
      */
     public function __construct(protected array $incomingChatBoostUpdated)
     {
