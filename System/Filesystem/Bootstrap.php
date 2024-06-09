@@ -32,7 +32,6 @@ class Bootstrap
                     ->setConfig(self::$config)
                     ->assign(new $handler, explode('::', $route['handler'])[1], array_values($route['params']))
                     ->run();
-                return;
             }
         }
 
@@ -43,7 +42,7 @@ class Bootstrap
 
         # blacklisted user or invalid payload
         if (!$this->verifyUserId()) {
-            HttpResponse::setStatusCode(200)->end();
+            HttpResponse::setStatusCode(401)->end();
         }
 
         if (!empty(($async = getenv('ASYNC')))) {
