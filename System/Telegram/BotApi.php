@@ -16,7 +16,7 @@ use TeleBot\System\Telegram\Types\IncomingMessage;
 use TeleBot\System\Telegram\Types\IncomingDocument;
 use TeleBot\System\Telegram\Types\IncomingAnimation;
 
-class BotClient
+class BotApi
 {
 
     use HttpClient, Extensions;

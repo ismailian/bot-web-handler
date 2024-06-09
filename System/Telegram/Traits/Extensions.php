@@ -3,7 +3,7 @@
 namespace TeleBot\System\Telegram\Traits;
 
 use GuzzleHttp\Exception\GuzzleException;
-use TeleBot\System\Telegram\BotClient;
+use TeleBot\System\Telegram\BotApi;
 
 trait Extensions
 {
@@ -30,7 +30,7 @@ trait Extensions
      * set bot token
      *
      * @param string $token bot token to be used in requests
-     * @return BotClient|Extensions
+     * @return BotApi|Extensions
      */
     public function setToken(string $token): self
     {
@@ -42,7 +42,7 @@ trait Extensions
      * set message parse mode
      *
      * @param string $mode mode to use with message
-     * @return BotClient|Extensions
+     * @return BotApi|Extensions
      */
     public function setParseMode(string $mode = 'text'): self
     {
@@ -54,7 +54,7 @@ trait Extensions
      * set recipient chat id
      *
      * @param string $chatId recipient chat id
-     * @return BotClient|Extensions
+     * @return BotApi|Extensions
      */
     public function setChatId(string $chatId): self
     {
@@ -66,7 +66,7 @@ trait Extensions
      * extra options to send with the message
      *
      * @param array $options
-     * @return BotClient|Extensions
+     * @return BotApi|Extensions
      */
     public function withOptions(array $options): self
     {
@@ -78,7 +78,7 @@ trait Extensions
      * send an action
      *
      * @param string $action action to send
-     * @return BotClient|Extensions
+     * @return BotApi|Extensions
      * @throws GuzzleException
      */
     public function withAction(string $action): self
@@ -96,7 +96,7 @@ trait Extensions
      *
      * @param int $messageId
      * @param string|null $chatId
-     * @return BotClient|Extensions
+     * @return BotApi|Extensions
      */
     public function replyTo(int $messageId, string $chatId = null): self
     {
@@ -111,7 +111,7 @@ trait Extensions
     /**
      * delete last message sent by bot
      *
-     * @return BotClient|Extensions
+     * @return BotApi|Extensions
      * @throws GuzzleException
      */
     public function deleteLastMessage(): self

@@ -4,7 +4,7 @@ namespace TeleBot\System;
 
 use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Http\HttpResponse;
-use TeleBot\System\Telegram\BotClient;
+use TeleBot\System\Telegram\BotApi;
 
 class IncomingRequest
 {
@@ -15,8 +15,8 @@ class IncomingRequest
     /** @var HttpResponse $response */
     protected HttpResponse $response;
 
-    /** @var BotClient $telegram telegram client */
-    protected BotClient $telegram;
+    /** @var BotApi $telegram telegram client */
+    protected BotApi $telegram;
 
     /** @var array $config */
     public array $config = [];
@@ -28,7 +28,7 @@ class IncomingRequest
     {
         $this->request = new HttpRequest();
         $this->response = new HttpResponse();
-        $this->telegram = (new BotClient())->setToken(getenv('TG_BOT_TOKEN'));
+        $this->telegram = (new BotApi())->setToken(getenv('TG_BOT_TOKEN'));
 
         $this->response::close();
     }

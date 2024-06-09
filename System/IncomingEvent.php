@@ -4,7 +4,7 @@ namespace TeleBot\System;
 
 use Exception;
 use TeleBot\System\Http\HttpRequest;
-use TeleBot\System\Telegram\BotClient;
+use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Exceptions\InvalidUpdate;
 use TeleBot\System\Exceptions\InvalidMessage;
@@ -18,8 +18,8 @@ class IncomingEvent
     /** @var Event|null $event incoming message event */
     public ?Event $event = null;
 
-    /** @var BotClient $telegram telegram client */
-    protected BotClient $telegram;
+    /** @var BotApi $telegram telegram client */
+    protected BotApi $telegram;
 
     /**
      * default constructor
@@ -30,7 +30,7 @@ class IncomingEvent
     public function __construct()
     {
         $this->event = new Event(HttpRequest::json());
-        $this->telegram = (new BotClient())
+        $this->telegram = (new BotApi())
             ->setToken(getenv('TG_BOT_TOKEN'))
             ->setChatId($this->event->chat?->id ?? $this->event->from->id);
     }
