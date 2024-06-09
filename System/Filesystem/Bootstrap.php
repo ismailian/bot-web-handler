@@ -3,7 +3,6 @@
 namespace TeleBot\System\Filesystem;
 
 use TeleBot\System\Router;
-use TeleBot\System\Telegram\Parser;
 use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Http\HttpResponse;
 
@@ -83,7 +82,20 @@ class Bootstrap
     private function verifyPayload(): void
     {
         $payload = HttpRequest::json();
-        if (!isset($payload['update_id']) || empty(array_intersect(Parser::$updates, array_keys($payload)))) {
+        $updates = [
+            'message', 'edited_message', 'callback_query',
+            'inline_query', 'chosen_inline_result',
+            'shipping_query', 'pre_checkout_query',
+            'channel_post', 'edited_channel_post',
+            'poll', 'poll_answer',
+            'my_chat_member', 'chat_member', 'chat_join_request',
+            'business_connection', 'business_message',
+            'edited_business_message', 'deleted_business_messages',
+            'message_reaction', 'message_reaction_count',
+            'chat_boost', 'removed_chat_boost'
+        ];
+
+        if (!isset($payload['update_id']) || empty(array_intersect($updates, array_keys($payload)))) {
             HttpResponse::setStatusCode(401)->end();
         }
     }
