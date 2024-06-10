@@ -16,29 +16,156 @@ class IncomingMessage
     /** @var string|null $messageThreadId supergroup thread id */
     public ?string $messageThreadId;
 
-    /** @var From|null $from message sender */
-    public ?From $from = null;
+    /** @var string|null $businessConnectionId id of the business connection */
+    public ?string $businessConnectionId = null;
+
+    /** @var DateTime|null $editDate Date the message was last edited in Unix time */
+    public ?DateTime $editDate = null;
+
+    /** @var bool|null $hasProtectedContent True, if the message can't be forwarded */
+    public ?bool $hasProtectedContent = null;
+
+    /** @var bool|null $isFromOnline True,
+     * if the message was sent by an implicit action, for example,
+     * as an away or a greeting business message, or as a scheduled message
+     */
+    public ?bool $isFromOnline = null;
+
+    /** @var string|null $mediaGroupId The unique identifier of a media message group this message belongs to */
+    public ?string $mediaGroupId = null;
+
+    /** @var string|null $authorSignature Signature of the post author for messages in channels, or the custom title of an anonymous group administrator */
+    public ?string $authorSignature = null;
+
+    /** @var string|null $connectedWebsite The domain name of the website on which the user has logged in */
+    public ?string $connectedWebsite = null;
+
+    /** @var User|null $from message sender */
+    public ?User $from = null;
+
+    /** @var User|null $viaBot Bot through which the message was sent */
+    public ?User $viaBot = null;
 
     /** @var Chat|null $chat conversation details */
     public ?Chat $chat = null;
 
-    /** @var array|null $entities message entities */
+    /** @var Chat|null $senderChat sender of the message */
+    public ?Chat $senderChat = null;
+
+    /** @var Chat|null $senderBusinessBot The bot that actually sent the message on behalf of the business account */
+    public ?Chat $senderBusinessBot = null;
+
+    /** @var User[]|null $newChatMembers New members that were added to the group or supergroup and information about them
+     * (the bot itself may be one of these members)
+     */
+    public ?array $newChatMembers = null;
+
+    /** @var User|null $leftChatMember A member was removed from the group, information about them (this member may be the bot itself) */
+    public ?User $leftChatMember = null;
+
+    /** @var UsersShared|null $sharedUsers users were shared with the bot */
+    public ?UsersShared $sharedUsers = null;
+
+    /** @var ChatShared|null $chatShared a chat was shared with the bot */
+    public ?ChatShared $chatShared = null;
+
+    /** @var WriteAccessAllowed|null $writeAccessAllowed the user allowed the bot to write messages after adding it to the attachment or side menu */
+    public ?WriteAccessAllowed $writeAccessAllowed = null;
+
+    /** @var PassportData|null $passportData Telegram Passport data */
+    public ?PassportData $passportData = null;
+
+    /** @var ProximityAlertTriggered|null $proximityAlertTriggered A user in the chat triggered another user's proximity alert while sharing Live Location. */
+    public ?ProximityAlertTriggered $proximityAlertTriggered = null;
+
+    /** @var ChatBoostAdded|null $boostAdded user boosted the chat */
+    public ?ChatBoostAdded $boostAdded = null;
+
+    /** @var ChatBackground|null $chatBackgroundSet chat background set */
+    public ?ChatBackground $chatBackgroundSet = null;
+
+    /** @var bool|null $isTopicMessage True, if the message is sent to a forum topic */
+    public ?bool $isTopicMessage = null;
+
+    /** @var bool|null $isAutomaticForward True, if the message is a channel post that was automatically forwarded to the connected discussion group */
+    public ?bool $isAutomaticForward = null;
+
+    /** @var bool|null $showCaptionAboveMedia True, if the caption must be shown above the message media */
+    public ?bool $showCaptionAboveMedia = null;
+
+    /** @var bool|null $hasMediaSpoiler True, if the message media is covered by a spoiler animation */
+    public ?bool $hasMediaSpoiler = null;
+
+    /** @var bool|null $deleteChatPhoto the chat photo was deleted */
+    public ?bool $deleteChatPhoto = null;
+
+    /** @var bool|null $groupChatCreated the group has been created */
+    public ?bool $groupChatCreated = null;
+
+    /** @var bool|null $supergroupChatCreated the supergroup has been created */
+    public ?bool $supergroupChatCreated = null;
+
+    /** @var bool|null $channelChatCreated the channel has been created */
+    public ?bool $channelChatCreated = null;
+
+    /** @var string|null $newChatTitle A chat title was changed to this value */
+    public ?string $newChatTitle = null;
+
+    /** @var PhotoSize[]|null $newChatPhoto A chat photo was change to this value */
+    public ?array $newChatPhoto = null;
+
+    /** @var string|null $effectId Unique identifier of the message effect added to the message */
+    public ?string $effectId = null;
+
+    /** @var string|null $migrateToChatId The group has been migrated to a supergroup with the specified identifier */
+    public ?string $migrateToChatId = null;
+
+    /** @var string|null $migrateFromChatId The supergroup has been migrated from a group with the specified identifier */
+    public ?string $migrateFromChatId = null;
+
+    /** @var MessageEntity[]|null $entities message entities */
     public ?array $entities = null;
 
     /** @var string|null $caption caption */
     public ?string $caption = null;
 
-    /** @var Entity[]|null $captionEntities list of caption entities */
+    /** @var MessageEntity[]|null $captionEntities list of caption entities */
     public ?array $captionEntities = null;
+
+    /** @var MessageAutoDeleteTimerChanged|null $messageAutoDeleteTimerChanged auto-delete timer settings changed in the chat */
+    public ?MessageAutoDeleteTimerChanged $messageAutoDeleteTimerChanged = null;
+
+    /** @var MaybeInaccessibleMessage|null $pinnedMessage Specified message was pinned */
+    public ?MaybeInaccessibleMessage $pinnedMessage = null;
+
+    /** @var LinkPreviewOptions|null $linkPreviewOptions Options used for link preview generation for the message,
+     * if it is a text message and link preview options were changed
+     */
+    public ?LinkPreviewOptions $linkPreviewOptions = null;
 
     /** @var InlineKeyboard|null $replyMarkup inline keyboard */
     public ?InlineKeyboard $replyMarkup = null;
 
-    /** @var RepliedTo|null $replyTo original message of context reply */
-    public ?RepliedTo $replyTo = null;
+    /** @var IncomingMessage|null $replyToMessage For replies in the same chat and message thread, the original message */
+    public ?IncomingMessage $replyToMessage = null;
+
+    /** @var IncomingStory|null $replyToStory For replies to a story, the original story */
+    public ?IncomingStory $replyToStory = null;
+
+    /** @var ExternalReplyInfo|null $externalReply Information about the message that is being replied to, which may come from another chat or forum topic */
+    public ?ExternalReplyInfo $externalReply = null;
+
+    /** @var MessageOrigin|null $forwardOrigin Information about the original message for forwarded messages */
+    public ?MessageOrigin $forwardOrigin = null;
 
     /** @var Forward|null $forward message source */
     public ?Forward $forward = null;
+
+    /** @var int|null $senderBoostCount the number of boosts added by the user */
+    public ?int $senderBoostCount = null;
+
+    /** @var TextQuote|null $textQuote For replies that quote part of the original message, the quoted part of the message */
+    public ?TextQuote $quote = null;
 
     /** @var string|null message text */
     public ?string $text = null;
@@ -94,12 +221,57 @@ class IncomingMessage
     /** @var IncomingSuccessfulPayment|null $successfulPayment */
     public ?IncomingSuccessfulPayment $successfulPayment = null;
 
+    /** @var ForumTopicCreated|null $forumTopicCreated forum topic created */
+    public ?ForumTopicCreated $forumTopicCreated = null;
+
+    /** @var ForumTopicEdited|null $forumTopicEdited forum topic edited */
+    public ?ForumTopicEdited $forumTopicEdited = null;
+
+    /** @var ForumTopicClosed|null $forumTopicClosed forum topic closed */
+    public ?ForumTopicClosed $forumTopicClosed = null;
+
+    /** @var ForumTopicReopened|null $forumTopicReopened forum topic reopened */
+    public ?ForumTopicReopened $forumTopicReopened = null;
+
+    /** @var GeneralForumTopicHidden|null $generalForumTopicHidden the 'General' forum topic hidden */
+    public ?GeneralForumTopicHidden $generalForumTopicHidden = null;
+
+    /** @var GeneralForumTopicUnhidden|null $forumTopicUnhidden the 'General' forum topic unhidden */
+    public ?GeneralForumTopicUnhidden $forumTopicUnhidden = null;
+
+    /** @var GiveawayCreated|null $giveawayCreated a scheduled giveaway was created */
+    public ?GiveawayCreated $giveawayCreated = null;
+
+    /** @var Giveaway|null $giveaway The message is a scheduled giveaway message */
+    public ?Giveaway $giveaway = null;
+
+    /** @var GiveawayWinners|null $giveawayWinners A giveaway with public winners was completed */
+    public ?GiveawayWinners $giveawayWinners = null;
+
+    /** @var GiveawayCompleted|null $giveawayCompleted a giveaway without public winners was completed */
+    public ?GiveawayCompleted $giveawayCompleted = null;
+
+    /** @var VideoChatScheduled|null $videoChatScheduled video chat scheduled */
+    public ?VideoChatScheduled $videoChatScheduled = null;
+
+    /** @var VideoChatStarted|null $videoChatStarted video chat started */
+    public ?VideoChatStarted $videoChatStarted = null;
+
+    /** @var VideoChatEnded|null $videoChatEnded video chat ended */
+    public ?VideoChatEnded $videoChatEnded = null;
+
+    /** @var VideoChatParticipantsInvited|null $videoChatParticipantsInvited new participants invited to a video chat */
+    public ?VideoChatParticipantsInvited $videoChatParticipantsInvited = null;
+
+    /** @var WebAppData|null $webAppData data sent by a Web App */
+    public ?WebAppData $webAppData = null;
+
     /**
      * default constructor
      *
      * @param array $message
      */
-    public function __construct(protected array $message)
+    public function __construct(protected readonly array $message)
     {
         try {
             $this->id = (int)$this->message['message_id'];
@@ -109,7 +281,7 @@ class IncomingMessage
             $this->text = $this->message['text'] ?? null;
             if (array_key_exists('text', $this->message)) {
                 $this->entities = array_map(
-                    fn($e) => new Entity($this->text, $e),
+                    fn($e) => new MessageEntity($this->text, $e),
                     ($this->message['entities'] ?? [])
                 );
             }
@@ -117,7 +289,7 @@ class IncomingMessage
             $this->caption = $this->message['caption'] ?? null;
             if (array_key_exists('caption', $this->message)) {
                 $this->captionEntities = array_map(
-                    fn($e) => new Entity($this->caption, $e),
+                    fn($e) => new MessageEntity($this->caption, $e),
                     ($this->message['caption_entities'] ?? [])
                 );
             }
@@ -129,12 +301,12 @@ class IncomingMessage
 
             /** <From> */
             if (array_key_exists('from', $this->message)) {
-                $this->from = new From($this->message['from']);
+                $this->from = new User($this->message['from']);
             }
 
             /** <ReplyToMessage> */
             if (array_key_exists('reply_to_message', $this->message)) {
-                $this->replyTo = new RepliedTo($this->message['reply_to_message']);
+                $this->replyToMessage = new IncomingMessage($this->message['reply_to_message']);
             }
 
             /** <FrowardFrom|ForwardFromChat> */
