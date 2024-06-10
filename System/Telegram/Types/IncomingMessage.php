@@ -3,6 +3,7 @@
 namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
+use TeleBot\System\Telegram\Events\Messages\Photo;
 
 class IncomingMessage
 {
@@ -251,20 +252,20 @@ class IncomingMessage
     /** @var GiveawayCompleted|null $giveawayCompleted a giveaway without public winners was completed */
     public ?GiveawayCompleted $giveawayCompleted = null;
 
-    /** @var VideoChatScheduled|null $videoChatScheduled video chat scheduled */
-    public ?VideoChatScheduled $videoChatScheduled = null;
+    /** @var IncomingVideoChatScheduled|null $videoChatScheduled video chat scheduled */
+    public ?IncomingVideoChatScheduled $videoChatScheduled = null;
 
-    /** @var VideoChatStarted|null $videoChatStarted video chat started */
-    public ?VideoChatStarted $videoChatStarted = null;
+    /** @var IncomingVideoChatStarted|null $videoChatStarted video chat started */
+    public ?IncomingVideoChatStarted $videoChatStarted = null;
 
-    /** @var VideoChatEnded|null $videoChatEnded video chat ended */
-    public ?VideoChatEnded $videoChatEnded = null;
+    /** @var IncomingVideoChatEnded|null $videoChatEnded video chat ended */
+    public ?IncomingVideoChatEnded $videoChatEnded = null;
 
     /** @var VideoChatParticipantsInvited|null $videoChatParticipantsInvited new participants invited to a video chat */
     public ?VideoChatParticipantsInvited $videoChatParticipantsInvited = null;
 
-    /** @var WebAppData|null $webAppData data sent by a Web App */
-    public ?WebAppData $webAppData = null;
+    /** @var IncomingWebAppData|null $webAppData data sent by a Web App */
+    public ?IncomingWebAppData $webAppData = null;
 
     /**
      * default constructor
@@ -277,8 +278,31 @@ class IncomingMessage
             $this->id = (int)$this->message['message_id'];
             $this->date = new DateTime(date('Y-m-d H:i:s T', $this->message['date']));
             $this->messageThreadId = $this->message['message_thread_id'] ?? null;
+            $this->businessConnectionId = $this->message['business_connection_id'] ?? null;
+            $this->hasProtectedContent = $this->message['has_protected_content'] ?? null;
+            $this->isFromOnline = $this->message['is_from_online'] ?? null;
+            $this->authorSignature = $this->message['author_signature'] ?? null;
+            $this->connectedWebsite = $this->message['connected_website'] ?? null;
+            $this->mediaGroupId = $this->message['media_group_id'] ?? null;
+            $this->isTopicMessage = $this->message['is_topic_message'] ?? null;
+            $this->isAutomaticForward = $this->message['is_automatic_forward'] ?? null;
+            $this->showCaptionAboveMedia = $this->message['show_caption_above_media'] ?? null;
+            $this->hasMediaSpoiler = $this->message['has_media_spoiler'] ?? null;
+            $this->deleteChatPhoto = $this->message['delete_chat_photo'] ?? null;
+            $this->groupChatCreated = $this->message['group_chat_created'] ?? null;
+            $this->supergroupChatCreated = $this->message['supergroup_chat_created'] ?? null;
+            $this->channelChatCreated = $this->message['channel_chat_created'] ?? null;
+            $this->newChatTitle = $this->message['new_chat_title'] ?? null;
+            $this->effectId = $this->message['effect_id'] ?? null;
+            $this->migrateToChatId = $this->message['migrate_to_chat_id'] ?? null;
+            $this->migrateFromChatId = $this->message['migrate_from_chat_id'] ?? null;
+            $this->senderBoostCount = $this->message['sender_boost_count'] ?? null;
 
             $this->text = $this->message['text'] ?? null;
+            if (array_key_exists('edit_date', $this->message)) {
+                $this->editDate = new DateTime(date('Y-m-d H:i:s T', $this->message['edit_date']));
+            }
+
             if (array_key_exists('text', $this->message)) {
                 $this->entities = array_map(
                     fn($e) => new MessageEntity($this->text, $e),
@@ -302,6 +326,42 @@ class IncomingMessage
             /** <From> */
             if (array_key_exists('from', $this->message)) {
                 $this->from = new User($this->message['from']);
+            }
+
+            /** <NewChatPhoto> */
+            if (array_key_exists('new_chat_photo', $this->message)) {
+                $this->newChatPhoto = array_map(
+                    fn($photo) => new PhotoSize($photo),
+                    $this->message['new_chat_photo']
+                );
+            }
+
+            /** <ViaBot> */
+            if (array_key_exists('via_bot', $this->message)) {
+                $this->viaBot = new User($this->message['via_bot']);
+            }
+
+            /** <SenderChat> */
+            if (array_key_exists('sender_chat', $this->message)) {
+                $this->senderChat = new Chat($this->message['sender_chat']);
+            }
+
+            /** <SenderBusinessBot> */
+            if (array_key_exists('sender_business_bot', $this->message)) {
+                $this->senderBusinessBot = new Chat($this->message['sender_business_bot']);
+            }
+
+            /** <NewChatMembers> */
+            if (array_key_exists('new_chat_members', $this->message)) {
+                $this->newChatMembers = array_map(
+                    fn($user) => new User($user),
+                    $this->message['new_chat_members']
+                );
+            }
+
+            /** <LeftChatMember> */
+            if (array_key_exists('left_chat_member', $this->message)) {
+                $this->leftChatMember = new User($this->message['left_chat_member']);
             }
 
             /** <ReplyToMessage> */
@@ -397,6 +457,21 @@ class IncomingMessage
             /** <SuccessfulPayment> */
             if (array_key_exists('successful_payment', $this->message)) {
                 $this->successfulPayment = new IncomingSuccessfulPayment($this->message['successful_payment']);
+            }
+
+            /** <VideoChatScheduled> */
+            if (array_key_exists('video_chat_scheduled', $this->message)) {
+                $this->videoChatScheduled = new IncomingVideoChatScheduled($this->message['video_chat_scheduled']);
+            }
+
+            /** <VideoChatStarted> */
+            if (array_key_exists('video_chat_started', $this->message)) {
+                $this->videoChatStarted = new IncomingVideoChatStarted($this->message['video_chat_started']);
+            }
+
+            /** <VideoChatEnded> */
+            if (array_key_exists('video_chat_ended', $this->message)) {
+                $this->videoChatEnded = new IncomingVideoChatEnded($this->message['video_chat_ended']);
             }
 
         } catch (\Exception $ex) {}

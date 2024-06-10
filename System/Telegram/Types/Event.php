@@ -95,7 +95,6 @@ class Event
     public function __construct(protected readonly array $event)
     {
         $this->id = $this->event['update_id'];
-        unset($this->event['update_id']);
 
         /**
          * <Message>
