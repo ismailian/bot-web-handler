@@ -34,7 +34,7 @@ class IncomingLocation
      *
      * @param array $incomingLocation
      */
-    public function __construct(protected array $incomingLocation)
+    public function __construct(protected readonly array $incomingLocation)
     {
         $this->latitude = $this->incomingLocation['latitude'];
         $this->longitude = $this->incomingLocation['longitude'];

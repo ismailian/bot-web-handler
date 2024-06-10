@@ -41,7 +41,7 @@ class ChatInviteLink
      * @param array $chatInviteLink
      * @throws Exception
      */
-    public function __construct(protected array $chatInviteLink)
+    public function __construct(protected readonly array $chatInviteLink)
     {
         $this->inviteLink = $this->chatInviteLink['invite_link'];
         $this->creator = new User($this->chatInviteLink['creator']);

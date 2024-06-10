@@ -16,7 +16,7 @@ class PhotoSize extends File
      *
      * @param array $photoSize
      */
-    public function __construct(protected array $photoSize)
+    public function __construct(protected readonly array $photoSize)
     {
         $this->fileId = $this->photoSize['file_id'];
         $this->fileUniqueId = $this->photoSize['file_unique_id'];

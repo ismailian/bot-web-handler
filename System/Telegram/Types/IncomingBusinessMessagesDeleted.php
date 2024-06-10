@@ -19,7 +19,7 @@ class IncomingBusinessMessagesDeleted
      *
      * @param array $incomingBusinessMessageDeleted
      */
-    public function __construct(protected array $incomingBusinessMessageDeleted)
+    public function __construct(protected readonly array $incomingBusinessMessageDeleted)
     {
         $this->chat = new Chat($incomingBusinessMessageDeleted['chat']);
         $this->messageIds = $incomingBusinessMessageDeleted['message_ids'];

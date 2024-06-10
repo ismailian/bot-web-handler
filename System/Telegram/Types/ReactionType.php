@@ -19,7 +19,7 @@ class ReactionType
      *
      * @param array $reaction
      */
-    public function __construct(protected array $reaction)
+    public function __construct(protected readonly array $reaction)
     {
         $this->type = $this->reaction['type'];
         $this->emoji = $this->reaction['emoji'] ?? null;

@@ -46,7 +46,7 @@ class User
      *
      * @param array $user
      */
-    public function __construct(protected array $user)
+    public function __construct(protected readonly array $user)
     {
         $this->id = $this->user['id'];
         $this->firstName = $this->user['first_name'];

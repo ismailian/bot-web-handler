@@ -16,7 +16,7 @@ class ReactionCount
      *
      * @param array $reactionCount
      */
-    public function __construct(protected array $reactionCount)
+    public function __construct(protected readonly array $reactionCount)
     {
         $this->totalCount = $this->reactionCount['total_count'];
         $this->reactionType = new ReactionType($this->reactionCount['reaction_type']);

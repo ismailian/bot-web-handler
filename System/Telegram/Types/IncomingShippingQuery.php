@@ -22,7 +22,7 @@ class IncomingShippingQuery
      *
      * @param array $incomingShippingQuery
      */
-    public function __construct(protected array $incomingShippingQuery)
+    public function __construct(protected readonly array $incomingShippingQuery)
     {
         $this->id = $incomingShippingQuery['id'];
         $this->from = new User($incomingShippingQuery['from']);

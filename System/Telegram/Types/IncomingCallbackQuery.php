@@ -11,8 +11,8 @@ class IncomingCallbackQuery
     /** @var string $chatInstance chat instance */
     public string $chatInstance;
 
-    /** @var From $from sender */
-    public From $from;
+    /** @var User $from sender */
+    public User $from;
 
     /** @var IncomingMessage $message callback message */
     public IncomingMessage $message;
@@ -25,12 +25,12 @@ class IncomingCallbackQuery
      *
      * @param array $callback
      */
-    public function __construct(protected array $callback)
+    public function __construct(protected readonly array $callback)
     {
         $this->id = $this->callback['id'];
         $this->chatInstance = $this->callback['chat_instance'];
 
-        $this->from = new From($this->callback['from']);
+        $this->from = new User($this->callback['from']);
         $this->message = new IncomingMessage($this->callback['message']);
         $this->data = $this->callback['data'];
 

@@ -29,7 +29,7 @@ class Forward
      * @param array $message
      * @throws Exception
      */
-    public function __construct(protected array $message)
+    public function __construct(protected readonly array $message)
     {
         $this->date = new DateTime(date('Y-m-d H:i:s T', $this->message['forward_date']));
         $this->type = $this->message['forward_origin']['type'];

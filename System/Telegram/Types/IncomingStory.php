@@ -16,7 +16,7 @@ class IncomingStory
      *
      * @param array $incomingStory
      */
-    public function __construct(protected array $incomingStory)
+    public function __construct(protected readonly array $incomingStory)
     {
         $this->id = $this->incomingStory['id'];
         $this->chat = $this->incomingStory['chat'];

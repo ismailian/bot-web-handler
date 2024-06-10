@@ -35,7 +35,7 @@ class IncomingVenue
      *
      * @param array $incomingVenue
      */
-    public function __construct(protected array $incomingVenue)
+    public function __construct(protected readonly array $incomingVenue)
     {
         $this->location = new IncomingLocation($this->incomingVenue['location']);
         $this->title = $this->incomingVenue['title'];

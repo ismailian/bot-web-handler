@@ -26,7 +26,7 @@ class IncomingMessageReactionCountUpdated
      * @param array $incomingMessageReactionCountUpdated
      * @throws Exception
      */
-    public function __construct(protected array $incomingMessageReactionCountUpdated)
+    public function __construct(protected readonly array $incomingMessageReactionCountUpdated)
     {
         $this->messageId = $this->incomingMessageReactionCountUpdated['message_id'];
         $this->chat = new Chat($this->incomingMessageReactionCountUpdated['chat']);

@@ -31,7 +31,7 @@ class IncomingSuccessfulPayment
      *
      * @param array $successfulPayment
      */
-    public function __construct(protected array $successfulPayment)
+    public function __construct(protected readonly array $successfulPayment)
     {
         $this->currency = $this->successfulPayment['currency'];
         $this->totalAmount = $this->successfulPayment['total_amount'];

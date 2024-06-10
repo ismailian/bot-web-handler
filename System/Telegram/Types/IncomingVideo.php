@@ -28,7 +28,7 @@ class IncomingVideo extends File
      *
      * @param array $incomingVideo
      */
-    public function __construct(protected array $incomingVideo)
+    public function __construct(protected readonly array $incomingVideo)
     {
         $this->fileId = $this->incomingVideo['file_id'];
         $this->fileUniqueId = $this->incomingVideo['file_unique_id'];

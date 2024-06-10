@@ -28,7 +28,7 @@ class Chat
      *
      * @param array $chat
      */
-    public function __construct(protected array $chat)
+    public function __construct(protected readonly array $chat)
     {
         $this->id = $this->chat['id'];
         $this->type = $this->chat['type'];

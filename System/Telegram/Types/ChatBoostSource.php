@@ -22,7 +22,7 @@ class ChatBoostSource
      *
      * @param array $chatBoostSource
      */
-    public function __construct(protected array $chatBoostSource)
+    public function __construct(protected readonly array $chatBoostSource)
     {
         $this->source = $this->chatBoostSource['source'];
         $this->giveawayMessageId = $this->chatBoostSource['giveaway_message_id'] ?? null;

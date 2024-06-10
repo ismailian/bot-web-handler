@@ -8,8 +8,8 @@ class IncomingChosenInlineResult
     /** @var string $resultId */
     public string $resultId;
 
-    /** @var From $from user who chose query */
-    public From $from;
+    /** @var User $from user who chose a query */
+    public User $from;
 
     /** @var IncomingLocation|null $location */
     public ?IncomingLocation $location = null;
@@ -25,9 +25,9 @@ class IncomingChosenInlineResult
      *
      * @param array $incomingChosenInlineResult
      */
-    public function __construct(protected array $incomingChosenInlineResult)
+    public function __construct(protected readonly array $incomingChosenInlineResult)
     {
-        $this->from = new From($this->incomingChosenInlineResult['from']);
+        $this->from = new User($this->incomingChosenInlineResult['from']);
         $this->resultId = $this->incomingChosenInlineResult['result_id'];
         $this->query = $this->incomingChosenInlineResult['query'];
 

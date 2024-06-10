@@ -32,7 +32,7 @@ class IncomingChatJoinRequest
      * @param array $incomingChatJoinRequest
      * @throws Exception
      */
-    public function __construct(protected array $incomingChatJoinRequest)
+    public function __construct(protected readonly array $incomingChatJoinRequest)
     {
         $this->chat = new Chat($this->incomingChatJoinRequest['chat']);
         $this->from = new User($this->incomingChatJoinRequest['from']);

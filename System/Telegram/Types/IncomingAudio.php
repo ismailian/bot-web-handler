@@ -28,7 +28,7 @@ class IncomingAudio extends File
      *
      * @param array $incomingAudio
      */
-    public function __construct(protected array $incomingAudio)
+    public function __construct(protected readonly array $incomingAudio)
     {
         $this->fileId = $this->incomingAudio['file_id'];
         $this->fileUniqueId = $this->incomingAudio['file_unique_id'];

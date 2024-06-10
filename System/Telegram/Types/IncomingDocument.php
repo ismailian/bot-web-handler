@@ -19,7 +19,7 @@ class IncomingDocument extends File
      *
      * @param array $incomingDocument
      */
-    public function __construct(protected array $incomingDocument)
+    public function __construct(protected readonly array $incomingDocument)
     {
         $this->fileId = $this->incomingDocument['file_id'];
         $this->fileUniqueId = $this->incomingDocument['file_unique_id'];

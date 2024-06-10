@@ -32,7 +32,7 @@ class IncomingBusinessConnection
      * @param array $incomingBusinessConnection
      * @throws Exception
      */
-    public function __construct(protected array $incomingBusinessConnection)
+    public function __construct(protected readonly array $incomingBusinessConnection)
     {
         $this->id = $incomingBusinessConnection['id'];
         $this->user = new User($incomingBusinessConnection['user']);

@@ -23,8 +23,8 @@ class Origin
     /** @var Chat|null $chat chat */
     public ?Chat $chat = null;
 
-    /** @var From|null $from message sender */
-    public ?From $from = null;
+    /** @var User|null $from message sender */
+    public ?User $from = null;
 
     /**
      * default constructor
@@ -32,7 +32,7 @@ class Origin
      * @param array $origin
      * @throws Exception
      */
-    public function __construct(protected array $origin)
+    public function __construct(protected readonly array $origin)
     {
         $this->id = $this->origin['message_id'] ?? null;
         $this->date = new DateTime(date('Y-m-d H:i:s T', $this->origin['date']));
@@ -41,7 +41,7 @@ class Origin
         $this->signature = $this->origin['author_signature'] ?? null;
 
         if ($this->type == 'user') {
-            $this->from = new From($this->origin['sender_user']);
+            $this->from = new User($this->origin['sender_user']);
         } else {
             $this->chat = new Chat($this->origin['chat']);
         }

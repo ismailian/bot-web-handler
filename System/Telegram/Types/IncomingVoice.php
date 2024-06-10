@@ -16,7 +16,7 @@ class IncomingVoice extends File
      *
      * @param array $incomingVoice
      */
-    public function __construct(protected array $incomingVoice)
+    public function __construct(protected readonly array $incomingVoice)
     {
         $this->fileId = $this->incomingVoice['file_id'];
         $this->fileUniqueId = $this->incomingVoice['file_unique_id'];

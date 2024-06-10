@@ -19,7 +19,7 @@ class IncomingChatBoostUpdated
      * @param array $incomingChatBoostUpdated
      * @throws Exception
      */
-    public function __construct(protected array $incomingChatBoostUpdated)
+    public function __construct(protected readonly array $incomingChatBoostUpdated)
     {
         $this->chat = new Chat($this->incomingChatBoostUpdated['chat']);
         $this->boost = new ChatBoost($this->incomingChatBoostUpdated['boost']);

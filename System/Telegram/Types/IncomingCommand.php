@@ -2,7 +2,7 @@
 
 namespace TeleBot\System\Telegram\Types;
 
-class IncomingCommand extends Entity
+class IncomingCommand extends MessageEntity
 {
 
     /**

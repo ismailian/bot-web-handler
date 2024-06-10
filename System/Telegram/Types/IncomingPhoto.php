@@ -13,7 +13,7 @@ class IncomingPhoto
      *
      * @param array $incomingPhoto
      */
-    public function __construct(protected array $incomingPhoto)
+    public function __construct(protected readonly array $incomingPhoto)
     {
         $this->photos = array_map(
             fn($photoSize) => new PhotoSize($photoSize),

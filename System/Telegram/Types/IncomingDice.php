@@ -16,7 +16,7 @@ class IncomingDice
      *
      * @param array $incomingDice
      */
-    public function __construct(protected array $incomingDice)
+    public function __construct(protected readonly array $incomingDice)
     {
         $this->emoji = $this->incomingDice['emoji'];
         $this->value = $this->incomingDice['value'];

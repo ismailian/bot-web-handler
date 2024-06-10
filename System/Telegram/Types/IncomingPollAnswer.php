@@ -22,7 +22,7 @@ class IncomingPollAnswer
      *
      * @param array $incomingPollAnswer
      */
-    public function __construct(protected array $incomingPollAnswer)
+    public function __construct(protected readonly array $incomingPollAnswer)
     {
         $this->pollId = $incomingPollAnswer['poll_id'];
         $this->optionIds = $incomingPollAnswer['option_ids'];

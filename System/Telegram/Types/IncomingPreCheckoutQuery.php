@@ -17,18 +17,18 @@ class IncomingPreCheckoutQuery
     /** @var string|array $invoicePayload invoice payload */
     public string|array $invoicePayload;
 
-    /** @var From $from From object */
-    public From $from;
+    /** @var User $from From object */
+    public User $from;
 
     /**
      * default constructor
      *
      * @param array $preCheckoutQuery
      */
-    public function __construct(protected array $preCheckoutQuery)
+    public function __construct(protected readonly array $preCheckoutQuery)
     {
         $this->id = $preCheckoutQuery['id'];
-        $this->from = new From($preCheckoutQuery['from']);
+        $this->from = new User($preCheckoutQuery['from']);
         $this->currency = $preCheckoutQuery['currency'];
         $this->amount = $preCheckoutQuery['total_amount'];
         $this->invoicePayload = $preCheckoutQuery['invoice_payload'];

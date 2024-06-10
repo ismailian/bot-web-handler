@@ -35,7 +35,7 @@ class IncomingMessageReactionUpdated
      * @param array $incomingMessageReactionUpdated
      * @throws Exception
      */
-    public function __construct(protected array $incomingMessageReactionUpdated)
+    public function __construct(protected readonly array $incomingMessageReactionUpdated)
     {
         $this->messageId = $this->incomingMessageReactionUpdated['message_id'];
         $this->chat = new Chat($this->incomingMessageReactionUpdated['chat']);

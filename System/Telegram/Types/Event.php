@@ -17,8 +17,8 @@ class Event
     /** @var Chat|null $chat event Chat */
     public ?Chat $chat = null;
 
-    /** @var From|null $from event From */
-    public ?From $from = null;
+    /** @var User|null $from event From */
+    public ?User $from = null;
 
     /** @var IncomingMessage|null $message message update */
     public ?IncomingMessage $message = null;
@@ -92,7 +92,7 @@ class Event
      * @param array $event
      * @throws Exception
      */
-    public function __construct(protected array $event)
+    public function __construct(protected readonly array $event)
     {
         $this->id = $this->event['update_id'];
         unset($this->event['update_id']);

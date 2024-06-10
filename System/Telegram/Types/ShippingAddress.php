@@ -28,7 +28,7 @@ class ShippingAddress
      *
      * @param array $shippingAddress
      */
-    public function __construct(protected array $shippingAddress)
+    public function __construct(protected readonly array $shippingAddress)
     {
         $this->countryCode = $this->shippingAddress['country_code'];
         $this->state = $this->shippingAddress['state'];

@@ -26,7 +26,7 @@ class ChatBoost
      * @param array $chatBoost
      * @throws Exception
      */
-    public function __construct(protected array $chatBoost)
+    public function __construct(protected readonly array $chatBoost)
     {
         $this->boostId = $chatBoost['boost_id'];
         $this->addDate = new DateTime(date('Y-m-d H:i:s', $chatBoost['add_date']));

@@ -10,8 +10,8 @@ class IncomingInlineQuery
     /** @var string $id inline query id */
     public string $id;
 
-    /** @var From $from inline query sender */
-    public From $from;
+    /** @var User $from inline query sender */
+    public User $from;
 
     /** @var InlineChatType|string $chatType */
     public InlineChatType|string $chatType;
@@ -22,7 +22,7 @@ class IncomingInlineQuery
     /** @var string $offset inline query offset */
     public string $offset;
 
-    /** @var bool $isEmpty is query empty */
+    /** @var bool $isEmpty is query empty? */
     public bool $isEmpty;
 
     /**
@@ -30,13 +30,13 @@ class IncomingInlineQuery
      *
      * @param array $inlineQuery
      */
-    public function __construct(protected array $inlineQuery)
+    public function __construct(protected readonly array $inlineQuery)
     {
         $this->id = $this->inlineQuery['id'];
         $this->isEmpty = empty($this->query);
         $this->query = $this->inlineQuery['query'];
         $this->offset = $this->inlineQuery['offset'];
-        $this->from = new From($this->inlineQuery['from']);
+        $this->from = new User($this->inlineQuery['from']);
         $this->chatType = match ($this->inlineQuery['chat_type']) {
             'sender' => InlineChatType::SENDER,
             'private' => InlineChatType::PRIVATE,

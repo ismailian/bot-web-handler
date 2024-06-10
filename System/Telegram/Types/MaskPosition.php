@@ -22,7 +22,7 @@ class MaskPosition
      *
      * @param array $maskPosition
      */
-    public function __construct(protected array $maskPosition)
+    public function __construct(protected readonly array $maskPosition)
     {
         $this->point = $this->maskPosition['point'];
         $this->point = $this->maskPosition['x_shift'];

@@ -67,7 +67,7 @@ class ChatMemberStatus
      * @param array $newChatMember
      * @throws Exception
      */
-    public function __construct(protected array $oldChatMember, protected array $newChatMember)
+    public function __construct(protected readonly array $oldChatMember, protected array $newChatMember)
     {
         $this->customTitle = $this->newChatMember['custom_title'] ?? null;
         $this->canBeEdited = $this->newChatMember['can_be_edited'] ?? false;

@@ -46,7 +46,7 @@ class IncomingSticker extends File
      *
      * @param array $incomingAnimation
      */
-    public function __construct(protected array $incomingAnimation)
+    public function __construct(protected readonly array $incomingAnimation)
     {
         $this->fileId = $this->incomingAnimation['file_id'];
         $this->fileUniqueId = $this->incomingAnimation['file_unique_id'];

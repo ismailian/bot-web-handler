@@ -25,7 +25,7 @@ class IncomingInvoice
      *
      * @param array $incomingInvoice
      */
-    public function __construct(protected array $incomingInvoice)
+    public function __construct(protected readonly array $incomingInvoice)
     {
         $this->title = $incomingInvoice['title'];
         $this->description = $incomingInvoice['description'];

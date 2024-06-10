@@ -19,7 +19,7 @@ class IncomingVideoNote extends File
      *
      * @param array $incomingVideoNote
      */
-    public function __construct(protected array $incomingVideoNote)
+    public function __construct(protected readonly array $incomingVideoNote)
     {
         $this->fileId = $this->incomingVideoNote['file_id'];
         $this->fileUniqueId = $this->incomingVideoNote['file_unique_id'];

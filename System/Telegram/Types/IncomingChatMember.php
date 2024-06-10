@@ -14,8 +14,8 @@ class IncomingChatMember
     /** @var Chat $chat Chat object */
     public Chat $chat;
 
-    /** @var From $from From object */
-    public From $from;
+    /** @var User $from From object */
+    public User $from;
 
     /** @var ChatMemberStatus $memberStatus chat member status object */
     public ChatMemberStatus $memberStatus;
@@ -26,11 +26,11 @@ class IncomingChatMember
      * @param array $myChatMember
      * @throws Exception
      */
-    public function __construct(protected array $myChatMember)
+    public function __construct(protected readonly array $myChatMember)
     {
         $this->date = new DateTime(date('Y-m-d H:i:s T', $this->myChatMember['date']));
         $this->chat = new Chat($this->myChatMember['chat']);
-        $this->from = new From($this->myChatMember['from']);
+        $this->from = new User($this->myChatMember['from']);
 
         $this->memberStatus = new ChatMemberStatus(
             $this->myChatMember['old_chat_member'],

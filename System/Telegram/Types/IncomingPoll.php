@@ -14,7 +14,7 @@ class IncomingPoll
     /** @var string $question poll question */
     public string $question;
 
-    /** @var Entity[]|null $questionEntities question entities */
+    /** @var MessageEntity[]|null $questionEntities question entities */
     public ?array $questionEntities = null;
 
     /** @var PollOption[]|null $options list of poll options */
@@ -41,7 +41,7 @@ class IncomingPoll
     /** @var string|null $explanation text to show when user chooses incorrect answer */
     public ?string $explanation = null;
 
-    /** @var Entity[]|null $explanationEntities explanation entities */
+    /** @var MessageEntity[]|null $explanationEntities explanation entities */
     public ?array $explanationEntities = null;
 
     /** @var int|null $openPeriod amount of time poll will be opened */
@@ -56,14 +56,14 @@ class IncomingPoll
      * @param array $incomingPoll
      * @throws Exception
      */
-    public function __construct(protected array $incomingPoll)
+    public function __construct(protected readonly array $incomingPoll)
     {
         $this->id = $this->incomingPoll['id'];
         $this->question = $this->incomingPoll['question'];
 
         if (array_key_exists('question_entities', $this->incomingPoll)) {
             $this->questionEntities = array_map(
-                fn($e) => new Entity($this->question, $e),
+                fn($e) => new MessageEntity($this->question, $e),
                 $this->incomingPoll['question_entities']
             );
         }
@@ -80,7 +80,7 @@ class IncomingPoll
         if (array_key_exists('explanation', $this->incomingPoll)) {
             $this->explanation = $this->incomingPoll['explanation'];
             $this->explanationEntities = array_map(
-                fn($e) => new Entity($this->explanation, $e),
+                fn($e) => new MessageEntity($this->explanation, $e),
                 $incomingPoll['explanation_entities']
             );
         }

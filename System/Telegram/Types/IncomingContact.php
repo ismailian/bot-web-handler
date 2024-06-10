@@ -25,7 +25,7 @@ class IncomingContact
      *
      * @param array $incomingContact
      */
-    public function __construct(protected array $incomingContact)
+    public function __construct(protected readonly array $incomingContact)
     {
         $this->phoneNumber = $this->incomingContact['phone_number'];
         $this->firstName = $this->incomingContact['first_name'];

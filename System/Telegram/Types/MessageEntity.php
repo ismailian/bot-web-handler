@@ -2,7 +2,7 @@
 
 namespace TeleBot\System\Telegram\Types;
 
-class Entity
+class MessageEntity
 {
 
     /** @var int $offset entity offset */
