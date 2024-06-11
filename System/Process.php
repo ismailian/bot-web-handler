@@ -13,8 +13,7 @@ class Process
      */
     public static function run(...$args): string|bool
     {
-        $command = join(' ', $args);
-        return system($command);
+        return system(join(' ', $args));
     }
 
 }
