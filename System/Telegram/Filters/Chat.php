@@ -9,10 +9,10 @@ use TeleBot\System\Interfaces\IEvent;
 class Chat implements IEvent
 {
 
-    const PRIVATE = 'private';
-    const CHANNEL = 'channel';
-    const GROUP = 'group';
-    const SUPERGROUP = 'supergroup';
+    const string PRIVATE = 'private';
+    const string CHANNEL = 'channel';
+    const string GROUP = 'group';
+    const string SUPERGROUP = 'supergroup';
 
     /**
      * default constructor

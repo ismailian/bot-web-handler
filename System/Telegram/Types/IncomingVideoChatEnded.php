@@ -5,7 +5,7 @@ namespace TeleBot\System\Telegram\Types;
 class IncomingVideoChatEnded
 {
 
-    /** @var int|mixed|null $duration Video chat duration in seconds */
+    /** @var int|null $duration Video chat duration in seconds */
     public ?int $duration;
 
     /**
