@@ -5,15 +5,15 @@ namespace TeleBot\System\Telegram\Types;
 class InlineKeyboard
 {
 
-    const URL = 'url';
-    const PAY = 'pay';
-    const WEB_APP = 'web_app';
-    const LOGIN_URL = 'login_url';
-    const CALLBACK_GAME = 'callback_game';
-    const CALLBACK_DATA = 'callback_data';
-    const SWITCH_INLINE_QUERY = 'switch_inline_query';
-    const SWITCH_INLINE_QUERY_CURRENT_CHAT = 'switch_inline_query_current_chat';
-    const SWITCH_INLINE_QUERY_CHOSEN_CHAT = 'switch_inline_query_chosen_chat';
+    const string URL = 'url';
+    const string PAY = 'pay';
+    const string WEB_APP = 'web_app';
+    const string LOGIN_URL = 'login_url';
+    const string CALLBACK_GAME = 'callback_game';
+    const string CALLBACK_DATA = 'callback_data';
+    const string SWITCH_INLINE_QUERY = 'switch_inline_query';
+    const string SWITCH_INLINE_QUERY_CURRENT_CHAT = 'switch_inline_query_current_chat';
+    const string SWITCH_INLINE_QUERY_CHOSEN_CHAT = 'switch_inline_query_chosen_chat';
 
     /** @var array collection of buttons */
     protected array $buttons = [];
@@ -21,6 +21,12 @@ class InlineKeyboard
     /** @var int $max max number of buttons in a row */
     protected int $max = 3;
 
+    /**
+     * set max number of buttons per row
+     *
+     * @param int $max
+     * @return $this
+     */
     public function setRowMax(int $max = 3): InlineKeyboard
     {
         $this->max = $max;
@@ -69,7 +75,7 @@ class InlineKeyboard
             $rows[] = [$button];
         }
 
-        return $rows;
+        return ['inline_keyboard' => $rows];
     }
 
 }
