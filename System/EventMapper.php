@@ -24,15 +24,6 @@ use TeleBot\System\Telegram\Filters\Awaits;
 class EventMapper
 {
 
-    /** @var array $config */
-    protected array $config = [];
-
-    /** @var array $event */
-    protected array $event;
-
-    /** @var object $telegram */
-    protected object $telegram;
-
     /** @var Handler $handler */
     protected Handler $handler;
 
@@ -44,9 +35,7 @@ class EventMapper
     public function init(): bool
     {
         (new Bootstrap())->setup();
-        $this->config = Bootstrap::$config;
-        $this->event = HttpRequest::json();
-        $this->handler = (new Handler())->setConfig($this->config);
+        $this->handler = (new Handler())->setConfig(Bootstrap::$config);
 
         $handlers = Collector::getNamespacedFiles('App/Handlers');
         foreach ($handlers as $handler) {
@@ -80,7 +69,7 @@ class EventMapper
         ];
 
         foreach ($filters as $filter) {
-            if (!($filter->newInstance()->apply($this->event))) {
+            if (!($filter->newInstance()->apply(HttpRequest::json()))) {
                 return false;
             }
         }
@@ -101,7 +90,7 @@ class EventMapper
         $eventResult = null;
         foreach ($method->getAttributes() as $attr) {
             if (!str_contains($attr->getName(), 'Filters')) {
-                $eventResult = $attr->newInstance()->apply($this->event);
+                $eventResult = $attr->newInstance()->apply(HttpRequest::json());
                 if (!$eventResult) return false;
             }
         }
