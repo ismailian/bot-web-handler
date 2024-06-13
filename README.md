@@ -57,7 +57,7 @@ public function photos(IncomingPhoto $photo): void
 #[Video]
 public function videos(IncomingVideo $video): void
 {
-    echo '[+] File ID: ' . $video->getFileId();
+    echo '[+] File ID: ' . $video->fileId;
 }
 ```
 
@@ -86,7 +86,7 @@ public function onStart(IncomingCommand $command): void
 #[CallbackQuery('game:type')]
 public function callbacks(IncomingCallbackQuery $query): void
 {
-    echo '[+] response: ' . $query('game:type');
+    echo '[+] response: ' . $query->data['game:type'];
 }
 ```
 
@@ -99,9 +99,9 @@ public function callbacks(IncomingCallbackQuery $query): void
  */
 #[Text]
 #[Chat(Chat::PRIVATE)]
-public function text(): void
+public function text(IncomingMessage $message): void
 {
-    echo '[+] user sent: ' . $this->event['message']['text'];
+    echo '[+] user sent: ' . $message->text;
 }
 ```
 
@@ -114,9 +114,9 @@ public function text(): void
  */
 #[Text]
 #[Only(userId: '<id>', userIds: [...'<id>'])]
-public function text(): void
+public function text(IncomingMessage $message): void
 {
-    echo '[+] user sent: ' . $this->event['message']['text'];
+    echo '[+] user sent: ' . $message->text;
 }
 ```
 
@@ -134,8 +134,7 @@ public function text(): void
 #[Command('age')]
 public function age(): void
 {
-    SessionManager::start()->set(['input' => 'age']);
-    
+    Session::set('input', 'age');
     $this->telegram->sendMessage('Please type in your age:');
 }
 
@@ -146,10 +145,63 @@ public function age(): void
  */
 #[Awaits('input', 'age')]
 #[Text(Validator: new NumberValidator())]
-public function setAge(): void
+public function setAge(IncomingMessage $message): void
 {
-    $age = $this->event['message']['text'];
-    
-    SessionManager::set(['input' => '']);
+    $age = $message->text;
+    Session::set('input', null);
+}
+```
+
+#### Handling Payments (in 3 steps)
+1. Create invoice and send it to users
+2. Answer pre-checkout query by confirming `the product` is available
+3. Process successful payments
+
+```php
+/**
+ * handle incoming purchase command
+ *
+ * @return void
+ */
+#[Command('purchase')]
+public function invoice(): void
+{
+    $this->telegram->sendInvoice(
+        title: 'Product title',
+        description: 'Product description',
+        payload: 'data for your internal processing',
+        prices: [
+            ['label' => 'Product Name', 'amount' => 100]
+        ],
+        currency: 'USD',
+        providerToken: 'Token assigned to you after linking your stripe account with telegram'
+    );
+}
+
+/**
+ * handle incoming pre checkout query
+ *
+ * @param IncomingPreCheckoutQuery $preCheckoutQuery
+ * @return void
+ */
+#[PreCheckoutQuery]
+public function checkout(IncomingPreCheckoutQuery $preCheckoutQuery): void
+{
+    $this->telegram->answerPreCheckoutQuery(
+        queryId: $preCheckoutQuery->id,
+        ok: true, // true if ok, otherwise false
+        errorMessage: 'if you have any errors'
+    );
+}
+
+/**
+ * handle incoming successful payment
+ *
+ * @return void
+ */
+#[SuccessfulPayment]
+public function paid(IncomingSuccessfulPayment $successfulPayment): void
+{
+    // do something
 }
 ```
