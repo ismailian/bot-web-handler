@@ -26,6 +26,19 @@ class Session
     protected static string $sessionId;
 
     /**
+     * set session id manually
+     *
+     * @param string $sessionId
+     * @return Session
+     */
+    public static function withId(string $sessionId): Session
+    {
+        self::init($sessionId);
+
+        return new self;
+    }
+
+    /**
      * set session data
      *
      * @param string $key
@@ -54,17 +67,22 @@ class Session
     /**
      * initialize session adapter
      *
+     * @param string|null $sessionId
      * @return void
      */
-    protected static function init(): void
+    protected static function init(string $sessionId = null): void
     {
         try {
             if (empty(self::$sessionId) || !self::$adapter) {
-                $event = HttpRequest::json();
-                foreach (array_keys($event) as $key) {
-                    if ($key !== 'update_id') {
-                        self::$sessionId = $event[$key]['from']['id'];
-                        break;
+                if ($sessionId) {
+                    self::$sessionId = $sessionId;
+                } else {
+                    $event = HttpRequest::json();
+                    foreach (array_keys($event) as $key) {
+                        if ($key !== 'update_id') {
+                            self::$sessionId = $event[$key]['from']['id'];
+                            break;
+                        }
                     }
                 }
 

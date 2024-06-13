@@ -35,9 +35,9 @@ class CallbackQuery implements IEvent
             if (!$this->key && !$this->value) return true;
             if (!empty(($callbackQuery = new IncomingCallbackQuery($event['callback_query'])))) {
                 if (array_key_exists($this->key, $callbackQuery->data)) {
-                    if ($callbackQuery->data[$this->key] === $this->value) {
-                        return $callbackQuery;
-                    }
+                    if (!$this->value
+                        || $callbackQuery->data[$this->key] === $this->value
+                    ) return $callbackQuery;
                 }
             }
         }
