@@ -12,10 +12,10 @@ namespace TeleBot\System\Telegram\Enums;
 
 enum MemberStatus
 {
-    const string OWNER = 'creator';
+    const OWNER = 'creator';
     const ADMIN = 'administrator';
-    const string MEMBER = 'member';
-    const string RESTRICTED = 'restricted';
-    const string BANNED = 'kicked';
-    const string LEFT = 'left';
+    const MEMBER = 'member';
+    const RESTRICTED = 'restricted';
+    const BANNED = 'kicked';
+    const LEFT = 'left';
 }

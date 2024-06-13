@@ -10,8 +10,8 @@
 
 namespace TeleBot\System\Telegram\Traits;
 
-use GuzzleHttp\Exception\GuzzleException;
 use TeleBot\System\Telegram\BotApi;
+use GuzzleHttp\Exception\GuzzleException;
 
 trait Extensions
 {

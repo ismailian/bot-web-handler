@@ -8,12 +8,6 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System\Telegram\Enums;
+namespace TeleBot\System\Telegram\Types;
 
-enum PollType
-{
-
-    const REGULAR = 'regular';
-    const QUIZ = 'quiz';
-
-}
+class MaybeInaccessibleMessage extends IncomingMessage {}

@@ -121,6 +121,7 @@ trait HttpClient
                 }
             }
 
+            $this->options = [];
             return $body['ok'] ? $body : null;
         } catch (Exception $e) {}
         return null;

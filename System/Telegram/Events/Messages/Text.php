@@ -14,6 +14,7 @@ use Attribute;
 use TeleBot\System\Interfaces\IEvent;
 use TeleBot\System\Interfaces\IValidator;
 use TeleBot\System\Telegram\Traits\Messageable;
+use TeleBot\System\Telegram\Types\IncomingMessage;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Text implements IEvent
@@ -32,7 +33,7 @@ class Text implements IEvent
     /**
      * @inheritDoc
      */
-    public function apply(array $event): bool
+    public function apply(array $event): IncomingMessage|bool
     {
         if (!$this->isMessage(array_keys($event))) return false;
 
@@ -44,6 +45,10 @@ class Text implements IEvent
                 fn($entity) => in_array($entity['type'], ['bot_command', 'url', 'mention'])
             ));
 
-        return $isCleanText && (!$this->Validator || $this->Validator->isValid($event[$key]['text']));
+        if ($isCleanText && (!$this->Validator || $this->Validator->isValid($event[$key]['text']))) {
+            return new IncomingMessage($event[$key]);
+        }
+
+        return false;
     }
 }

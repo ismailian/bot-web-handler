@@ -26,7 +26,7 @@ class Session
     protected static string $sessionId;
 
     /**
-     * set session id manually
+     * re-start session with custom session id
      *
      * @param string $sessionId
      * @return Session
@@ -35,7 +35,7 @@ class Session
     {
         self::init($sessionId);
 
-        return new self;
+        return new static();
     }
 
     /**
