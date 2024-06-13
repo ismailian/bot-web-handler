@@ -49,7 +49,7 @@ class  DbClient
 
         try {
             $this->dbResource = new \PDO(
-                "mysql:host={$this->dbHostname};dbname={$this->dbDatabase}",
+                "mysql:host={$this->dbHostname};dbname={$this->dbDatabase};charset=utf8mb4",
                 $this->dbUsername,
                 $this->dbPassword,
                 $options

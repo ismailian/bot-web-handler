@@ -10,9 +10,9 @@
 
 namespace TeleBot\System;
 
+use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Http\HttpResponse;
-use TeleBot\System\Telegram\BotApi;
 
 class IncomingRequest
 {
@@ -37,8 +37,6 @@ class IncomingRequest
         $this->request = new HttpRequest();
         $this->response = new HttpResponse();
         $this->telegram = (new BotApi())->setToken(getenv('TG_BOT_TOKEN'));
-
-        $this->response::close();
     }
 
 }

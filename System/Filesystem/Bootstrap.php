@@ -41,6 +41,9 @@ class Bootstrap
                     ->assign(new $handler, explode('::', $route['handler'])[1], array_values($route['params']))
                     ->run();
             }
+
+            // end connection with a status based on wither handler is properly executed
+            HttpResponse::setStatusCode(($handler ? 200 : 404))->end();
         }
 
         $this->verifyIP()
