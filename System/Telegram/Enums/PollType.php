@@ -13,7 +13,7 @@ namespace TeleBot\System\Telegram\Enums;
 enum PollType
 {
 
-    const string REGULAR = 'regular';
-    const string QUIZ = 'quiz';
+    const REGULAR = 'regular';
+    const QUIZ = 'quiz';
 
 }
