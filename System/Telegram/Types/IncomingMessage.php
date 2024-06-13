@@ -11,7 +11,6 @@
 namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
-use TeleBot\System\Telegram\Events\Messages\Photo;
 
 class IncomingMessage
 {

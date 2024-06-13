@@ -26,6 +26,19 @@ class Session
     protected static string $sessionId;
 
     /**
+     * re-start session with custom session id
+     *
+     * @param string $sessionId
+     * @return Session
+     */
+    public static function withId(string $sessionId): Session
+    {
+        self::init($sessionId);
+
+        return new static();
+    }
+
+    /**
      * set session data
      *
      * @param string $key
