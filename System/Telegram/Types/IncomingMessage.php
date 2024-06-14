@@ -83,7 +83,9 @@ class IncomingMessage
     /** @var PassportData|null $passportData Telegram Passport data */
     public ?PassportData $passportData = null;
 
-    /** @var ProximityAlertTriggered|null $proximityAlertTriggered A user in the chat triggered another user's proximity alert while sharing Live Location. */
+    /** @var ProximityAlertTriggered|null $proximityAlertTriggered
+     * A user in the chat triggered another user's proximity alert while sharing Live Location.
+     */
     public ?ProximityAlertTriggered $proximityAlertTriggered = null;
 
     /** @var ChatBoostAdded|null $boostAdded user boosted the chat */
@@ -229,26 +231,26 @@ class IncomingMessage
     /** @var IncomingSuccessfulPayment|null $successfulPayment */
     public ?IncomingSuccessfulPayment $successfulPayment = null;
 
-    /** @var ForumTopicCreated|null $forumTopicCreated forum topic created */
-    public ?ForumTopicCreated $forumTopicCreated = null;
+    /** @var IncomingForumTopicCreated|null $forumTopicCreated forum topic created */
+    public ?IncomingForumTopicCreated $forumTopicCreated = null;
 
-    /** @var ForumTopicEdited|null $forumTopicEdited forum topic edited */
-    public ?ForumTopicEdited $forumTopicEdited = null;
+    /** @var IncomingForumTopicEdited|null $forumTopicEdited forum topic edited */
+    public ?IncomingForumTopicEdited $forumTopicEdited = null;
 
-    /** @var ForumTopicClosed|null $forumTopicClosed forum topic closed */
-    public ?ForumTopicClosed $forumTopicClosed = null;
+    /** @var IncomingForumTopicClosed|null $forumTopicClosed forum topic closed */
+    public ?IncomingForumTopicClosed $forumTopicClosed = null;
 
-    /** @var ForumTopicReopened|null $forumTopicReopened forum topic reopened */
-    public ?ForumTopicReopened $forumTopicReopened = null;
+    /** @var IncomingForumTopicReopened|null $forumTopicReopened forum topic reopened */
+    public ?IncomingForumTopicReopened $forumTopicReopened = null;
 
-    /** @var GeneralForumTopicHidden|null $generalForumTopicHidden the 'General' forum topic hidden */
-    public ?GeneralForumTopicHidden $generalForumTopicHidden = null;
+    /** @var IncomingGeneralForumTopicHidden|null $generalForumTopicHidden the 'General' forum topic hidden */
+    public ?IncomingGeneralForumTopicHidden $generalForumTopicHidden = null;
 
-    /** @var GeneralForumTopicUnhidden|null $forumTopicUnhidden the 'General' forum topic unhidden */
-    public ?GeneralForumTopicUnhidden $forumTopicUnhidden = null;
+    /** @var IncomingGeneralForumTopicUnhidden|null $generalForumTopicUnhidden the 'General' forum topic unhidden */
+    public ?IncomingGeneralForumTopicUnhidden $generalForumTopicUnhidden = null;
 
-    /** @var GiveawayCreated|null $giveawayCreated a scheduled giveaway was created */
-    public ?GiveawayCreated $giveawayCreated = null;
+    /** @var IncomingGiveawayCreated|null $giveawayCreated a scheduled giveaway was created */
+    public ?IncomingGiveawayCreated $giveawayCreated = null;
 
     /** @var Giveaway|null $giveaway The message is a scheduled giveaway message */
     public ?Giveaway $giveaway = null;
@@ -256,8 +258,8 @@ class IncomingMessage
     /** @var GiveawayWinners|null $giveawayWinners A giveaway with public winners was completed */
     public ?GiveawayWinners $giveawayWinners = null;
 
-    /** @var GiveawayCompleted|null $giveawayCompleted a giveaway without public winners was completed */
-    public ?GiveawayCompleted $giveawayCompleted = null;
+    /** @var IncomingGiveawayCompleted|null $giveawayCompleted a giveaway without public winners was completed */
+    public ?IncomingGiveawayCompleted $giveawayCompleted = null;
 
     /** @var IncomingVideoChatScheduled|null $videoChatScheduled video chat scheduled */
     public ?IncomingVideoChatScheduled $videoChatScheduled = null;
@@ -479,6 +481,60 @@ class IncomingMessage
             /** <VideoChatEnded> */
             if (array_key_exists('video_chat_ended', $this->message)) {
                 $this->videoChatEnded = new IncomingVideoChatEnded($this->message['video_chat_ended']);
+            }
+
+            /** <ForumTopicCreated> */
+            if (array_key_exists('forum_topic_created', $this->message)) {
+                $this->forumTopicCreated = new IncomingForumTopicCreated($this->message['forum_topic_created']);
+            }
+
+            /** <ForumTopicEdited> */
+            if (array_key_exists('forum_topic_edited', $this->message)) {
+                $this->forumTopicEdited = new IncomingForumTopicEdited($this->message['forum_topic_edited']);
+            }
+
+            /** <ForumTopicClosed> */
+            if (array_key_exists('forum_topic_closed', $this->message)) {
+                $this->forumTopicClosed = new IncomingForumTopicClosed($this->message['forum_topic_closed']);
+            }
+
+            /** <ForumTopicReopened> */
+            if (array_key_exists('forum_topic_reopened', $this->message)) {
+                $this->forumTopicReopened = new IncomingForumTopicReopened($this->message['forum_topic_reopened']);
+            }
+
+            /** <GeneralForumTopicHidden> */
+            if (array_key_exists('general_forum_topic_hidden', $this->message)) {
+                $this->generalForumTopicHidden = new IncomingGeneralForumTopicHidden(
+                    $this->message['general_forum_topic_hidden']
+                );
+            }
+
+            /** <GeneralForumTopicUnhidden> */
+            if (array_key_exists('general_forum_topic_unhidden', $this->message)) {
+                $this->generalForumTopicUnhidden = new IncomingGeneralForumTopicUnhidden(
+                    $this->message['general_forum_topic_unhidden']
+                );
+            }
+
+            /** <Giveaway> */
+            if (array_key_exists('giveaway', $this->message)) {
+                $this->giveaway = new Giveaway($this->message['giveaway']);
+            }
+
+            /** <GiveawayWinners> */
+            if (array_key_exists('giveaway_winners', $this->message)) {
+                $this->giveawayWinners = new GiveawayWinners($this->message['giveaway_winners']);
+            }
+
+            /** <GiveawayCreated> */
+            if (array_key_exists('giveaway_created', $this->message)) {
+                $this->giveawayCreated = new IncomingGiveawayCreated($this->message['giveaway_created']);
+            }
+
+            /** <GiveawayCompleted> */
+            if (array_key_exists('giveaway_completed', $this->message)) {
+                $this->giveawayCompleted = new IncomingGiveawayCompleted($this->message['giveaway_completed']);
             }
 
         } catch (\Exception $ex) {}
