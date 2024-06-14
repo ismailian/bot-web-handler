@@ -10,8 +10,6 @@
 
 namespace TeleBot\System\Filesystem;
 
-use TeleBot\System\IncomingEvent;
-
 class Handler
 {
 
