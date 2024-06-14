@@ -29,7 +29,7 @@ class UsersShared
         $this->requestId = $this->usersShared['request_id'];
         $this->users = array_map(
             fn($user) => new SharedUser($user),
-            $this->usersShared
+            $this->usersShared['users']
         );
     }
 

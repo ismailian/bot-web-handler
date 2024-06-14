@@ -39,13 +39,20 @@ class IncomingMessage
      */
     public ?bool $isFromOnline = null;
 
-    /** @var string|null $mediaGroupId The unique identifier of a media message group this message belongs to */
+    /** @var string|null $mediaGroupId
+     * The unique identifier of a media message group this message belongs to
+     */
     public ?string $mediaGroupId = null;
 
-    /** @var string|null $authorSignature Signature of the post author for messages in channels, or the custom title of an anonymous group administrator */
+    /** @var string|null $authorSignature
+     * Signature of the post author for messages in channels,
+     * or the custom title of an anonymous group administrator
+     */
     public ?string $authorSignature = null;
 
-    /** @var string|null $connectedWebsite The domain name of the website on which the user has logged in */
+    /** @var string|null $connectedWebsite
+     * The domain name of the website on which the user has logged in
+     */
     public ?string $connectedWebsite = null;
 
     /** @var User|null $from message sender */
@@ -60,36 +67,43 @@ class IncomingMessage
     /** @var Chat|null $senderChat sender of the message */
     public ?Chat $senderChat = null;
 
-    /** @var Chat|null $senderBusinessBot The bot that actually sent the message on behalf of the business account */
+    /** @var Chat|null $senderBusinessBot
+     * The bot that actually sent the message on behalf of the business account
+     */
     public ?Chat $senderBusinessBot = null;
 
-    /** @var User[]|null $newChatMembers New members that were added to the group or supergroup and information about them
+    /** @var User[]|null $newChatMembers
+     * New members that were added to the group or supergroup and information about them
      * (the bot itself may be one of these members)
      */
     public ?array $newChatMembers = null;
 
-    /** @var User|null $leftChatMember A member was removed from the group, information about them (this member may be the bot itself) */
+    /** @var User|null $leftChatMember
+     * A member was removed from the group, information about them (this member may be the bot itself)
+     */
     public ?User $leftChatMember = null;
 
-    /** @var UsersShared|null $sharedUsers users were shared with the bot */
-    public ?UsersShared $sharedUsers = null;
+    /** @var UsersShared|null $usersShared users were shared with the bot */
+    public ?UsersShared $usersShared = null;
 
     /** @var ChatShared|null $chatShared a chat was shared with the bot */
     public ?ChatShared $chatShared = null;
 
-    /** @var WriteAccessAllowed|null $writeAccessAllowed the user allowed the bot to write messages after adding it to the attachment or side menu */
+    /** @var WriteAccessAllowed|null $writeAccessAllowed
+     * the user allowed the bot to write messages after adding it to the attachment or side menu
+     */
     public ?WriteAccessAllowed $writeAccessAllowed = null;
 
     /** @var PassportData|null $passportData Telegram Passport data */
     public ?PassportData $passportData = null;
 
-    /** @var ProximityAlertTriggered|null $proximityAlertTriggered
+    /** @var IncomingProximityAlertTriggered|null $proximityAlertTriggered
      * A user in the chat triggered another user's proximity alert while sharing Live Location.
      */
-    public ?ProximityAlertTriggered $proximityAlertTriggered = null;
+    public ?IncomingProximityAlertTriggered $proximityAlertTriggered = null;
 
-    /** @var ChatBoostAdded|null $boostAdded user boosted the chat */
-    public ?ChatBoostAdded $boostAdded = null;
+    /** @var IncomingChatBoostAdded|null $boostAdded user boosted the chat */
+    public ?IncomingChatBoostAdded $boostAdded = null;
 
     /** @var ChatBackground|null $chatBackgroundSet chat background set */
     public ?ChatBackground $chatBackgroundSet = null;
@@ -148,7 +162,8 @@ class IncomingMessage
     /** @var MaybeInaccessibleMessage|null $pinnedMessage Specified message was pinned */
     public ?MaybeInaccessibleMessage $pinnedMessage = null;
 
-    /** @var LinkPreviewOptions|null $linkPreviewOptions Options used for link preview generation for the message,
+    /** @var LinkPreviewOptions|null $linkPreviewOptions
+     * Options used for link preview generation for the message,
      * if it is a text message and link preview options were changed
      */
     public ?LinkPreviewOptions $linkPreviewOptions = null;
@@ -312,6 +327,10 @@ class IncomingMessage
                 $this->editDate = new DateTime(date('Y-m-d H:i:s T', $this->message['edit_date']));
             }
 
+            if (array_key_exists('link_preview_options', $this->message)) {
+                $this->linkPreviewOptions = new LinkPreviewOptions($this->message['link_preview_options']);
+            }
+
             if (array_key_exists('text', $this->message)) {
                 $this->entities = array_map(
                     fn($e) => new MessageEntity($this->text, $e),
@@ -376,6 +395,11 @@ class IncomingMessage
             /** <ReplyToMessage> */
             if (array_key_exists('reply_to_message', $this->message)) {
                 $this->replyToMessage = new IncomingMessage($this->message['reply_to_message']);
+            }
+
+            /** <ReplyToStory> */
+            if (array_key_exists('reply_to_story', $this->message)) {
+                $this->replyToStory = new IncomingStory($this->message['reply_to_story']);
             }
 
             /** <FrowardFrom|ForwardFromChat> */
@@ -473,6 +497,13 @@ class IncomingMessage
                 $this->videoChatScheduled = new IncomingVideoChatScheduled($this->message['video_chat_scheduled']);
             }
 
+            /** <IncomingVideoChatParticipantsInvited> */
+            if (array_key_exists('video_chat_participants_invited', $this->message)) {
+                $this->videoChatParticipantsInvited = new VideoChatParticipantsInvited(
+                    $this->message['video_chat_participants_invited']
+                );
+            }
+
             /** <VideoChatStarted> */
             if (array_key_exists('video_chat_started', $this->message)) {
                 $this->videoChatStarted = new IncomingVideoChatStarted($this->message['video_chat_started']);
@@ -537,7 +568,43 @@ class IncomingMessage
                 $this->giveawayCompleted = new IncomingGiveawayCompleted($this->message['giveaway_completed']);
             }
 
+            /** <WebAppData> */
+            if (array_key_exists('web_app_data', $this->message)) {
+                $this->webAppData = new IncomingWebAppData($this->message['web_app_data']);
+            }
+
+            /** <ProximityAlertTriggered> */
+            if (array_key_exists('proximity_alert_triggered', $this->message)) {
+                $this->proximityAlertTriggered = new IncomingProximityAlertTriggered(
+                    $this->message['proximity_alert_triggered']
+                );
+            }
+
+            /** <ChatBoostAdded> */
+            if (array_key_exists('boost_added', $this->message)) {
+                $this->boostAdded = new IncomingChatBoostAdded($this->message['boost_added']);
+            }
+
+            /** <ChatBackground> */
+            if (array_key_exists('chat_background_set', $this->message)) {
+                $this->chatBackgroundSet = new ChatBackground($this->message['chat_background_set']);
+            }
+
+            /** <WriteAccessAllowed> */
+            if (array_key_exists('write_access_allowed', $this->message)) {
+                $this->writeAccessAllowed = new WriteAccessAllowed($this->message['write_access_allowed']);
+            }
+
+            /** <UsersShared> */
+            if (array_key_exists('users_shared', $this->message)) {
+                $this->usersShared = new UsersShared($this->message['users_shared']);
+            }
+
+            /** <ChatShared> */
+            if (array_key_exists('chat_shared', $this->message)) {
+                $this->chatShared = new ChatShared($this->message['chat_shared']);
+            }
+
         } catch (\Exception $ex) {}
     }
-
 }
