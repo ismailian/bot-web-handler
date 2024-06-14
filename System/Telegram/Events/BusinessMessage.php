@@ -10,9 +10,11 @@
 
 namespace TeleBot\System\Telegram\Events;
 
+use Attribute;
 use TeleBot\System\Interfaces\IEvent;
 use TeleBot\System\Telegram\Types\IncomingMessage;
 
+#[Attribute(Attribute::TARGET_METHOD)]
 class BusinessMessage implements IEvent
 {
 

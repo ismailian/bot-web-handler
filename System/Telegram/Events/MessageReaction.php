@@ -10,10 +10,12 @@
 
 namespace TeleBot\System\Telegram\Events;
 
+use Attribute;
 use Exception;
 use TeleBot\System\Interfaces\IEvent;
 use TeleBot\System\Telegram\Types\IncomingMessageReactionUpdated;
 
+#[Attribute(Attribute::TARGET_METHOD)]
 class MessageReaction implements IEvent
 {
 

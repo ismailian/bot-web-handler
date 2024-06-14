@@ -10,10 +10,12 @@
 
 namespace TeleBot\System\Telegram\Events;
 
+use Attribute;
 use Exception;
 use TeleBot\System\Interfaces\IEvent;
 use TeleBot\System\Telegram\Types\IncomingMessageReactionCountUpdated;
 
+#[Attribute(Attribute::TARGET_METHOD)]
 class MessageReactionCount implements IEvent
 {
 
