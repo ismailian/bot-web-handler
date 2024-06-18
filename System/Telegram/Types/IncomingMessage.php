@@ -327,8 +327,22 @@ class IncomingMessage
                 $this->editDate = new DateTime(date('Y-m-d H:i:s T', $this->message['edit_date']));
             }
 
+            if (array_key_exists('forward_origin', $this->message)) {
+                $this->forwardOrigin = new MessageOrigin($this->message['forward_origin']);
+            }
+
             if (array_key_exists('link_preview_options', $this->message)) {
                 $this->linkPreviewOptions = new LinkPreviewOptions($this->message['link_preview_options']);
+            }
+
+            if (array_key_exists('reply_markup', $this->message)) {
+                $this->replyMarkup = new InlineKeyboard($this->message['reply_markup']);
+            }
+
+            if (array_key_exists('message_auto_delete_timer_changed', $this->message)) {
+                $this->messageAutoDeleteTimerChanged = new MessageAutoDeleteTimerChanged(
+                    $this->message['message_auto_delete_timer_changed']
+                );
             }
 
             if (array_key_exists('text', $this->message)) {
@@ -354,6 +368,11 @@ class IncomingMessage
             /** <From> */
             if (array_key_exists('from', $this->message)) {
                 $this->from = new User($this->message['from']);
+            }
+
+            /** <PinnedMessage> */
+            if (array_key_exists('pinned_message', $this->message)) {
+                $this->pinnedMessage = new MaybeInaccessibleMessage($this->message['pinned_message']);
             }
 
             /** <NewChatPhoto> */

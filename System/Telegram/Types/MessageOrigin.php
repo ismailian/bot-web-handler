@@ -37,6 +37,9 @@ class MessageOrigin
     /** @var Chat|null $senderChat Chat that sent the message originally */
     public ?Chat $senderChat = null;
 
+    /** @var User|null $senderUser User that sent the message originally */
+    public ?User $senderUser = null;
+
     /** @var string|null $authorSignature
      * For messages originally sent by an anonymous chat administrator,
      * original message author signature
@@ -64,6 +67,10 @@ class MessageOrigin
 
         if (array_key_exists('sender_chat', $this->messageOrigin)) {
             $this->senderChat = new Chat($this->messageOrigin['sender_chat']);
+        }
+
+        if (array_key_exists('sender_user', $this->messageOrigin)) {
+            $this->senderUser = new User($this->messageOrigin['sender_user']);
         }
 
         if (array_key_exists('author_signature', $this->messageOrigin)) {
