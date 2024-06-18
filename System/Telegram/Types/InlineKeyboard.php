@@ -30,6 +30,22 @@ class InlineKeyboard
     protected int $max = 3;
 
     /**
+     * default constructor
+     *
+     * @param array|null $inlineKeyboard
+     */
+    public function __construct(protected readonly ?array $inlineKeyboard = null)
+    {
+        if ($inlineKeyboard) {
+            foreach ($inlineKeyboard as $row) {
+                foreach ($row as $button) {
+                    $this->buttons[] = $button;
+                }
+            }
+        }
+    }
+
+    /**
      * set max number of buttons per row
      *
      * @param int $max
@@ -51,8 +67,28 @@ class InlineKeyboard
      */
     public function addButton(string $text, mixed $value, string $type = InlineKeyboard::URL): InlineKeyboard
     {
-        $this->buttons[] = ['text' => $text, $type => is_array($value) ? json_encode($value, JSON_UNESCAPED_SLASHES) : $value];
+        $this->buttons[] = [
+            'text' => $text,
+            $type => is_array($value) ? json_encode($value, JSON_UNESCAPED_SLASHES) : $value
+        ];
+
         return $this;
+    }
+
+    /**
+     * get button
+     *
+     * @param int $rowIndex
+     * @param int $buttonIndex
+     * @return array|null
+     */
+    public function getButton(int $rowIndex, int $buttonIndex): ?array
+    {
+        if (array_key_exists($rowIndex, $this->buttons)) {
+            return $this->buttons[$rowIndex][$buttonIndex] ?? null;
+        }
+
+        return null;
     }
 
     /**
