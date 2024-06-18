@@ -33,7 +33,7 @@ class ChatShared
      *
      * @param array $chatShared
      */
-    public function __construct(protected array $chatShared)
+    public function __construct(protected readonly array $chatShared)
     {
         $this->requestId = $this->chatShared['request_id'];
         $this->chatId = $this->chatShared['chat_id'];

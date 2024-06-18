@@ -44,7 +44,7 @@ class LinkPreviewOptions
      *
      * @param array $linkPreviewOptions
      */
-    public function __construct(protected array $linkPreviewOptions)
+    public function __construct(protected readonly array $linkPreviewOptions)
     {
         $this->isDisabled = $this->linkPreviewOptions['is_disabled'] ?? null;
         $this->url = $this->linkPreviewOptions['url'] ?? null;

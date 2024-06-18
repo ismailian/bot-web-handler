@@ -36,7 +36,7 @@ class TextQuote
      *
      * @param array $textQuote
      */
-    public function __construct(protected array $textQuote)
+    public function __construct(protected readonly array $textQuote)
     {
         $this->text = $this->textQuote['text'];
         $this->position = $this->textQuote['position'];

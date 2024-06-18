@@ -21,8 +21,8 @@ class IncomingInlineQuery
     /** @var User $from inline query sender */
     public User $from;
 
-    /** @var InlineChatType|string $chatType */
-    public InlineChatType|string $chatType;
+    /** @var InlineChatType $chatType */
+    public InlineChatType $chatType;
 
     /** @var string $query inline query content */
     public string $query;

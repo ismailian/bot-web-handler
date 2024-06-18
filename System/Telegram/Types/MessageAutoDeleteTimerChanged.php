@@ -21,7 +21,7 @@ class MessageAutoDeleteTimerChanged
      *
      * @param array $messageAutoDeleteTimerChanged
      */
-    public function __construct(protected array $messageAutoDeleteTimerChanged)
+    public function __construct(protected readonly array $messageAutoDeleteTimerChanged)
     {
         $this->messageAutoDeleteTime = $this->messageAutoDeleteTimerChanged["messageAutoDeleteTime"];
     }

@@ -33,7 +33,7 @@ class SharedUser
      *
      * @param array $sharedUser
      */
-    public function __construct(protected array $sharedUser)
+    public function __construct(protected readonly array $sharedUser)
     {
         $this->userId = $sharedUser['id'];
         $this->firstName = $sharedUser['first_name'] ?? null;

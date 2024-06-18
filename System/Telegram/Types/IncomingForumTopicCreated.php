@@ -27,7 +27,7 @@ class IncomingForumTopicCreated
      *
      * @param array $incomingForumTopicCreated
      */
-    public function __construct(protected array $incomingForumTopicCreated)
+    public function __construct(protected readonly array $incomingForumTopicCreated)
     {
         $this->name = $this->incomingForumTopicCreated['name'];
         $this->iconColor = $this->incomingForumTopicCreated['icon_color'];

@@ -49,7 +49,7 @@ class MessageOrigin
      * @param array $messageOrigin
      * @throws Exception
      */
-    public function __construct(protected array $messageOrigin)
+    public function __construct(protected readonly array $messageOrigin)
     {
         $this->type = $this->messageOrigin['type'];
         $this->date = new DateTime(date('Y-m-d H:m:s', $this->messageOrigin['date']));

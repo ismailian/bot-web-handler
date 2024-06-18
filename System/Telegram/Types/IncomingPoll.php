@@ -12,6 +12,7 @@ namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
 use Exception;
+use TeleBot\System\Telegram\Enums\PollType;
 
 class IncomingPoll
 {
@@ -37,8 +38,8 @@ class IncomingPoll
     /** @var bool $isAnonymous is poll anonymous */
     public bool $isAnonymous;
 
-    /** @var string $type poll type */
-    public string $type;
+    /** @var PollType $type poll type */
+    public PollType $type;
 
     /** @var bool $allowMultipleAnswers allow multiple answers */
     public bool $allowMultipleAnswers;
@@ -77,13 +78,16 @@ class IncomingPoll
         }
 
         $this->options = array_map(fn($o) => new PollOption($o), $this->incomingPoll['options']);
-        $this->type = $this->incomingPoll['type'];
         $this->isClosed = $this->incomingPoll['is_closed'];
         $this->isAnonymous = $this->incomingPoll['is_anonymous'];
         $this->openPeriod = $this->incomingPoll['open_period'] ?? null;
         $this->totalVoterCount = $this->incomingPoll['total_voter_count'];
         $this->correctOptionId = $this->incomingPoll['correct_option_id'] ?? null;
         $this->allowMultipleAnswers = $this->incomingPoll['allows_multiple_answers'];
+        $this->type = match ($this->incomingPoll['type']) {
+            'regular' => PollType::REGULAR,
+            'quiz' => PollType::QUIZ,
+        };
 
         if (array_key_exists('explanation', $this->incomingPoll)) {
             $this->explanation = $this->incomingPoll['explanation'];

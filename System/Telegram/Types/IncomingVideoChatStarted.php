@@ -18,6 +18,6 @@ readonly class IncomingVideoChatStarted
      *
      * @param array $incomingVideoChatStarted
      */
-    public function __construct(protected array $incomingVideoChatStarted) {}
+    public function __construct(protected readonly array $incomingVideoChatStarted) {}
 
 }

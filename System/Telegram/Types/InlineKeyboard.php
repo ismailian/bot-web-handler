@@ -20,8 +20,8 @@ class InlineKeyboard
     const string CALLBACK_GAME = 'callback_game';
     const string CALLBACK_DATA = 'callback_data';
     const string SWITCH_INLINE_QUERY = 'switch_inline_query';
-    const string SWITCH_INLINE_QUERY_CURRENT_CHAT = 'switch_inline_query_current_chat';
     const string SWITCH_INLINE_QUERY_CHOSEN_CHAT = 'switch_inline_query_chosen_chat';
+    const string SWITCH_INLINE_QUERY_CURRENT_CHAT = 'switch_inline_query_current_chat';
 
     /** @var array collection of buttons */
     protected array $buttons = [];

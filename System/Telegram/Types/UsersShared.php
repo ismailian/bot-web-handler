@@ -24,7 +24,7 @@ class UsersShared
      *
      * @param array $usersShared
      */
-    public function __construct(protected array $usersShared)
+    public function __construct(protected readonly array $usersShared)
     {
         $this->requestId = $this->usersShared['request_id'];
         $this->users = array_map(

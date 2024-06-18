@@ -18,6 +18,6 @@ readonly class IncomingForumTopicClosed
      *
      * @param array $incomingForumTopicClosed
      */
-    public function __construct(protected array $incomingForumTopicClosed) {}
+    public function __construct(protected readonly array $incomingForumTopicClosed) {}
 
 }

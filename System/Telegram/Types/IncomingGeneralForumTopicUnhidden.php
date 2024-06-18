@@ -18,6 +18,6 @@ readonly class IncomingGeneralForumTopicUnhidden
      *
      * @param array $incomingGeneralForumTopicUnhidden
      */
-    public function __construct(protected array $incomingGeneralForumTopicUnhidden) {}
+    public function __construct(protected readonly array $incomingGeneralForumTopicUnhidden) {}
 
 }

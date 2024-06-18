@@ -34,7 +34,7 @@ class WriteAccessAllowed
      *
      * @param array $writeAccessAllowed
      */
-    public function __construct(protected array $writeAccessAllowed)
+    public function __construct(protected readonly array $writeAccessAllowed)
     {
         $this->fromRequest = $this->writeAccessAllowed['from_request'] ?? null;
         $this->webAppName = $this->writeAccessAllowed['web_app_name'] ?? null;
