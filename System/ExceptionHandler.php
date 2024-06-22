@@ -10,6 +10,8 @@
 
 namespace TeleBot\System;
 
+use TeleBot\System\Http\HttpRequest;
+
 class ExceptionHandler
 {
 
@@ -29,7 +31,14 @@ class ExceptionHandler
             'file' => $file,
             'line' => $line,
             'error' => $message,
-            'trace' => $context
+            'trace' => $context,
+            'request' => [
+                'ip' => HttpRequest::ip(),
+                'uri' => HttpRequest::uri(),
+                'method' => HttpRequest::method(),
+                'query' => HttpRequest::query(),
+                'body' => HttpRequest::body(),
+            ],
         ]);
     }
 
@@ -62,7 +71,14 @@ class ExceptionHandler
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTrace()
+            'trace' => $exception->getTrace(),
+            'request' => [
+                'ip' => HttpRequest::ip(),
+                'uri' => HttpRequest::uri(),
+                'method' => HttpRequest::method(),
+                'query' => HttpRequest::query(),
+                'body' => HttpRequest::body(),
+            ],
         ]);
     }
 
