@@ -65,6 +65,34 @@ class Session
     }
 
     /**
+     * remove session prop
+     *
+     * @param string $key
+     * @return bool
+     */
+    public static function unset(string $key): bool
+    {
+        self::init();
+
+        $data = self::$adapter->read();
+        $keys = explode('.', $key);
+        $temp =& $data;
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $temp)) return false;
+            $temp =& $temp[$key];
+        }
+
+        // unset the target property
+        $lastKey = array_pop($keys);
+        $temp =& $data;
+
+        foreach ($keys as $key) $temp =& $temp[$key];
+        unset($temp[$lastKey]);
+
+        return self::$adapter->write($data);
+    }
+
+    /**
      * initialize session adapter
      *
      * @param string|null $sessionId
