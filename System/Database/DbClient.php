@@ -7,7 +7,7 @@
  * package: https://github.com/dcblogdev/pdo-wrapper
  *
  * and modified to fit in this project by:
- * author: Ismail Aatif (techcyber598@gmail.com)
+ * author: Ismail Aatif (ismail@ismailian.com)
  * project: https://github.com/ismailian/bot-web-handler
  *
  * For the full copyright and license information, please view the LICENSE
