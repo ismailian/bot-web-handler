@@ -174,8 +174,8 @@ class DbClient
     {
         /** add columns into comma seperated string */
         $columns = implode(',', array_map(
-            fn($k) => ('`' . trim($k, '`') . '`'),
-            array_keys($data))
+                fn($k) => ('`' . trim($k, '`') . '`'),
+                array_keys($data))
         );
 
         /** get values */
