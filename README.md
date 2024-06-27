@@ -23,12 +23,12 @@ This little project is designed specifically for [Telegram](https://core.telegra
 - blacklist - list of disallowed user ids (Optional)
 
 #### 3. Useful commands
-| Command                         | Description                |
-|---------------------------------|----------------------------|
-| `php cli update:check`          | check for updates          |
-| `php cli update:apply`          | apply available updates    |
-| `php cli handler:make <name>`   | create new handler         |
-| `php cli handler:delete <name>` | delete an existing handler |
+| Command                         | Description                 |
+|---------------------------------|-----------------------------|
+| `php cli update:check`          | check for available updates |
+| `php cli update:apply`          | apply available updates     |
+| `php cli handler:make <name>`   | create new handler          |
+| `php cli handler:delete <name>` | delete a handler            |
 
 ## Examples
 #### Photos
@@ -42,7 +42,7 @@ This little project is designed specifically for [Telegram](https://core.telegra
 #[Photo]
 public function photos(IncomingPhoto $photo): void
 {
-    echo '[+] File ID: ' . $photo->getFileId(0);
+    echo '[+] File ID: ' . $photo->photos[0]->fileId;
 }
 ```
 
@@ -148,7 +148,7 @@ public function age(): void
 public function setAge(IncomingMessage $message): void
 {
     $age = $message->text;
-    Session::set('input', null);
+    Session::unset('input');
 }
 ```
 
@@ -202,6 +202,6 @@ public function checkout(IncomingPreCheckoutQuery $preCheckoutQuery): void
 #[SuccessfulPayment]
 public function paid(IncomingSuccessfulPayment $successfulPayment): void
 {
-    // do something
+    // save payment info and send thank you message
 }
 ```
