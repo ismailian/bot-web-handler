@@ -5,6 +5,7 @@ namespace TeleBot\App\Handlers;
 use Exception;
 use TeleBot\System\IncomingEvent;
 use GuzzleHttp\Exception\GuzzleException;
+use TeleBot\System\Telegram\Enums\InlineChatType;
 use TeleBot\System\Telegram\Filters\Chat;
 use TeleBot\System\Telegram\Events\Messages\Text;
 use TeleBot\System\Telegram\Types\IncomingMessage;
@@ -20,7 +21,7 @@ class GetMyId extends IncomingEvent
      * @throws GuzzleException
      */
     #[Text]
-    #[Chat(Chat::PRIVATE)]
+    #[Chat(InlineChatType::PRIVATE)]
     public function inPrivate(): void
     {
         $reply = "Your user ID: <strong>{$this->event->from->id}</strong>\n";
@@ -38,7 +39,7 @@ class GetMyId extends IncomingEvent
      */
     #[Text]
     #[Mention('me')]
-    #[Chat(Chat::SUPERGROUP)]
+    #[Chat(InlineChatType::SUPERGROUP)]
     public function inGroups(IncomingMessage $message): void
     {
         $reply = "Your user ID: <strong>{$this->event->from->id}</strong>\n";
