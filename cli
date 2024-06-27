@@ -19,6 +19,7 @@ require_once 'vendor/autoload.php';
  */
 $router = new Router();
 
+$router->add('migrate [<tables>...]', fn($args) => Cli::migrate($args));
 $router->add('update:init', fn($args) => Cli::init());
 $router->add('update:check', fn($args) => Cli::check());
 $router->add('update:apply', fn($args) => Cli::update());

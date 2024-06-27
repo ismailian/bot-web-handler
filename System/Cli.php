@@ -11,6 +11,8 @@
 namespace TeleBot\System;
 
 use GuzzleHttp\Client;
+use TeleBot\System\Database\DbClient;
+use TeleBot\System\Filesystem\Dotenv;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Cli
@@ -23,89 +25,6 @@ class Cli
     protected static string $history = 'history.json';
 
     /**
-     * get http client
-     *
-     * @return Client
-     */
-    protected static function getClient(): Client
-    {
-        if (!self::$client) {
-            self::$client = new Client([
-                'verify' => false,
-                'base_uri' => 'https://api.github.com/',
-                'headers' => [
-                    'X-GitHub-Api-Version' => '2022-11-28'
-                ]
-            ]);
-        }
-
-        return self::$client;
-    }
-
-    /**
-     * get list of commits
-     *
-     * @param string|null $startDate
-     * @param string|null $endTime
-     * @param bool $autoFetchFiles
-     * @return array
-     */
-    protected static function getCommits(string $startDate = null, string $endTime = null, bool $autoFetchFiles = false): array
-    {
-        try {
-            $query = [];
-            $uri = '/repos/' . self::$owner . '/' . self::$repo . '/commits';
-            if ($startDate) $query['since'] = $startDate;
-            if ($endTime) $query['until'] = $startDate;
-
-            $response = self::getClient()->get($uri, ['query' => $query])->getBody();
-            return array_reverse(array_map(function ($commit) use ($autoFetchFiles) {
-                return [
-                    'id' => $commit['sha'],
-                    'author' => $commit['author']['login'],
-                    'message' => $commit['commit']['message'],
-                    'files' => $autoFetchFiles ? self::getCommitFiles($commit['sha']) : [],
-                ];
-            }, json_decode($response, true)));
-        } catch (GuzzleException $e) {
-            if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
-                die('[!] Rate limit exceeded, please wait before trying again!');
-            }
-        }
-
-        return [];
-    }
-
-    /**
-     * get commit files
-     *
-     * @param string $commit
-     * @return array
-     */
-    protected static function getCommitFiles(string $commit): array
-    {
-        try {
-            $uri = '/repos/' . self::$owner . '/' . self::$repo . '/commits/' . $commit;
-            $response = self::getClient()->get($uri)->getBody();
-            $files = array_filter(
-                json_decode($response, true)['files'],
-                fn($f) => !str_starts_with($f['filename'], 'App')
-            );
-
-            return array_map(fn($file) => ([
-                'status' => $file['status'],
-                'filename' => $file['filename'],
-                'url' => $file['raw_url'],
-            ]), $files);
-        } catch (GuzzleException $e) {
-            if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
-                die('[!] Rate limit exceeded, please wait before trying again!');
-            }
-        }
-        return [];
-    }
-
-    /**
      * initialize update history file
      *
      * @return void
@@ -116,12 +35,64 @@ class Cli
             file_put_contents(self::$history, json_encode([
                 'date' => (new \DateTime())->format('Y-m-d\TH:i:s\Z'),
                 'changes' => [],
-            ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-            die('[+] History file has been created!');
+            $historyFileMessage = '[+] history file has been created!';
+        } else {
+            $historyFileMessage = '[!] history file already exists!';
         }
 
-        die('[!] History file already exists!');
+        echo $historyFileMessage . PHP_EOL;
+    }
+
+    /**
+     * run migrations
+     *
+     * @param array $args
+     * @return void
+     */
+    public static function migrate(array $args): void
+    {
+        $tables = ['users', 'events'];
+        if (array_key_exists('tables', $args)) {
+            $tables = array_intersect(['users', 'events'], $args['tables']);
+        }
+
+        $migrations = [
+            'users' => "CREATE TABLE `users` (
+                            `id` INT(11) NOT NULL AUTO_INCREMENT,
+                            `user_id` VARCHAR(64) NOT NULL,
+                            `firstname` VARCHAR(45) NOT NULL,
+                            `lastname` VARCHAR(45) NULL DEFAULT NULL,
+                            `language_code` VARCHAR(2) NULL DEFAULT 'en',
+                            `is_bot` TINYINT(1) NOT NULL DEFAULT '0',
+                            `is_premium` TINYINT(1) NULL DEFAULT NULL,
+                            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+                            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+                            PRIMARY KEY (`id`),
+                            UNIQUE INDEX `user_id` (`user_id`)
+                        ) COLLATE='utf8mb4_unicode_ci';",
+            'events' => "CREATE TABLE `events` (
+                            `id` INT(11) NOT NULL AUTO_INCREMENT,
+                            `user_id` INT NOT NULL,
+                            `update_id` INT NOT NULL,
+                            `update` JSON NOT NULL,
+                            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+                            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+                            PRIMARY KEY (`id`),
+                            UNIQUE INDEX `update_id` (`update_id`),
+                            CONSTRAINT `user_id_to_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                        ) COLLATE='utf8mb4_unicode_ci';"
+        ];
+
+        Dotenv::load();
+        $db = new DbClient();
+        foreach ($tables as $table) {
+            echo "[+] running migration for: $table" . PHP_EOL;
+            $db->raw($migrations[$table]);
+        }
+
+        echo "[OK] migrations completed!";
     }
 
     /**
@@ -168,9 +139,92 @@ class Cli
         file_put_contents(self::$history, json_encode([
             'date' => (new \DateTime())->format('Y-m-d\TH:i:s\Z'),
             'changes' => $updates,
-        ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-        die('[+] all changes have been applied!' . PHP_EOL . PHP_EOL);
+        echo '[+] all changes have been applied!' . PHP_EOL . PHP_EOL;
+    }
+
+    /**
+     * get list of commits
+     *
+     * @param string|null $startDate
+     * @param string|null $endTime
+     * @param bool $autoFetchFiles
+     * @return array
+     */
+    protected static function getCommits(string $startDate = null, string $endTime = null, bool $autoFetchFiles = false): array
+    {
+        try {
+            $query = [];
+            $uri = '/repos/' . self::$owner . '/' . self::$repo . '/commits';
+            if ($startDate) $query['since'] = $startDate;
+            if ($endTime) $query['until'] = $startDate;
+
+            $response = self::getClient()->get($uri, ['query' => $query])->getBody();
+            return array_reverse(array_map(function ($commit) use ($autoFetchFiles) {
+                return [
+                    'id' => $commit['sha'],
+                    'author' => $commit['author']['login'],
+                    'message' => $commit['commit']['message'],
+                    'files' => $autoFetchFiles ? self::getCommitFiles($commit['sha']) : [],
+                ];
+            }, json_decode($response, true)));
+        } catch (GuzzleException $e) {
+            if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
+                die('[!] Rate limit exceeded, please wait before trying again!');
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * get http client
+     *
+     * @return Client
+     */
+    protected static function getClient(): Client
+    {
+        if (!self::$client) {
+            self::$client = new Client([
+                'verify' => false,
+                'base_uri' => 'https://api.github.com/',
+                'headers' => [
+                    'X-GitHub-Api-Version' => '2022-11-28'
+                ]
+            ]);
+        }
+
+        return self::$client;
+    }
+
+    /**
+     * get commit files
+     *
+     * @param string $commit
+     * @return array
+     */
+    protected static function getCommitFiles(string $commit): array
+    {
+        try {
+            $uri = '/repos/' . self::$owner . '/' . self::$repo . '/commits/' . $commit;
+            $response = self::getClient()->get($uri)->getBody();
+            $files = array_filter(
+                json_decode($response, true)['files'],
+                fn($f) => !str_starts_with($f['filename'], 'App')
+            );
+
+            return array_map(fn($file) => ([
+                'status' => $file['status'],
+                'filename' => $file['filename'],
+                'url' => $file['raw_url'],
+            ]), $files);
+        } catch (GuzzleException $e) {
+            if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
+                die('[!] Rate limit exceeded, please wait before trying again!');
+            }
+        }
+        return [];
     }
 
     /**
@@ -258,7 +312,7 @@ class Cli
             die("[+] handler deleted successfully!" . PHP_EOL);
         }
 
-        die("[-] failed to delete handler!" . PHP_EOL);
+        echo "[-] failed to delete handler!" . PHP_EOL;
     }
 
 }
