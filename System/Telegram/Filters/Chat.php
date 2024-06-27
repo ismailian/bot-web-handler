@@ -12,22 +12,18 @@ namespace TeleBot\System\Telegram\Filters;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
+use TeleBot\System\Telegram\Enums\InlineChatType;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Chat implements IEvent
 {
 
-    const string PRIVATE = 'private';
-    const string CHANNEL = 'channel';
-    const string GROUP = 'group';
-    const string SUPERGROUP = 'supergroup';
-
     /**
      * default constructor
      *
-     * @param string $chatType
+     * @param InlineChatType $chatType
      */
-    public function __construct(public string $chatType = Chat::PRIVATE) {}
+    public function __construct(public InlineChatType $chatType = InlineChatType::PRIVATE) {}
 
     /**
      * @inheritDoc
@@ -36,7 +32,12 @@ class Chat implements IEvent
     {
         unset($event['update_id']);
         $keys = array_keys($event);
-        $chatType = $event[$keys[0]]['chat']['type'];
+        $chatType = match ($event[$keys[0]]['chat']['type']) {
+            'group' => InlineChatType::GROUP,
+            'supergroup' => InlineChatType::SUPERGROUP,
+            'channel' => InlineChatType::CHANNEL,
+            default => InlineChatType::PRIVATE
+        };
 
         return $chatType === $this->chatType;
     }

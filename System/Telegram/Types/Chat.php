@@ -10,14 +10,16 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Enums\InlineChatType;
+
 class Chat
 {
 
     /** @var string $id chat id */
     public string $id;
 
-    /** @var string $chat type */
-    public string $type = 'private';
+    /** @var InlineChatType $type chat type */
+    public InlineChatType $type = InlineChatType::PRIVATE;
 
     /** @var string|null $username unique username */
     public ?string $username = null;
@@ -39,11 +41,17 @@ class Chat
     public function __construct(protected readonly array $chat)
     {
         $this->id = $this->chat['id'];
-        $this->type = $this->chat['type'];
         $this->username = $this->chat['username'] ?? null;
         $this->firstName = $this->chat['first_name'] ?? null;
         $this->lastName = $this->chat['last_name'] ?? null;
         $this->title = $this->chat['title'] ?? null;
+        $this->type = match($this->chat['type']) {
+            'group' => InlineChatType::GROUP,
+            'supergroup' => InlineChatType::SUPERGROUP,
+            'channel' => InlineChatType::CHANNEL,
+            'sender' => InlineChatType::SENDER,
+            default => InlineChatType::PRIVATE,
+        };
     }
 
 }
