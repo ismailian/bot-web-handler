@@ -205,3 +205,30 @@ public function paid(IncomingSuccessfulPayment $successfulPayment): void
     // save payment info and send thank you message
 }
 ```
+
+## Simple Queue
+Currently, the queue only uses database to manage jobs, in the future, other methods will be integrated.
+
+#### setup queue in 3 steps:
+1. run migration: `php cli queue:init`
+2. run queue worker: `php cli queue:work`
+3. create job class:
+   *typically, you would create a `Jobs` directory in the `App` folder where your jobs will live. Job classes must implement the `IJob` interface.*
+
+#### dispatching jobs:
+```php
+/**
+ * handle incoming urls
+ *
+ * @return void
+ */
+#[Url]
+public function urls(IncomingUrl $url): void
+{
+    QueueWorker::dispatch(UrlParserJob::class, [
+        'url' => $url
+    ]);
+    
+    $this->telegram->sendMessage('Your url is being processed!');
+}
+```
