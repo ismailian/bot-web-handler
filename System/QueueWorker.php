@@ -45,7 +45,7 @@ class QueueWorker
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
                         PRIMARY KEY (`id`)
                     ) COLLATE='latin1_swedish_ci';");
-                echo 'OK!' . PHP_EOL;
+                die('OK!' . PHP_EOL);
             } catch (\Exception $e) {
                 die("failed!" . PHP_EOL . $e->getMessage() . PHP_EOL);
             }
