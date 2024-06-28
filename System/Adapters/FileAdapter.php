@@ -70,4 +70,12 @@ class FileAdapter implements ISessionAdapter
             json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
         ) > 0);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function delete(): int|bool
+    {
+        return @unlink($this->sessionFilePath);
+    }
 }

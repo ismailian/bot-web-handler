@@ -75,4 +75,12 @@ class RedisAdapter implements ISessionAdapter
 
         return !!$result;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function delete(): int
+    {
+        return $this->client->del("{$this->prefix}:{$this->sessionId}");
+    }
 }

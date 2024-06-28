@@ -35,4 +35,11 @@ interface ISessionAdapter
      */
     public function write(array $data): bool;
 
+    /**
+     * delete session entry
+     *
+     * @return int|bool
+     */
+    public function delete(): int|bool;
+
 }

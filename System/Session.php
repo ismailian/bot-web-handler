@@ -33,9 +33,7 @@ class Session
      */
     public static function withId(string $sessionId): Session
     {
-        self::init($sessionId);
-
-        return new static();
+        return self::init($sessionId);
     }
 
     /**
@@ -47,10 +45,9 @@ class Session
      */
     public static function set(string $key, mixed $value): bool
     {
-        self::init();
+        $data = self::init()::$adapter->read();
 
         if ($key !== '*') {
-            $data = self::$adapter->read();
             $keys = explode('.', $key);
             $current = &$data;
             foreach ($keys as $key) {
@@ -72,9 +69,7 @@ class Session
      */
     public static function unset(string $key): bool
     {
-        self::init();
-
-        $data = self::$adapter->read();
+        $data = self::init()::$adapter->read();
         $keys = explode('.', $key);
         $temp =& $data;
         foreach ($keys as $key) {
@@ -96,9 +91,9 @@ class Session
      * initialize session adapter
      *
      * @param string|null $sessionId
-     * @return void
+     * @return self
      */
-    protected static function init(string $sessionId = null): void
+    protected static function init(string $sessionId = null): self
     {
         try {
             if (empty(self::$sessionId) || !self::$adapter) {
@@ -120,6 +115,7 @@ class Session
                 };
             }
         } catch (Exception) {}
+        return (new self);
     }
 
     /**
@@ -130,9 +126,7 @@ class Session
      */
     public static function get(string $key = null): mixed
     {
-        self::init();
-
-        $data = self::$adapter->read();
+        $data = self::init()::$adapter->read();
         if (!$key) return $data;
 
         $keys = explode('.', $key);
@@ -145,6 +139,16 @@ class Session
         }
 
         return null;
+    }
+
+    /**
+     * destroy session
+     *
+     * @return int|bool
+     */
+    public static function destroy(): int|bool
+    {
+        return self::init()::$adapter->delete();
     }
 
 }
