@@ -11,8 +11,8 @@
 namespace TeleBot\System\Telegram\Filters;
 
 use Attribute;
-use TeleBot\System\Session;
 use TeleBot\System\Interfaces\IEvent;
+use TeleBot\System\Session\Session;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Awaits implements IEvent
