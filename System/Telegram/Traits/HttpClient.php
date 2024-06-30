@@ -41,6 +41,8 @@ trait HttpClient
         'sendMediaGroup' => 'sendMediaGroup',
         'invoice' => 'sendInvoice',
         'checkout' => 'answerPreCheckoutQuery',
+        'hook' => 'setWebhook',
+        'unhook' => 'deleteWebhook',
     ];
 
     /**

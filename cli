@@ -38,6 +38,9 @@ $router->add('migrate [<tables>...]', fn($args) => Cli::migrate($args));
 /* queue commands */
 $router->add('queue:init', fn($args) => QueueWorker::init());
 $router->add('queue:work', fn($args) => QueueWorker::listen());
-$router->add('queue:mock', fn($args) => QueueWorker::mock());
+
+/* webhook commands */
+$router->add('webhook:set [<uri>]', fn($args) => Cli::setWebhook($args));
+$router->add('webhook:unset', fn($args) => Cli::unsetWebhook());
 
 $router->execArgv();
