@@ -18,6 +18,7 @@ namespace TeleBot\System\Database;
 
 use PDO;
 use Exception;
+use TeleBot\System\ExceptionHandler;
 
 class DbClient
 {
@@ -80,7 +81,7 @@ class DbClient
     }
 
     /**
-     * get array of records
+     * get an array of records
      *
      * @param string $sql sql query
      * @param array $args params
@@ -106,28 +107,30 @@ class DbClient
         }
 
         $stmt = $this->db->prepare($sql);
-
-        /** check if args is associative or sequential? */
-        $is_assoc = !(array() === $args) && array_keys($args) !== range(0, count($args) - 1);
-        if ($is_assoc) {
-            foreach ($args as $key => $value) {
-                if (is_int($value)) {
-                    $stmt->bindValue(":$key", $value, PDO::PARAM_INT);
-                } else {
-                    $stmt->bindValue(":$key", $value);
+        try {
+            $is_assoc = !(array() === $args) && array_keys($args) !== range(0, count($args) - 1);
+            if ($is_assoc) {
+                foreach ($args as $key => $value) {
+                    if (is_int($value)) {
+                        $stmt->bindValue(":$key", $value, PDO::PARAM_INT);
+                    } else {
+                        $stmt->bindValue(":$key", $value);
+                    }
                 }
-            }
 
-            $stmt->execute();
-        } else {
-            $stmt->execute($args);
+                $stmt->execute();
+            } else {
+                $stmt->execute($args);
+            }
+        } catch (\Exception $e) {
+            ExceptionHandler::onException($e);
         }
 
         return $stmt;
     }
 
     /**
-     * get array of records
+     * get an array of records
      *
      * @param string $sql sql query
      * @param array $args params

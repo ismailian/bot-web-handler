@@ -50,13 +50,19 @@ class ExceptionHandler
      */
     protected static function log(array $data): void
     {
-        /** create logs dir if it does not already exist */
+        /** create log dir if it does not already exist */
         if (!file_exists('logs') && !is_dir('logs')) {
             mkdir('logs');
         }
 
         $logPath = 'logs/' . date('Y-m-d__H-i-s') . '.log';
-        file_put_contents($logPath, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        $encodedData = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        if (!$encodedData) {
+            unset($data['trace']);
+            $encodedData = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        }
+
+        file_put_contents($logPath, $encodedData);
     }
 
     /**
