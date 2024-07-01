@@ -54,9 +54,9 @@ class Cli
      */
     public static function migrate(array $args): void
     {
-        $tables = ['users', 'events'];
+        $tables = ['users', 'events', 'sessions'];
         if (array_key_exists('tables', $args)) {
-            $tables = array_intersect(['users', 'events'], $args['tables']);
+            $tables = array_intersect($tables, $args['tables']);
         }
 
         $migrations = [
@@ -83,17 +83,37 @@ class Cli
                             PRIMARY KEY (`id`),
                             UNIQUE INDEX `update_id` (`update_id`),
                             CONSTRAINT `user_id_to_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE
-                        ) COLLATE='utf8mb4_unicode_ci';"
+                        ) COLLATE='utf8mb4_unicode_ci';",
+            'sessions' => "CREATE TABLE `sessions` (
+                    `id` INT NOT NULL AUTO_INCREMENT,
+                    `session_id` VARCHAR(64) NOT NULL,
+                    `data` JSON NOT NULL,
+                    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+                    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+                    PRIMARY KEY (`id`, `session_id`),
+                    UNIQUE INDEX `session_id` (`session_id`)
+                ) COLLATE='utf8mb4_unicode_ci';"
         ];
 
         Dotenv::load();
         $db = new DbClient();
+        $dbName = getenv('DATABASE_NAME', true);
+
+        $tableNames = join(',', array_map(fn($tableName) => "'$tableName'", $tables));
+        $existingTables = $db->getClient()->query("show tables where Tables_in_{$dbName} in ($tableNames)")->fetchAll();
+        $existingTables = array_column($existingTables, 'Tables_in_' . $dbName);
+
         foreach ($tables as $table) {
+            if (in_array($table, $existingTables)) {
+                echo '[!] table already exists: ' . $table . PHP_EOL;
+                continue;
+            }
+
             echo "[+] running migration for: $table" . PHP_EOL;
             $db->raw($migrations[$table]);
         }
 
-        echo "[OK] migrations completed!";
+        echo "\n[OK] migrations completed!\n";
     }
 
     /**
