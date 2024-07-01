@@ -13,6 +13,7 @@ namespace TeleBot\System\Session;
 use Exception;
 use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Interfaces\ISessionAdapter;
+use TeleBot\System\Session\Adapters\DbAdapter;
 use TeleBot\System\Session\Adapters\FileAdapter;
 use TeleBot\System\Session\Adapters\RedisAdapter;
 
@@ -111,6 +112,7 @@ class Session
 
                 self::$adapter = match (getenv('SESSION', true)) {
                     'filesystem' => new FileAdapter(self::$sessionId),
+                    'database' => new DbAdapter(self::$sessionId),
                     'redis' => new RedisAdapter(self::$sessionId),
                 };
             }
