@@ -74,11 +74,12 @@ trait Extensions
      * extra options to send with the message
      *
      * @param array $options
+     * @param bool $reset
      * @return BotApi|Extensions
      */
-    public function withOptions(array $options): self
+    public function withOptions(array $options, bool $reset = false): self
     {
-        $this->options = [...$this->options, ...$options];
+        $this->options = $reset ? $options : [...$this->options, ...$options];
         return $this;
     }
 
