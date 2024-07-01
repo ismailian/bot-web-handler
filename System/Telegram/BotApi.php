@@ -409,4 +409,37 @@ class BotApi
 
         return $data && $data['ok'] == true;
     }
+
+    /**
+     * set bot webhook
+     *
+     * @param string $webhookUrl webhook url
+     * @param string|null $secretToken secret token (optional)
+     * @return bool
+     * @throws GuzzleException
+     */
+    public function setWebhook(string $webhookUrl, string $secretToken = null): bool
+    {
+        $data = $this->post('hook', [
+            'url' => $webhookUrl,
+            ...($secretToken ? ['secret_token' => $secretToken] : [])
+        ]);
+
+        return $data && $data['ok'] == true;
+    }
+
+    /**
+     * delete bot webhook
+     *
+     * @return bool
+     * @throws GuzzleException
+     */
+    public function deleteWebhook(): bool
+    {
+        $data = $this->post('unhook', []);
+
+        return $data && $data['ok'] == true;
+    }
+
+
 }

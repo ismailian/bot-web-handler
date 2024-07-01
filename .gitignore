@@ -2,7 +2,7 @@
 .idea
 vendor
 tmp
-session
+./session
 logs
 tests
 todos.txt

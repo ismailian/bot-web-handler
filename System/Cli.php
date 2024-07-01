@@ -11,6 +11,7 @@
 namespace TeleBot\System;
 
 use GuzzleHttp\Client;
+use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Database\DbClient;
 use TeleBot\System\Filesystem\Dotenv;
 use GuzzleHttp\Exception\GuzzleException;
@@ -313,6 +314,53 @@ class Cli
         }
 
         echo "[-] failed to delete handler!" . PHP_EOL;
+    }
+
+    /**
+     * set bot webhook
+     *
+     * @param array $args
+     * @return void
+     * @throws GuzzleException
+     */
+    public static function setWebhook(array $args): void
+    {
+        $webhookUrl = getenv('APP_DOMAIN', true);
+        if (empty($webhookUrl)) {
+            die('[APP_DOMAIN] in .env file is required!');
+        }
+
+        if ($webhookUrl == 'http://localhost') {
+            die('[APP_DOMAIN] seems to be set to localhost which is not a valid webhook url!');
+        }
+
+        $webhookUrl .= str_ends_with($webhookUrl, '/') ? '' : '/';
+        if (array_key_exists('uri', $args)) {
+            $webhookUrl = rtrim($webhookUrl, '/') . '/' . ltrim($args['uri'], '/');
+        }
+
+        $api = (new BotApi())->setToken(getenv('TG_BOT_TOKEN', true));
+        if (!$api->setWebhook($webhookUrl, getenv('TG_BOT_SIGNATURE', true))) {
+            die('[-] failed to set bot webhook!' . PHP_EOL);
+        }
+
+        echo '[+] webhook set successfully!' . PHP_EOL;
+    }
+
+    /**
+     * unset bot webhook
+     *
+     * @return void
+     * @throws GuzzleException
+     */
+    public static function unsetWebhook(): void
+    {
+        $api = (new BotApi())->setToken(getenv('TG_BOT_TOKEN', true));
+        if (!$api->deleteWebhook()) {
+            die('[-] failed to delete bot webhook!' . PHP_EOL);
+        }
+
+        echo '[+] webhook deleted successfully!' . PHP_EOL;
     }
 
 }
