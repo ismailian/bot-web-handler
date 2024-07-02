@@ -22,12 +22,17 @@ A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 - blacklist - list of disallowed user ids (Optional)
 
 #### 3. Useful commands
-| Command                         | Description                 |
-|---------------------------------|-----------------------------|
-| `php cli update:check`          | check for available updates |
-| `php cli update:apply`          | apply available updates     |
-| `php cli handler:make <name>`   | create new handler          |
-| `php cli handler:delete <name>` | delete a handler            |
+| Command                         | Description                                |
+|---------------------------------|--------------------------------------------|
+| `php cli update:check`          | check for available updates                |
+| `php cli update:apply`          | apply available updates                    |
+| `php cli handler:make <name>`   | create new handler                         |
+| `php cli handler:delete <name>` | delete a handler                           |
+| `php cli webhook:set [uri]`     | set bot webhook (URI is optional)          |
+| `php cli webhook:unset`         | unset bot webhook                          |
+| `php cli migrate <tables>`      | migrate tables (users, events, sessions)   |
+| `php cli queue:init`            | create queue table + jobs directory        |
+| `php cli queue:work`            | run queue                                  |
 
 ## Examples
 #### Photos
