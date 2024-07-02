@@ -212,8 +212,28 @@ Currently, the queue only uses database to manage jobs, in the future, other met
 #### setup queue in 3 steps:
 1. run migration: `php cli queue:init`
 2. run queue worker: `php cli queue:work`
-3. create job class:
-   *typically, you would create a `Jobs` directory in the `App` folder where your jobs will live. Job classes must implement the `IJob` interface.*
+3. create job:
+   *typically, you would create the job in the `App\Jobs` directory where your jobs will live. Job classes must implement the `IJob` interface.*
+```php
+use TeleBot\System\Interfaces\IJob;
+
+readonly class UrlParserJob implements IJob
+{
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct(protected array $data) {}
+
+    /**
+     * @inheritDoc
+     */
+    public function process(): void
+    {
+        // process your data
+    }
+}
+```
 
 #### dispatching jobs:
 ```php
@@ -225,7 +245,7 @@ Currently, the queue only uses database to manage jobs, in the future, other met
 #[Url]
 public function urls(IncomingUrl $url): void
 {
-    QueueWorker::dispatch(UrlParserJob::class, [
+    Queue::dispatch(UrlParserJob::class, [
         'url' => $url
     ]);
     
