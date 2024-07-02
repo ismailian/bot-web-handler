@@ -16,7 +16,7 @@ use TeleBot\System\Database\DbClient;
 use TeleBot\System\Filesystem\Dotenv;
 use GuzzleHttp\Exception\GuzzleException;
 
-class Cli
+class Console
 {
 
     protected static string $payload = "PD9waHAKCm5hbWVzcGFjZSBUZWxlQm90XEFwcFxIYW5kbGVyc3t7aGFuZGxlclBhdGh9fTsKCnVzZSBUZWxlQm90XFN5c3RlbVxJbmNvbWluZ0V2ZW50OwoKY2xhc3Mge3toYW5kbGVyTmFtZX19IGV4dGVuZHMgSW5jb21pbmdFdmVudCB7fQ==";

@@ -12,7 +12,7 @@ namespace TeleBot\System;
 
 use TeleBot\System\Database\DbClient;
 
-class QueueWorker
+class Queue
 {
 
     /** @var int $SLEEP_TIME */
@@ -36,7 +36,7 @@ class QueueWorker
         $tableExists = (bool) self::$db->getClient()->query("SHOW TABLES LIKE 'queue_jobs'")->rowCount();
         if (!$tableExists) {
             try {
-                echo '[+] running migration for queue table..';
+                echo '[+] running migration for queue table.. ';
                 self::$db->raw("CREATE TABLE `queue_jobs` (
                         `id` INT(11) NOT NULL AUTO_INCREMENT,
                         `status` TINYINT(1) NOT NULL DEFAULT 0,
@@ -45,7 +45,11 @@ class QueueWorker
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
                         PRIMARY KEY (`id`)
                     ) COLLATE='latin1_swedish_ci';");
-                die('OK!' . PHP_EOL);
+                echo '[OK]' . PHP_EOL;
+
+                echo '[+] creating jobs directory.. ';
+                @mkdir('App/Jobs');
+                die('[OK]');
             } catch (\Exception $e) {
                 die("failed!" . PHP_EOL . $e->getMessage() . PHP_EOL);
             }

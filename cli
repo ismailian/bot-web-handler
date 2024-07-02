@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-use TeleBot\System\Cli;
+use TeleBot\System\Queue;
 use Clue\Commander\Router;
-use TeleBot\System\QueueWorker;
+use TeleBot\System\Console;
 use TeleBot\System\Filesystem\Dotenv;
 
 require_once 'vendor/autoload.php';
@@ -24,23 +24,23 @@ Dotenv::load();
 $router = new Router();
 
 /* system update command */
-$router->add('update:init', fn($args) => Cli::init());
-$router->add('update:check', fn($args) => Cli::check());
-$router->add('update:apply', fn($args) => Cli::update());
+$router->add('update:init', fn($args) => Console::init());
+$router->add('update:check', fn($args) => Console::check());
+$router->add('update:apply', fn($args) => Console::update());
 
 /* handler commands */
-$router->add('handler:make <name>', fn($args) => Cli::makeHandler($args));
-$router->add('handler:delete <name>', fn($args) => Cli::deleteHandler($args));
+$router->add('handler:make <name>', fn($args) => Console::makeHandler($args));
+$router->add('handler:delete <name>', fn($args) => Console::deleteHandler($args));
 
 /* migration commands */
-$router->add('migrate [<tables>...]', fn($args) => Cli::migrate($args));
+$router->add('migrate [<tables>...]', fn($args) => Console::migrate($args));
 
 /* queue commands */
-$router->add('queue:init', fn($args) => QueueWorker::init());
-$router->add('queue:work', fn($args) => QueueWorker::listen());
+$router->add('queue:init', fn($args) => Queue::init());
+$router->add('queue:work', fn($args) => Queue::listen());
 
 /* webhook commands */
-$router->add('webhook:set [<uri>]', fn($args) => Cli::setWebhook($args));
-$router->add('webhook:unset', fn($args) => Cli::unsetWebhook());
+$router->add('webhook:set [<uri>]', fn($args) => Console::setWebhook($args));
+$router->add('webhook:unset', fn($args) => Console::unsetWebhook());
 
 $router->execArgv();
