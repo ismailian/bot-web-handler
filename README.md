@@ -1,21 +1,20 @@
-# bot-web-handler
-
-This little project is designed specifically for [Telegram](https://core.telegram.org/bots/api) bots.
+# Bot Web Handler
+A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 
 **Steps**
-1. `git clone https://github.com/ismailian/bot-web-handler`
-2. `mv bot-web-handler /var/www/`
-3. `cd /var/www/bot-web-handler/`
-4. `composer install`
-5. `cp .env.sample .env`
+1. `git clone https://github.com/ismailian/bot-web-handler my-bot`
+2. `cd my-bot`
+3. `composer install`
+4. `cp .env.sample .env`
 
-**[Configurations]**
+**Configurations**
 
 #### 1. Set the following properties in the `.env` file
 - domain url `APP_DOMAIN`
 - bot token `BOT_TOKEN`
 - webhook secret `TG_BOT_SIGNATURE` (Optional)
 - Telegram source IP `TG_SOURCE_IP` (Optional)
+  - I don't recommend setting this, because the Telegram IP will definitely change.
 
 #### 2. Set the following properties in the `config.php` file
 - routes - routes to accept requests from (Optional)
@@ -251,4 +250,22 @@ public function urls(IncomingUrl $url): void
     
     $this->telegram->sendMessage('Your url is being processed!');
 }
+```
+
+### Accepting requests other than Telegram's.
+In `config.php`, you can configure your routes to handle other requests.
+```php
+ /**
+  * @var array $routes allowed routes
+  */
+ 'routes' => [
+     'web' => [
+         'get' => [
+             '/api/health-check' => 'HealthCheck::index'
+         ],
+         'post' => [
+             '/api/whitelist' => 'Whitelist::update'
+         ]
+     ]
+ ],
 ```
