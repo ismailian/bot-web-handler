@@ -146,6 +146,10 @@ class Console
                 echo "[+] \033[{$color}m{$action}\033[0m: {$file['filename']}" . PHP_EOL;
                 if ($action == 'deleting') {
                     @unlink($file['filename']);
+                } else if ($action == 'renamed') {
+                    if (array_key_exists('preview_filename', $file)) {
+                        @rename($file['previous_filename'], $file['filename']);
+                    }
                 } else {
                     if (!file_exists(dirname($file['filename']))) {
                         @mkdir(dirname($file['filename']));
@@ -239,6 +243,7 @@ class Console
                 'status' => $file['status'],
                 'filename' => $file['filename'],
                 'url' => $file['raw_url'],
+                ...($file['status'] == 'renamed' ? ['previous_filename' => $file['previous_filename']] : [])
             ]), $files);
         } catch (GuzzleException $e) {
             if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
