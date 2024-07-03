@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System\Session\Adapters;
+namespace TeleBot\System\Session\Drivers;
 
 use TeleBot\System\Database\DbClient;
-use TeleBot\System\Interfaces\ISessionAdapter;
+use TeleBot\System\Interfaces\ISessionDriver;
 
-class DbAdapter implements ISessionAdapter
+class DbDriver implements ISessionDriver
 {
 
     /** @var DbClient|null $db db client */

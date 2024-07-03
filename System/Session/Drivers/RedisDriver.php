@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System\Session\Adapters;
+namespace TeleBot\System\Session\Drivers;
 
 use Predis\Client;
 use TeleBot\System\Exceptions\MissingToken;
-use TeleBot\System\Interfaces\ISessionAdapter;
+use TeleBot\System\Interfaces\ISessionDriver;
 
-class RedisAdapter implements ISessionAdapter
+class RedisDriver implements ISessionDriver
 {
 
     /** @var Client $client redis client */

@@ -12,16 +12,16 @@ namespace TeleBot\System\Session;
 
 use Exception;
 use TeleBot\System\Http\HttpRequest;
-use TeleBot\System\Interfaces\ISessionAdapter;
-use TeleBot\System\Session\Adapters\DbAdapter;
-use TeleBot\System\Session\Adapters\FileAdapter;
-use TeleBot\System\Session\Adapters\RedisAdapter;
+use TeleBot\System\Interfaces\ISessionDriver;
+use TeleBot\System\Session\Drivers\DbDriver;
+use TeleBot\System\Session\Drivers\FileDriver;
+use TeleBot\System\Session\Drivers\RedisDriver;
 
 class Session
 {
 
-    /** @var ISessionAdapter|null $adapter */
-    protected static ?ISessionAdapter $adapter = null;
+    /** @var ISessionDriver|null $adapter */
+    protected static ?ISessionDriver $adapter = null;
 
     /** @var string|mixed $sessionId */
     protected static string $sessionId;
@@ -111,9 +111,9 @@ class Session
                 }
 
                 self::$adapter = match (getenv('SESSION', true)) {
-                    'filesystem' => new FileAdapter(self::$sessionId),
-                    'database' => new DbAdapter(self::$sessionId),
-                    'redis' => new RedisAdapter(self::$sessionId),
+                    'filesystem' => new FileDriver(self::$sessionId),
+                    'database' => new DbDriver(self::$sessionId),
+                    'redis' => new RedisDriver(self::$sessionId),
                 };
             }
         } catch (Exception) {}

@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System\Session\Adapters;
+namespace TeleBot\System\Session\Drivers;
 
-use TeleBot\System\Interfaces\ISessionAdapter;
+use TeleBot\System\Interfaces\ISessionDriver;
 
-class FileAdapter implements ISessionAdapter
+class FileDriver implements ISessionDriver
 {
 
     /** @var string $sessionId session id */

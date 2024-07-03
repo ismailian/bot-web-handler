@@ -10,7 +10,7 @@
 
 namespace TeleBot\System\Interfaces;
 
-interface ISessionAdapter
+interface ISessionDriver
 {
 
     /**
