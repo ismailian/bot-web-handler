@@ -146,16 +146,18 @@ class Console
                 echo "[+] \033[{$color}m{$action}\033[0m: {$file['filename']}" . PHP_EOL;
                 if ($action == 'deleting') {
                     @unlink($file['filename']);
-                } else if ($action == 'renamed') {
-                    if (array_key_exists('preview_filename', $file)) {
-                        @rename($file['previous_filename'], $file['filename']);
-                    }
                 } else {
                     if (!file_exists(dirname($file['filename']))) {
                         @mkdir(dirname($file['filename']));
                     }
 
                     file_put_contents($file['filename'], file_get_contents($file['url']));
+
+                    // delete previous file (if renamed)
+                    if (array_key_exists('previous_filename', $file)) {
+                        @unlink($file['previous_filename']);
+                        @rmdir(dirname($file['previous_filename']));
+                    }
                 }
             }
         }
