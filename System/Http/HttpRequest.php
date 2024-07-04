@@ -111,10 +111,15 @@ class HttpRequest
     /**
      * get form-data body
      *
-     * @return array
+     * @param bool $raw
+     * @return array|string
      */
-    public static function body(): array
+    public static function body(bool $raw = false): array|string
     {
+        if ($raw) {
+            return file_get_contents('php://input');
+        }
+
         $body = self::$_body ?? (self::$_body = $_POST);
         return [
             ...$body,
