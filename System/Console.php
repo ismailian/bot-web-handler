@@ -32,6 +32,10 @@ class Console
      */
     public static function init(): void
     {
+        if (!file_exists('.env')) {
+            @copy('.env.sample', '.env');
+        }
+
         if (!file_exists(self::$history)) {
             file_put_contents(self::$history, json_encode([
                 'date' => (new \DateTime())->format('Y-m-d\TH:i:s\Z'),
