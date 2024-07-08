@@ -10,18 +10,10 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Enums\InlineKeyboardType;
+
 class InlineKeyboard
 {
-
-    const string URL = 'url';
-    const string PAY = 'pay';
-    const string WEB_APP = 'web_app';
-    const string LOGIN_URL = 'login_url';
-    const string CALLBACK_GAME = 'callback_game';
-    const string CALLBACK_DATA = 'callback_data';
-    const string SWITCH_INLINE_QUERY = 'switch_inline_query';
-    const string SWITCH_INLINE_QUERY_CHOSEN_CHAT = 'switch_inline_query_chosen_chat';
-    const string SWITCH_INLINE_QUERY_CURRENT_CHAT = 'switch_inline_query_current_chat';
 
     /** @var array collection of buttons */
     protected array $buttons = [];
@@ -62,14 +54,14 @@ class InlineKeyboard
      *
      * @param string $text
      * @param mixed $value
-     * @param string $type
+     * @param InlineKeyboardType $type
      * @return $this
      */
-    public function addButton(string $text, mixed $value, string $type = InlineKeyboard::URL): InlineKeyboard
+    public function addButton(string $text, mixed $value, InlineKeyboardType $type = InlineKeyboardType::URL): InlineKeyboard
     {
         $this->buttons[] = [
             'text' => $text,
-            $type => is_array($value) ? json_encode($value, JSON_UNESCAPED_SLASHES) : $value
+            $type->value => is_array($value) ? json_encode($value, JSON_UNESCAPED_SLASHES) : $value
         ];
 
         return $this;
