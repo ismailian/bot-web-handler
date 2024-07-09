@@ -88,11 +88,17 @@ class HttpRequest
     /**
      * get query parameters
      *
-     * @return array
+     * @param string|null $key
+     * @return string|array|null
      */
-    public static function query(): array
+    public static function query(string $key = null): string|array|null
     {
-        return self::$_query ?? (self::$_query = $_GET);
+        self::$_query = $_GET;
+        if (!is_null($key)) {
+            return self::$_query[$key] ?? null;
+        }
+
+        return self::$_query;
     }
 
     /**
