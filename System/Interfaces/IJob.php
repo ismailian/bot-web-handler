@@ -16,9 +16,10 @@ interface IJob
     /**
      * default constructor
      *
+     * @param int $id
      * @param array $data
      */
-    public function __construct(array $data);
+    public function __construct(int $id, array $data);
 
     /**
      * process data
