@@ -67,7 +67,7 @@ class Queue
     {
         self::$db ??= new DbClient();
         while (true) {
-            $job = self::$db->row('select * from `queue_jobs` where `status` = ?', [0]);
+            $job = self::$db->row('select id,data from `queue_jobs` where `status` = ?', [0]);
             if ($job) {
                 if (self::$SLEEP_TIME > 300_000) {
                     self::$SLEEP_TIME = 300_000;
@@ -98,7 +98,7 @@ class Queue
         $status = 2;
 
         try {
-            (new $payload['class']($payload))->process();
+            (new $payload['class']($job->id, $payload))->process();
         } catch (\Exception $e) {
             if ($attempts < self::$RETRIES) {
                 self::runJob($job, $attempts + 1);
