@@ -33,13 +33,14 @@ class Queue
     {
         self::$db ??= new DbClient();
 
-        $tableExists = (bool) self::$db->getClient()->query("SHOW TABLES LIKE 'queue_jobs'")->rowCount();
+        $tableExists = (bool)self::$db->getClient()->query("SHOW TABLES LIKE 'queue_jobs'")->rowCount();
         if (!$tableExists) {
             try {
                 echo '[+] running migration for queue table.. ';
                 self::$db->raw("CREATE TABLE `queue_jobs` (
                         `id` INT(11) NOT NULL AUTO_INCREMENT,
                         `status` TINYINT(1) NOT NULL DEFAULT 0,
+                        `job` VARCHAR(255) NOT NULL,
                         `data` JSON NOT NULL,
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
@@ -67,7 +68,7 @@ class Queue
     {
         self::$db ??= new DbClient();
         while (true) {
-            $job = self::$db->row('select id,data from `queue_jobs` where `status` = ?', [0]);
+            $job = self::$db->row('select id,job,data from `queue_jobs` where `status` = ?', [0]);
             if ($job) {
                 if (self::$SLEEP_TIME > 300_000) {
                     self::$SLEEP_TIME = 300_000;
@@ -98,7 +99,7 @@ class Queue
         $status = 2;
 
         try {
-            (new $payload['class']($job->id, $payload))->process();
+            (new $job->job($job->id, $payload))->process();
         } catch (\Exception $e) {
             if ($attempts < self::$RETRIES) {
                 self::runJob($job, $attempts + 1);
@@ -114,18 +115,16 @@ class Queue
     /**
      * add job to the queue
      *
-     * @param string $class job class
+     * @param string $job job class
      * @param array $data data to pass to the job class
      * @return void
      */
-    public static function dispatch(string $class, array $data): void
+    public static function dispatch(string $job, array $data): void
     {
         self::$db ??= new DbClient();
         self::$db->insert('queue_jobs', [
-            'data' => json_encode([
-                'class' => $class,
-                ...$data
-            ]),
+            'job' => $job,
+            'data' => json_encode($data),
         ]);
     }
 
