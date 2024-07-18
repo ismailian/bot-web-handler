@@ -69,13 +69,17 @@ class Queue
     {
         self::$db ??= new DbClient();
         while (true) {
-            $job = self::$db->row('select id,job,data from `queue_jobs` where `status` = ?', [0]);
-            if ($job) {
-                if (self::$SLEEP_TIME > 300_000) {
-                    self::$SLEEP_TIME = 300_000;
+            $reservedAt = (int)str_replace('.', '', microtime(true));
+            $rows = self::$db->run('UPDATE `queue_jobs` SET `reserved_at` = ? WHERE `status` = ? ORDER BY `id` LIMIT 1', [$reservedAt, 0])->rowCount();
+            if ($rows > 0) {
+                $job = self::$db->row('select id,job,data from `queue_jobs` where `reserved_at` = ?', [$reservedAt]);
+                if ($job) {
+                    self::$db->update('queue_jobs', ['status' => 1], ['id' => $job->id]);
+                    self::runJob($job);
+                    if (self::$SLEEP_TIME > 300_000) {
+                        self::$SLEEP_TIME = 300_000;
+                    }
                 }
-
-                self::runJob($job);
             } else {
                 if (self::$SLEEP_TIME < 1_000_000) {
                     self::$SLEEP_TIME = 1_000_000;
@@ -95,7 +99,6 @@ class Queue
      */
     private static function runJob(object $job, int $attempts = 1): void
     {
-        self::$db->update('queue_jobs', ['status' => 1], ['id' => $job->id]);
         $payload = json_decode($job->data, true);
         $status = 2;
 
