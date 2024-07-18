@@ -31,14 +31,7 @@ class ExceptionHandler
             'file' => $file,
             'line' => $line,
             'error' => $message,
-            'trace' => $context,
-            'request' => [
-                'ip' => HttpRequest::ip(),
-                'uri' => HttpRequest::uri(),
-                'method' => HttpRequest::method(),
-                'query' => HttpRequest::query(),
-                'body' => HttpRequest::body(),
-            ],
+            'trace' => $context
         ]);
     }
 
@@ -50,16 +43,29 @@ class ExceptionHandler
      */
     protected static function log(array $data): void
     {
+        if (php_sapi_name() !== 'cli') {
+            $data = [
+                ...$data,
+                'request' => [
+                    'ip' => HttpRequest::ip(),
+                    'uri' => HttpRequest::uri(),
+                    'method' => HttpRequest::method(),
+                    'query' => HttpRequest::query(),
+                    'body' => HttpRequest::body(),
+                ]
+            ];
+        }
+
         /** create log dir if it does not already exist */
         if (!file_exists('logs') && !is_dir('logs')) {
             mkdir('logs');
         }
 
         $logPath = 'logs/' . date('Y-m-d__H-i-s') . '.log';
-        $encodedData = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $encodedData = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         if (!$encodedData) {
             unset($data['trace']);
-            $encodedData = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+            $encodedData = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         }
 
         file_put_contents($logPath, $encodedData);
@@ -77,14 +83,7 @@ class ExceptionHandler
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTrace(),
-            'request' => [
-                'ip' => HttpRequest::ip(),
-                'uri' => HttpRequest::uri(),
-                'method' => HttpRequest::method(),
-                'query' => HttpRequest::query(),
-                'body' => HttpRequest::body(),
-            ],
+            'trace' => $exception->getTrace()
         ]);
     }
 
