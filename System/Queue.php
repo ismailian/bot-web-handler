@@ -42,6 +42,7 @@ class Queue
                         `status` TINYINT(1) NOT NULL DEFAULT 0,
                         `job` VARCHAR(255) NOT NULL,
                         `data` JSON NOT NULL,
+                        `reserved_at` BIGINT(20) UNSIGNED NULL,
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
                         PRIMARY KEY (`id`)
