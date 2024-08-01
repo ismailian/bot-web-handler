@@ -26,7 +26,7 @@ class Message implements IEvent
      */
     public function apply(array $event): IncomingMessage|bool
     {
-        if (!$this->isMessage(array_keys($event))) return false;
+        if (!$this->isMessage(array_keys($event), 'message')) return false;
         return new IncomingMessage($event[$this->first(array_keys($event))]);
     }
 }

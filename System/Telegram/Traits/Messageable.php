@@ -24,10 +24,17 @@ trait Messageable
      * checks if a message update exists
      *
      * @param array $keys
+     * @param string|null $strict
      * @return bool
      */
-    public function isMessage(array $keys): bool
+    public function isMessage(array $keys, string $strict = null): bool
     {
+        if (!is_null($strict)) {
+            return
+                !empty(array_intersect($this->updates, $keys))
+                && $this->first($keys) == $strict;
+        }
+
         return !empty(array_intersect($this->updates, $keys));
     }
 
