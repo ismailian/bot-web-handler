@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System\Filesystem;
+namespace TeleBot\System\Core;
 
-use TeleBot\System\Core\Router;
+use TeleBot\System\Filesystem\Collector;
 use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Http\HttpResponse;
 

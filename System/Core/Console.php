@@ -13,7 +13,6 @@ namespace TeleBot\System\Core;
 use GuzzleHttp\Client;
 use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Database\DbClient;
-use TeleBot\System\Filesystem\Dotenv;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Console

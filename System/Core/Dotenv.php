@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System\Filesystem;
+namespace TeleBot\System\Core;
 
 class Dotenv
 {

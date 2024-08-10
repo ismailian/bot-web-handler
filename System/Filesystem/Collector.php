@@ -17,7 +17,7 @@ class Collector
     const DEFAULT_NS = 'TeleBot';
 
     /**
-     * recursively collect files in path based on their extension
+     * recursively collect files in a path based on their extension
      *
      * @param string $folder
      * @param string $extension
@@ -38,7 +38,7 @@ class Collector
     }
 
     /**
-     * recursively collect namespaces files in path based on their extension
+     * recursively collect namespace files in a path based on their extension
      *
      * @param string $folder
      * @param string $namespace
@@ -63,7 +63,7 @@ class Collector
     }
 
     /**
-     * get full file path
+     * get a full file path
      *
      * @param string $handlerName
      * @param string $folder
