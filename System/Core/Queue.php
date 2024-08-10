@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System;
+namespace TeleBot\System\Core;
 
 use TeleBot\System\Database\DbClient;
 
@@ -117,7 +117,7 @@ class Queue
     }
 
     /**
-     * add job to the queue
+     * add a job to the queue
      *
      * @param string $job job class
      * @param array $data data to pass to the job class

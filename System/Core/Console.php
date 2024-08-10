@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System;
+namespace TeleBot\System\Core;
 
 use GuzzleHttp\Client;
 use TeleBot\System\Telegram\BotApi;
