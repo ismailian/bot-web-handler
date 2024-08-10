@@ -10,7 +10,7 @@
 
 namespace TeleBot\System\Filesystem;
 
-use TeleBot\System\Router;
+use TeleBot\System\Core\Router;
 use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Http\HttpResponse;
 

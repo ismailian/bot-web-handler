@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-use TeleBot\System\Queue;
 use Clue\Commander\Router;
-use TeleBot\System\Console;
+use TeleBot\System\Core\Console;
+use TeleBot\System\Core\Queue;
 use TeleBot\System\Filesystem\Dotenv;
 
 require_once 'vendor/autoload.php';
