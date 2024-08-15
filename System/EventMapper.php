@@ -14,6 +14,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionException;
 use TeleBot\System\Core\Handler;
+use TeleBot\System\Core\Delegate;
 use TeleBot\System\Core\Bootstrap;
 use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Filesystem\Collector;
@@ -63,15 +64,21 @@ class EventMapper
     private function runFilters(ReflectionMethod $method): bool
     {
         $filters = [
+            ...$method->getAttributes(Delegate::class),
             ...$method->getAttributes(Chat::class),
             ...$method->getAttributes(Only::class),
             ...$method->getAttributes(Awaits::class),
         ];
 
         foreach ($filters as $filter) {
-            if (!($filter->newInstance()->apply(HttpRequest::json()))) {
-                return false;
+            if (is_subclass_of($method->class, Delegate::class)) {
+                $filter->newInstance()();
+            } else {
+                if (!($filter->newInstance()->apply(HttpRequest::json()))) {
+                    return false;
+                }
             }
+
         }
 
         return true;
