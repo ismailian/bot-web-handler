@@ -10,9 +10,9 @@
 
 namespace TeleBot\System\Core;
 
-use TeleBot\System\Filesystem\Collector;
 use TeleBot\System\Http\HttpRequest;
 use TeleBot\System\Http\HttpResponse;
+use TeleBot\System\Filesystem\Collector;
 
 class Bootstrap
 {
@@ -38,11 +38,12 @@ class Bootstrap
             if ($handler = Collector::getNamespacedFile($route['handler'])) {
                 (new Handler())
                     ->setConfig(self::$config)
-                    ->assign(new $handler, explode('::', $route['handler'])[1], array_values($route['params']))
-                    ->run();
+                    ->assign(new $handler,
+                        explode('::', $route['handler'])[1], array_values($route['params'])
+                    )->run();
             }
 
-            // end connection with a status based on wither handler is properly executed
+            // end connection with a status based on whether handler is properly executed
             HttpResponse::setStatusCode(($handler ? 200 : 404))->end();
         }
 
@@ -61,27 +62,6 @@ class Bootstrap
                 HttpResponse::close();
             }
         }
-    }
-
-    /**
-     * verify user id
-     *
-     * @return bool
-     */
-    private function verifyUserId(): bool
-    {
-        $payload = HttpRequest::json();
-        unset($payload['update_id']);
-        $keys = array_keys($payload);
-        $userId = $payload[$keys[0]]['from']['id'];
-
-        $whitelist = self::$config['users']['whitelist'];
-        $blacklist = self::$config['users']['blacklist'];
-
-        if (!empty($whitelist)) return in_array($userId, $whitelist);
-        if (!empty($blacklist)) return !in_array($userId, $blacklist);
-
-        return true;
     }
 
     /**
@@ -159,6 +139,27 @@ class Bootstrap
         }
 
         return $this;
+    }
+
+    /**
+     * verify user id
+     *
+     * @return bool
+     */
+    private function verifyUserId(): bool
+    {
+        $payload = HttpRequest::json();
+        unset($payload['update_id']);
+        $keys = array_keys($payload);
+        $userId = $payload[$keys[0]]['from']['id'];
+
+        $whitelist = self::$config['users']['whitelist'];
+        $blacklist = self::$config['users']['blacklist'];
+
+        if (!empty($whitelist)) return in_array($userId, $whitelist);
+        if (!empty($blacklist)) return !in_array($userId, $blacklist);
+
+        return true;
     }
 
 }

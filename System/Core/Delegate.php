@@ -12,7 +12,9 @@ namespace TeleBot\System\Core;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[Attribute(
+    Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE
+)]
 readonly class Delegate
 {
 
@@ -30,9 +32,7 @@ readonly class Delegate
      */
     public function __invoke(): void
     {
-        try {
-            (new $this->delegateTo())();
-        } catch (\Exception $e) {}
+        (new $this->delegateTo())();
     }
 
 }

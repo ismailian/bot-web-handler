@@ -10,6 +10,8 @@
 
 namespace TeleBot\System\Core;
 
+use ReflectionMethod;
+use ReflectionException;
 use TeleBot\System\Filesystem\Collector;
 
 class Handler
@@ -60,9 +62,12 @@ class Handler
      * execute handler
      *
      * @return void
+     * @throws ReflectionException
      */
     public function run(): void
     {
+        $this->executeDelegates();
+
         call_user_func_array(
             [$this->instance, $this->method], [$this->args]
         );
@@ -80,6 +85,24 @@ class Handler
             call_user_func_array(
                 [new (Collector::getNamespacedFile($class)), $method], []
             );
+        }
+    }
+
+    /**
+     * execute any available delegates
+     *
+     * @return void
+     * @throws ReflectionException
+     */
+    private function executeDelegates(): void
+    {
+        $refMethod = new ReflectionMethod($this->instance, $this->method);
+        $delegates = $refMethod->getAttributes(
+            Delegate::class
+        );
+
+        foreach ($delegates as $delegate) {
+            $delegate->newInstance()();
         }
     }
 
