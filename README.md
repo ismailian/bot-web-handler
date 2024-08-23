@@ -189,7 +189,7 @@ public function invoice(): void
  * @return void
  */
 #[PreCheckoutQuery]
-public function checkout(IncomingPreCheckoutQuery $preCheckoutQuery): void
+public function preCheckout(IncomingPreCheckoutQuery $preCheckoutQuery): void
 {
     $this->telegram->answerPreCheckoutQuery(
         queryId: $preCheckoutQuery->id,
@@ -213,7 +213,7 @@ public function paid(IncomingSuccessfulPayment $successfulPayment): void
 ## Simple Queue
 Currently, the queue only uses database to manage jobs, in the future, other methods will be integrated.
 
-#### setup queue in 3 steps:
+#### configure queue in 3 steps:
 1. run migration: `php cli queue:init`
 2. run queue worker: `php cli queue:work`
 3. create job:
@@ -227,7 +227,7 @@ readonly class UrlParserJob implements IJob
     /**
      * @inheritDoc
      */
-    public function __construct(protected array $data) {}
+    public function __construct(protected int $id, protected array $data) {}
 
     /**
      * @inheritDoc
@@ -273,4 +273,51 @@ In `config.php`, you can configure your routes to handle other requests.
          ]
      ]
  ],
+```
+
+### Delegates (middlewares)
+delegates are meant to intercept incoming requests before hitting the final handler.
+To create a delegate, simply add new class to the `App\Delegates` directory, and implement the `IDelegate` interface.
+
+This example demonstrates how to verify that the http request is coming from the admin.
+
+Example `Web` Handler:
+```php
+use TeleBot\System\Core\Delegate;
+use TeleBot\App\Delegates\IsAdmin;
+
+/**
+ * list all users
+ *
+ * @return void
+ */
+#[Delegate(IsAdmin::class)]
+public function users(): void
+{
+    // some logic to fetch users
+    $users = [];
+    
+    HttpResponse::send(['users' => $users], true);
+}
+```
+
+`IsAdmin` delegate:
+```php
+/**
+ * check if request is coming from the admin
+ *
+ * @return void
+ */
+public function __invoke(): void
+{
+    $apiKey = HttpRequest::headers('X-Admin-Api-Key');
+    if (empty($apiKey)) {
+        HttpResponse::setStatusCode(401)->end();
+    }
+
+    $secret = getenv('ADMIN_API_KEY');
+    if (!hash_equals($secret, $apiKey)) {
+        HttpResponse::setStatusCode(401)->end();
+    }   
+}
 ```
