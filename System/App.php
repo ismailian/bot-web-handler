@@ -12,7 +12,7 @@ namespace TeleBot\System;
 
 use Exception;
 
-class AppHandler extends EventMapper
+class App extends EventMapper
 {
 
     /**
