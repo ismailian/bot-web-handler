@@ -12,6 +12,7 @@ namespace TeleBot\System\Telegram\Traits;
 
 use Exception;
 use GuzzleHttp\Client;
+use TeleBot\System\ExceptionHandler;
 use GuzzleHttp\Exception\GuzzleException;
 
 trait HttpClient
@@ -74,7 +75,9 @@ trait HttpClient
             $body = json_decode($response->getBody(), true);
 
             return $body['ok'] ? $body : null;
-        } catch (GuzzleException $e) {}
+        } catch (GuzzleException $e) {
+            ExceptionHandler::onException($e);
+        }
         return null;
     }
 
@@ -126,7 +129,9 @@ trait HttpClient
 
             $this->options = [];
             return $body['ok'] ? $body : null;
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+            ExceptionHandler::onException($e);
+        }
         return null;
     }
 
