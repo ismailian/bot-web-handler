@@ -12,6 +12,7 @@ namespace TeleBot\System\Telegram\Traits;
 
 use Closure;
 use TeleBot\System\Telegram\BotApi;
+use TeleBot\System\Interfaces\IValidator;
 
 trait Catchable
 {
@@ -29,11 +30,18 @@ trait Catchable
      *
      * @param int $code
      * @param callable $callback
+     * @param IValidator|null $validator
      * @return Catchable|BotApi
      */
-    public function on(int $code, callable $callback): self
+    public function on(int $code, callable $callback, IValidator $validator = null): self
     {
         $this->callbacks["$code"] = $callback;
+        if ($validator !== null) {
+            $this->callbacks["$code"] = [
+                'validator' => $validator,
+                'callback' => $callback,
+            ];
+        }
 
         return $this;
     }
@@ -64,7 +72,16 @@ trait Catchable
             return;
         }
 
-        $this->callbacks["$code"]($data);
+        $callback = $this->callbacks["$code"];
+        if (is_array($callback)) {
+            $validator = $callback['validator'];
+            $callback = $callback['callback'];
+            if (!$validator->isValid(
+                is_array($data) ? json_encode($data) : $data)
+            ) return;
+        }
+
+        $callback($data);
     }
 
     /**
