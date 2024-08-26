@@ -10,10 +10,9 @@
 
 namespace TeleBot\System\Telegram;
 
-use Exception;
 use GuzzleHttp\Psr7\Utils;
 use TeleBot\System\Telegram\Types\User;
-use GuzzleHttp\Exception\GuzzleException;
+use TeleBot\System\Telegram\Traits\Catchable;
 use TeleBot\System\Telegram\Traits\Extensions;
 use TeleBot\System\Telegram\Traits\HttpClient;
 use TeleBot\System\Telegram\Types\IncomingDice;
@@ -27,7 +26,7 @@ use TeleBot\System\Telegram\Types\IncomingAnimation;
 class BotApi
 {
 
-    use HttpClient, Extensions;
+    use HttpClient, Catchable, Extensions;
 
     /**
      * send a text message
@@ -35,7 +34,6 @@ class BotApi
      * @param string $text text message to send
      * @param bool $withAction send action
      * @return IncomingMessage|bool returns true on success, otherwise false
-     * @throws Exception|GuzzleException
      */
     public function sendMessage(string $text, bool $withAction = false): IncomingMessage|bool
     {
@@ -59,7 +57,6 @@ class BotApi
      * @param string|null $caption caption to send with image
      * @param bool $withAction send action indicator
      * @return IncomingPhoto|IncomingMessage|bool returns IncomingPhoto on success, otherwise false
-     * @throws Exception|GuzzleException
      */
     public function sendPhoto(
         string $imagePath,
@@ -94,7 +91,6 @@ class BotApi
      * @param bool $withAction send action indicator
      * @param bool $asUrl weather the provider video is an ID or Url
      * @return IncomingVideo|IncomingMessage|bool returns IncomingVideo on success, otherwise false
-     * @throws Exception|GuzzleException
      */
     public function sendVideo(
         string $videoPath,
@@ -129,7 +125,6 @@ class BotApi
      * @param bool $withAction
      * @param bool $asUrl
      * @return IncomingAudio|IncomingMessage|bool
-     * @throws GuzzleException
      */
     public function sendAudio(
         string $audioFile,
@@ -164,7 +159,6 @@ class BotApi
      * @param bool $withAction
      * @param bool $asUrl
      * @return IncomingAnimation|IncomingMessage|bool
-     * @throws GuzzleException
      */
     public function sendAnimation(string $filePath, string $caption = null, bool $withAction = false, bool $asUrl = false): IncomingAnimation|IncomingMessage|bool
     {
@@ -194,7 +188,6 @@ class BotApi
      * @param bool $withAction send action indicator
      * @param bool $asUrl
      * @return IncomingDocument|IncomingMessage|bool returns IncomingDocument on success, otherwise false
-     * @throws Exception|GuzzleException
      */
     public function sendDocument(
         string $fileUrl,
@@ -226,7 +219,6 @@ class BotApi
      *
      * @param string $emoji
      * @return IncomingDice|bool
-     * @throws Exception|GuzzleException
      */
     public function sendDice(string $emoji): IncomingDice|bool
     {
@@ -242,7 +234,6 @@ class BotApi
      *
      * @param string $messageId id of a message to delete
      * @return bool
-     * @throws Exception|GuzzleException
      */
     public function deleteMessage(string $messageId): bool
     {
@@ -275,7 +266,6 @@ class BotApi
      * @param string $messageId
      * @param string $text
      * @return bool
-     * @throws Exception|GuzzleException
      */
     public function editMessage(string $messageId, string $text): bool
     {
@@ -297,7 +287,6 @@ class BotApi
      * @param string|null $caption
      * @param bool $asUrl
      * @return bool
-     * @throws GuzzleException
      */
     public function editMedia(
         string $messageId,
@@ -329,7 +318,6 @@ class BotApi
      * @param string|null $caption
      * @param bool $asUrl
      * @return bool
-     * @throws GuzzleException
      */
     public function sendMediaGroup(string $type, array $files, string $caption = null, bool $asUrl = false): bool
     {
@@ -364,7 +352,6 @@ class BotApi
      * @param string|null $providerToken
      * @param string|null $photoUrl
      * @return bool
-     * @throws GuzzleException
      */
     public function sendInvoice(
         string $title,
@@ -397,7 +384,6 @@ class BotApi
      * @param bool $ok
      * @param string|null $errorMessage
      * @return bool
-     * @throws GuzzleException
      */
     public function answerPreCheckoutQuery(string $queryId, bool $ok, string $errorMessage = null): bool
     {
@@ -416,7 +402,6 @@ class BotApi
      * @param string $webhookUrl webhook url
      * @param string|null $secretToken secret token (optional)
      * @return bool
-     * @throws GuzzleException
      */
     public function setWebhook(string $webhookUrl, string $secretToken = null): bool
     {
@@ -432,7 +417,6 @@ class BotApi
      * delete bot webhook
      *
      * @return bool
-     * @throws GuzzleException
      */
     public function deleteWebhook(): bool
     {
@@ -450,14 +434,13 @@ class BotApi
      * @param string|null $url url to be opened by the user (only for callback_game type)
      * @param int $cacheTime time - in seconds - to cache the result by the user's app
      * @return bool
-     * @throws GuzzleException
      */
     public function answerCallbackQuery(
         string $callbackQueryId,
         string $text = null,
-        bool $showAlert = false,
+        bool   $showAlert = false,
         string $url = null,
-        int $cacheTime = 0
+        int    $cacheTime = 0
     ): bool
     {
         $data = $this->post('callbackQuery', [

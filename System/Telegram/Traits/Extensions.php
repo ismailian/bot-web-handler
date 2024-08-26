@@ -88,7 +88,6 @@ trait Extensions
      *
      * @param string $action action to send
      * @return BotApi|Extensions
-     * @throws GuzzleException
      */
     public function withAction(string $action): self
     {
@@ -121,7 +120,6 @@ trait Extensions
      * delete last message sent by bot
      *
      * @return BotApi|Extensions
-     * @throws GuzzleException
      */
     public function deleteLastMessage(): self
     {

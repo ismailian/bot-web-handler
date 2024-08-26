@@ -10,10 +10,10 @@
 
 namespace TeleBot\System\Telegram\Traits;
 
-use Exception;
 use GuzzleHttp\Client;
 use TeleBot\System\ExceptionHandler;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 
 trait HttpClient
 {
@@ -75,9 +75,21 @@ trait HttpClient
             $body = json_decode($response->getBody(), true);
 
             return $body['ok'] ? $body : null;
-        } catch (GuzzleException $e) {
+        } catch (GuzzleException|RequestException $e) {
             ExceptionHandler::onException($e);
+
+            $this->throw($e);
+            if ($e->hasResponse()) {
+                $code = $e->getResponse()->getStatusCode();
+                $description = $e->getResponse()->getBody()->getContents();
+                if (($json = json_decode($description, true))) {
+                    $description = $json;
+                }
+
+                $this->resolve($code, $description);
+            }
         }
+
         return null;
     }
 
@@ -87,7 +99,6 @@ trait HttpClient
      * @param string $action
      * @param array $data
      * @return array|null
-     * @throws Exception|GuzzleException
      */
     protected function post(string $action, array $data): ?array
     {
@@ -129,9 +140,21 @@ trait HttpClient
 
             $this->options = [];
             return $body['ok'] ? $body : null;
-        } catch (Exception $e) {
+        } catch (GuzzleException|RequestException $e) {
             ExceptionHandler::onException($e);
+
+            $this->throw($e);
+            if ($e->hasResponse()) {
+                $code = $e->getResponse()->getStatusCode();
+                $description = $e->getResponse()->getBody()->getContents();
+                if (($json = json_decode($description, true))) {
+                    $description = $json;
+                }
+
+                $this->resolve($code, $description);
+            }
         }
+
         return null;
     }
 
