@@ -56,6 +56,19 @@ trait HttpClient
     }
 
     /**
+     * determine whether to log the exception
+     *
+     * @param $exception
+     * @return void
+     */
+    protected function log($exception): void
+    {
+        if (getenv('TG_LOG_EXCEPTIONS', true) === 'true') {
+            ExceptionHandler::onException($exception);
+        }
+    }
+
+    /**
      * send request to API
      *
      * @param string $action
@@ -76,8 +89,7 @@ trait HttpClient
 
             return $body['ok'] ? $body : null;
         } catch (GuzzleException|RequestException $e) {
-            ExceptionHandler::onException($e);
-
+            $this->log($e);
             $this->throw($e);
             if ($e->hasResponse()) {
                 $code = $e->getResponse()->getStatusCode();
@@ -141,8 +153,7 @@ trait HttpClient
             $this->options = [];
             return $body['ok'] ? $body : null;
         } catch (GuzzleException|RequestException $e) {
-            ExceptionHandler::onException($e);
-
+            $this->log($e);
             $this->throw($e);
             if ($e->hasResponse()) {
                 $code = $e->getResponse()->getStatusCode();
