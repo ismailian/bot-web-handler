@@ -370,7 +370,7 @@ class Console
         }
 
         $api = (new BotApi())->setToken(getenv('TG_BOT_TOKEN', true));
-        if (!$api->setWebhook($webhookUrl, getenv('TG_BOT_SIGNATURE', true))) {
+        if (!$api->setWebhook($webhookUrl, getenv('TG_WEBHOOK_SIGNATURE', true))) {
             die('[-] failed to set bot webhook!' . PHP_EOL);
         }
 

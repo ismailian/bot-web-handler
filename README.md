@@ -12,8 +12,8 @@ A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 #### 1. Set the following properties in the `.env` file
 - domain url `APP_DOMAIN`
 - bot token `BOT_TOKEN`
-- webhook secret `TG_BOT_SIGNATURE` (Optional)
-- Telegram source IP `TG_SOURCE_IP` (Optional)
+- webhook secret `TG_WEBHOOK_SIGNATURE` (Optional)
+- Telegram source IP `TG_WEBHOOK_SOURCE_IP` (Optional)
   - I don't recommend setting this, because the Telegram IP will definitely change.
 
 #### 2. Set the following properties in the `config.php` file
