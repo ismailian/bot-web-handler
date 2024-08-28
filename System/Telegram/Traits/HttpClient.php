@@ -11,7 +11,7 @@
 namespace TeleBot\System\Telegram\Traits;
 
 use GuzzleHttp\Client;
-use TeleBot\System\ExceptionHandler;
+use TeleBot\System\Core\Logger;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 
@@ -64,7 +64,7 @@ trait HttpClient
     protected function log($exception): void
     {
         if (getenv('TG_LOG_EXCEPTIONS', true) === 'true') {
-            ExceptionHandler::onException($exception);
+            Logger::onException($exception);
         }
     }
 

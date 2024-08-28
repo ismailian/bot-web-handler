@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System;
+namespace TeleBot\System\Core;
 
 use TeleBot\System\Http\HttpRequest;
 
-class ExceptionHandler
+class Logger
 {
 
     /**

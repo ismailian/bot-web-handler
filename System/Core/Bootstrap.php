@@ -30,6 +30,9 @@ class Bootstrap
      */
     public function setup(): void
     {
+        set_exception_handler(fn($e) => Logger::onException($e));
+        set_error_handler(fn(...$args) => Logger::onError(...$args));
+
         Dotenv::load();
         $this->router = new Router();
         self::$config = require_once 'config.php';

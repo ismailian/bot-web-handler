@@ -18,7 +18,7 @@ namespace TeleBot\System\Database;
 
 use PDO;
 use Exception;
-use TeleBot\System\ExceptionHandler;
+use TeleBot\System\Core\Logger;
 
 class DbClient
 {
@@ -123,7 +123,7 @@ class DbClient
                 $stmt->execute($args);
             }
         } catch (\Exception $e) {
-            ExceptionHandler::onException($e);
+            Logger::onException($e);
         }
 
         return $stmt;
