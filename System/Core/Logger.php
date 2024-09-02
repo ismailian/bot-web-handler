@@ -10,7 +10,7 @@
 
 namespace TeleBot\System\Core;
 
-use TeleBot\System\Http\HttpRequest;
+use TeleBot\System\Http\Request;
 
 class Logger
 {
@@ -47,11 +47,11 @@ class Logger
             $data = [
                 ...$data,
                 'request' => [
-                    'ip' => HttpRequest::ip(),
-                    'uri' => HttpRequest::uri(),
-                    'method' => HttpRequest::method(),
-                    'query' => HttpRequest::query(),
-                    'body' => HttpRequest::body(),
+                    'ip' => Request::ip(),
+                    'uri' => Request::uri(),
+                    'method' => Request::method(),
+                    'query' => Request::query(),
+                    'body' => Request::body(),
                 ]
             ];
         }
