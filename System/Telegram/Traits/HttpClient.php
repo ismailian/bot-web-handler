@@ -66,6 +66,17 @@ trait HttpClient
         if (getenv('TG_LOG_EXCEPTIONS', true) === 'true') {
             Logger::onException($exception);
         }
+
+        $this->throw($exception);
+        if ($exception->hasResponse()) {
+            $code = $exception->getResponse()->getStatusCode();
+            $description = $exception->getResponse()->getBody()->getContents();
+            if (($json = json_decode($description, true))) {
+                $description = $json;
+            }
+
+            $this->resolve($code, $description);
+        }
     }
 
     /**
@@ -90,16 +101,6 @@ trait HttpClient
             return $body['ok'] ? $body : null;
         } catch (GuzzleException|RequestException $e) {
             $this->log($e);
-            $this->throw($e);
-            if ($e->hasResponse()) {
-                $code = $e->getResponse()->getStatusCode();
-                $description = $e->getResponse()->getBody()->getContents();
-                if (($json = json_decode($description, true))) {
-                    $description = $json;
-                }
-
-                $this->resolve($code, $description);
-            }
         }
 
         return null;
@@ -154,16 +155,6 @@ trait HttpClient
             return $body['ok'] ? $body : null;
         } catch (GuzzleException|RequestException $e) {
             $this->log($e);
-            $this->throw($e);
-            if ($e->hasResponse()) {
-                $code = $e->getResponse()->getStatusCode();
-                $description = $e->getResponse()->getBody()->getContents();
-                if (($json = json_decode($description, true))) {
-                    $description = $json;
-                }
-
-                $this->resolve($code, $description);
-            }
         }
 
         return null;
