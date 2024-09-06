@@ -10,7 +10,5 @@
 
 require_once 'vendor/autoload.php';
 
-use TeleBot\System\App;
-
-/** create and run instance */
-(new App())->start();
+/** run app instance */
+(new TeleBot\System\App())->start();
