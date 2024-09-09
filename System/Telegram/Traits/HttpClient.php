@@ -56,30 +56,6 @@ trait HttpClient
     }
 
     /**
-     * determine whether to log the exception
-     *
-     * @param $exception
-     * @return void
-     */
-    protected function log($exception): void
-    {
-        if (getenv('TG_LOG_EXCEPTIONS', true) === 'true') {
-            Logger::onException($exception);
-        }
-
-        $this->throw($exception);
-        if ($exception->hasResponse()) {
-            $code = $exception->getResponse()->getStatusCode();
-            $description = $exception->getResponse()->getBody()->getContents();
-            if (($json = json_decode($description, true))) {
-                $description = $json;
-            }
-
-            $this->resolve($code, $description);
-        }
-    }
-
-    /**
      * send request to API
      *
      * @param string $action
@@ -104,6 +80,33 @@ trait HttpClient
         }
 
         return null;
+    }
+
+    /**
+     * determine whether to log the exception
+     *
+     * @param $exception
+     * @return void
+     */
+    protected function log($exception): void
+    {
+        $resolved = false;
+        $shouldLog = getenv('TG_LOG_EXCEPTIONS', true) === 'true';
+
+        $thrown = $this->throw($exception);
+        if ($exception->hasResponse()) {
+            $code = $exception->getResponse()->getStatusCode();
+            $description = $exception->getResponse()->getBody()->getContents();
+            if (($json = json_decode($description, true))) {
+                $description = $json;
+            }
+
+            $resolved = $this->resolve($code, $description);
+        }
+
+        if ($shouldLog && !$resolved && !$thrown) {
+            Logger::onException($exception);
+        }
     }
 
     /**

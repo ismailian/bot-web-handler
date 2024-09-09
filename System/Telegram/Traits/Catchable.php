@@ -64,12 +64,12 @@ trait Catchable
      *
      * @param int $code
      * @param mixed $data
-     * @return void
+     * @return bool
      */
-    private function resolve(int $code, mixed $data): void
+    private function resolve(int $code, mixed $data): bool
     {
         if (!array_key_exists("$code", $this->callbacks)) {
-            return;
+            return false;
         }
 
         $callback = $this->callbacks["$code"];
@@ -78,23 +78,27 @@ trait Catchable
             $callback = $callback['callback'];
             if (!$validator->isValid(
                 is_array($data) ? json_encode($data) : $data)
-            ) return;
+            ) return false;
         }
 
         $callback($data);
+        return true;
     }
 
     /**
      * pass exceptions to a custom error handler
      *
      * @param $exception
-     * @return void
+     * @return bool
      */
-    private function throw($exception): void
+    private function throw($exception): bool
     {
         if ($this->errorHandler) {
             call_user_func($this->errorHandler, $exception);
+            return true;
         }
+
+        return false;
     }
 
 }
