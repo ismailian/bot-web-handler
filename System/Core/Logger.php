@@ -72,8 +72,10 @@ class Logger
          * telegram logs may contain the bot token,
          * and it must be redacted before writing to the desk
          */
-        if (preg_match('/bot(?<token>\d+:[a-zA-Z0-9-]+)?/i', $encodedData, $result)) {
-            $encodedData = str_replace($result['token'], '[redacted]', $encodedData);
+        if (preg_match('/bot(?<token>\d+:[a-zA-Z0-9-_]+)?/i', $encodedData, $result)) {
+            if (array_key_exists('token', $result)) {
+                $encodedData = str_replace($result['token'], '[redacted]', $encodedData);
+            }
         }
 
         file_put_contents($logPath, $encodedData);
