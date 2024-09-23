@@ -74,7 +74,7 @@ class Logger
          */
         if (preg_match('/bot(?<token>\d+:[a-zA-Z0-9-_]+)?/i', $encodedData, $result)) {
             if (array_key_exists('token', $result)) {
-                $encodedData = str_replace($result['token'], '[redacted]', $encodedData);
+                $encodedData = str_replace($result['token'], '', $encodedData);
             }
         }
 
