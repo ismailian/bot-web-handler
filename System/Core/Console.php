@@ -134,7 +134,7 @@ class Console
 
         $updates = self::getCommits($lastUpdate, null, true);
         if (empty($updates)) {
-            die('[+] system is up-to-date!');
+            die('[+] system is up-to-date!' . PHP_EOL);
         }
 
         foreach ($updates as $update) {
