@@ -27,7 +27,7 @@ class IncomingStory
     public function __construct(protected readonly array $incomingStory)
     {
         $this->id = $this->incomingStory['id'];
-        $this->chat = $this->incomingStory['chat'];
+        $this->chat = new Chat($this->incomingStory['chat']);
     }
 
 }
