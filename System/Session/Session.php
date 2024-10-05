@@ -11,9 +11,9 @@
 namespace TeleBot\System\Session;
 
 use Exception;
-use TeleBot\System\Http\HttpRequest;
-use TeleBot\System\Interfaces\ISessionDriver;
+use TeleBot\System\Http\Request;
 use TeleBot\System\Session\Drivers\DbDriver;
+use TeleBot\System\Interfaces\ISessionDriver;
 use TeleBot\System\Session\Drivers\FileDriver;
 use TeleBot\System\Session\Drivers\RedisDriver;
 
@@ -101,7 +101,7 @@ class Session
                 if ($sessionId) {
                     self::$sessionId = $sessionId;
                 } else {
-                    $event = HttpRequest::json();
+                    $event = Request::json();
                     foreach (array_keys($event) as $key) {
                         if ($key !== 'update_id') {
                             self::$sessionId = $event[$key]['from']['id'];

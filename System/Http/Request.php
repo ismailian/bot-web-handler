@@ -10,7 +10,7 @@
 
 namespace TeleBot\System\Http;
 
-class HttpRequest
+class Request
 {
 
     /** @var array|null $_query */

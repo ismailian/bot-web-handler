@@ -10,10 +10,10 @@
 
 namespace TeleBot\System\Telegram\Traits;
 
-use Exception;
 use GuzzleHttp\Client;
-use TeleBot\System\ExceptionHandler;
+use TeleBot\System\Core\Logger;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 
 trait HttpClient
 {
@@ -75,10 +75,38 @@ trait HttpClient
             $body = json_decode($response->getBody(), true);
 
             return $body['ok'] ? $body : null;
-        } catch (GuzzleException $e) {
-            ExceptionHandler::onException($e);
+        } catch (GuzzleException|RequestException $e) {
+            $this->log($e);
         }
+
         return null;
+    }
+
+    /**
+     * determine whether to log the exception
+     *
+     * @param $exception
+     * @return void
+     */
+    protected function log($exception): void
+    {
+        $resolved = false;
+        $shouldLog = getenv('TG_LOG_EXCEPTIONS', true) === 'true';
+
+        $thrown = $this->throw($exception);
+        if ($exception->hasResponse()) {
+            $code = $exception->getResponse()->getStatusCode();
+            $description = $exception->getResponse()->getBody()->getContents();
+            if (($json = json_decode($description, true))) {
+                $description = $json;
+            }
+
+            $resolved = $this->resolve($code, $description);
+        }
+
+        if ($shouldLog && !$resolved && !$thrown) {
+            Logger::onException($exception);
+        }
     }
 
     /**
@@ -87,7 +115,6 @@ trait HttpClient
      * @param string $action
      * @param array $data
      * @return array|null
-     * @throws Exception|GuzzleException
      */
     protected function post(string $action, array $data): ?array
     {
@@ -129,9 +156,10 @@ trait HttpClient
 
             $this->options = [];
             return $body['ok'] ? $body : null;
-        } catch (Exception $e) {
-            ExceptionHandler::onException($e);
+        } catch (GuzzleException|RequestException $e) {
+            $this->log($e);
         }
+
         return null;
     }
 

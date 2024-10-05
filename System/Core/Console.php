@@ -134,7 +134,7 @@ class Console
 
         $updates = self::getCommits($lastUpdate, null, true);
         if (empty($updates)) {
-            die('[+] system is up-to-date!');
+            die('[+] system is up-to-date!' . PHP_EOL);
         }
 
         foreach ($updates as $update) {
@@ -370,7 +370,7 @@ class Console
         }
 
         $api = (new BotApi())->setToken(getenv('TG_BOT_TOKEN', true));
-        if (!$api->setWebhook($webhookUrl, getenv('TG_BOT_SIGNATURE', true))) {
+        if (!$api->setWebhook($webhookUrl, getenv('TG_WEBHOOK_SIGNATURE', true))) {
             die('[-] failed to set bot webhook!' . PHP_EOL);
         }
 

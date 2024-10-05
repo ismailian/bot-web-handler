@@ -23,7 +23,7 @@ class MessageAutoDeleteTimerChanged
      */
     public function __construct(protected readonly array $messageAutoDeleteTimerChanged)
     {
-        $this->messageAutoDeleteTime = $this->messageAutoDeleteTimerChanged["messageAutoDeleteTime"];
+        $this->messageAutoDeleteTime = $this->messageAutoDeleteTimerChanged["message_auto_delete_time"];
     }
 
 }

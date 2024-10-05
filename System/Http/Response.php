@@ -12,7 +12,7 @@ namespace TeleBot\System\Http;
 
 use Exception;
 
-class HttpResponse
+class Response
 {
 
     /**

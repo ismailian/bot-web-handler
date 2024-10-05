@@ -10,11 +10,5 @@
 
 require_once 'vendor/autoload.php';
 
-use TeleBot\System\App;
-use TeleBot\System\ExceptionHandler;
-
-set_exception_handler(fn($e) => ExceptionHandler::onException($e));
-set_error_handler(fn(...$args) => ExceptionHandler::onError(...$args));
-
-/** create and run instance */
-(new App())->start();
+/** run app instance */
+(new TeleBot\System\App())->start();

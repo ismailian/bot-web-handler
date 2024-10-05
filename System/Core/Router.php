@@ -10,7 +10,7 @@
 
 namespace TeleBot\System\Core;
 
-use TeleBot\System\Http\HttpRequest;
+use TeleBot\System\Http\Request;
 
 class Router
 {
@@ -25,14 +25,14 @@ class Router
     {
         if (
             empty($routes) || (
-                empty($routes[HttpRequest::method()])
-                && empty($routes[strtoupper(HttpRequest::method())])
+                empty($routes[Request::method()])
+                && empty($routes[strtoupper(Request::method())])
             )) {
             return false;
         }
 
-        $uri = HttpRequest::uri();
-        $routes = $routes[HttpRequest::method()] ?? $routes[strtoupper(HttpRequest::method())];
+        $uri = Request::uri();
+        $routes = $routes[Request::method()] ?? $routes[strtoupper(Request::method())];
         foreach ($routes as $route => $handler) {
             if ($this->isDynamic($route)) {
                 $routeMeta = $this->getUrlInfo($uri, $route);

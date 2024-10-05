@@ -2,11 +2,9 @@
 
 namespace TeleBot\App\Handlers;
 
-use Exception;
 use TeleBot\System\IncomingEvent;
-use GuzzleHttp\Exception\GuzzleException;
-use TeleBot\System\Telegram\Enums\InlineChatType;
 use TeleBot\System\Telegram\Filters\Chat;
+use TeleBot\System\Telegram\Enums\InlineChatType;
 use TeleBot\System\Telegram\Events\Messages\Text;
 use TeleBot\System\Telegram\Types\IncomingMessage;
 use TeleBot\System\Telegram\Events\Messages\Mention;
@@ -18,7 +16,6 @@ class GetMyId extends IncomingEvent
      * handle all incoming private messages
      *
      * @return void
-     * @throws GuzzleException
      */
     #[Text]
     #[Chat(InlineChatType::PRIVATE)]
@@ -35,7 +32,6 @@ class GetMyId extends IncomingEvent
      *
      * @param IncomingMessage $message
      * @return void
-     * @throws GuzzleException
      */
     #[Text]
     #[Mention('me')]

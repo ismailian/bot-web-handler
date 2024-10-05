@@ -28,7 +28,7 @@ return [
     /**
      * @var string $ip property holding source IP
      */
-    'ip' => getenv('TG_SOURCE_IP', true),
+    'ip' => getenv('TG_WEBHOOK_SOURCE_IP', true),
 
     /**
      * @var array $routes allowed routes
@@ -38,7 +38,7 @@ return [
     /**
      * @var array $authorization property holding request signature
      */
-    'signature' => getenv('TG_BOT_SIGNATURE', true),
+    'signature' => getenv('TG_WEBHOOK_SIGNATURE', true),
 
     /**
      * @var array $admins list of bot admins

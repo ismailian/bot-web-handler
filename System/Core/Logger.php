@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System;
+namespace TeleBot\System\Core;
 
-use TeleBot\System\Http\HttpRequest;
+use TeleBot\System\Http\Request;
 
-class ExceptionHandler
+class Logger
 {
 
     /**
@@ -47,11 +47,11 @@ class ExceptionHandler
             $data = [
                 ...$data,
                 'request' => [
-                    'ip' => HttpRequest::ip(),
-                    'uri' => HttpRequest::uri(),
-                    'method' => HttpRequest::method(),
-                    'query' => HttpRequest::query(),
-                    'body' => HttpRequest::body(),
+                    'ip' => Request::ip(),
+                    'uri' => Request::uri(),
+                    'method' => Request::method(),
+                    'query' => Request::query(),
+                    'body' => Request::body(),
                 ]
             ];
         }
@@ -66,6 +66,16 @@ class ExceptionHandler
         if (!$encodedData) {
             unset($data['trace']);
             $encodedData = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        }
+
+        /**
+         * telegram logs may contain the bot token,
+         * and it must be redacted before writing to the desk
+         */
+        if (preg_match('/bot(?<token>\d+:[a-zA-Z0-9-_]+)?/i', $encodedData, $result)) {
+            if (array_key_exists('token', $result)) {
+                $encodedData = str_replace($result['token'], '', $encodedData);
+            }
         }
 
         file_put_contents($logPath, $encodedData);
