@@ -37,6 +37,13 @@ class Bootstrap
         $this->router = new Router();
         self::$config = require_once 'config.php';
 
+        /** git auto deployments */
+        if ($this->router->matches(self::$config['routes']['git'] ?? [])) {
+            if (getenv('GIT_AUTO_DEPLOY', true) === 'true') {
+                Deployment::run();
+            }
+        }
+
         if ($route = $this->router->matches(self::$config['routes']['web'] ?? [])) {
             if ($handler = Collector::getNamespacedFile($route['handler'])) {
                 (new Handler())
