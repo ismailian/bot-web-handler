@@ -168,7 +168,7 @@ public function setAge(IncomingMessage $message): void
  * @return void
  */
 #[Command('purchase')]
-public function invoice(): void
+public function purchase(): void
 {
     $this->telegram->sendInvoice(
         title: 'Product title',
@@ -297,7 +297,7 @@ public function users(): void
     // some logic to fetch users
     $users = [];
     
-    HttpResponse::send(['users' => $users], true);
+    Response::send(['users' => $users], true);
 }
 ```
 
@@ -310,14 +310,14 @@ public function users(): void
  */
 public function __invoke(): void
 {
-    $apiKey = HttpRequest::headers('X-Admin-Api-Key');
+    $apiKey = Response::headers('X-Admin-Api-Key');
     if (empty($apiKey)) {
-        HttpResponse::setStatusCode(401)->end();
+        Response::setStatusCode(401)->end();
     }
 
     $secret = getenv('ADMIN_API_KEY');
     if (!hash_equals($secret, $apiKey)) {
-        HttpResponse::setStatusCode(401)->end();
+        Response::setStatusCode(401)->end();
     }   
 }
 ```
