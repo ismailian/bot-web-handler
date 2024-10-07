@@ -15,14 +15,13 @@ use TeleBot\System\Database\DbClient;
 class Queue
 {
 
+    use Queuable;
+
     /** @var int $SLEEP_TIME */
     protected static int $SLEEP_TIME = 300_000;
 
     /** @var int $RETRIES number of retries */
     protected static int $RETRIES = 3;
-
-    /** @var DbClient|null $db database client */
-    protected static ?DbClient $db = null;
 
     /**
      * run queue migrations
