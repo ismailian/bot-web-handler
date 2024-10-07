@@ -219,10 +219,13 @@ Currently, the queue only uses database to manage jobs, in the future, other met
 3. create job:
    *typically, you would create the job in the `App\Jobs` directory where your jobs will live. Job classes must implement the `IJob` interface.*
 ```php
+use \TeleBot\System\Core\Queuable;
 use TeleBot\System\Interfaces\IJob;
 
 readonly class UrlParserJob implements IJob
 {
+
+    use Queuable;
 
     /**
      * @inheritDoc
@@ -249,6 +252,10 @@ readonly class UrlParserJob implements IJob
 #[Url]
 public function urls(IncomingUrl $url): void
 {
+    // dispatch job using:
+    UrlParserJob::dispatch(['url' => $url]);
+    
+    // or:
     Queue::dispatch(UrlParserJob::class, [
         'url' => $url
     ]);
