@@ -24,8 +24,8 @@ trait HttpClient
     /** @var string $baseUrl */
     protected string $baseUrl = 'https://api.telegram.org/bot{token}/';
 
-    /** @var array $endpoints */
-    protected array $endpoints = [
+    /** @var array $endpointMap */
+    protected array $endpointMap = [
         'updates' => 'getUpdates',
         'message' => 'sendMessage',
         'photo' => 'sendPhoto',
@@ -68,7 +68,7 @@ trait HttpClient
     protected function get(string $action, array $query): ?array
     {
         try {
-            $endpoint = $this->baseUrl . $this->endpoints[$action];
+            $endpoint = $this->baseUrl . $this->endpointMap[$action];
             $endpoint = str_replace('{token}', $this->token, $endpoint);
             $response = $this->api->request('GET', $endpoint, [
                 'query' => ['chat_id' => $this->chatId, ...$query]
@@ -122,7 +122,7 @@ trait HttpClient
     protected function post(string $action, array $data): ?array
     {
         try {
-            $endpoint = $this->baseUrl . $this->endpoints[$action];
+            $endpoint = $this->baseUrl . $this->endpointMap[$action];
             $endpoint = str_replace('{token}', $this->token, $endpoint);
 
             /** use [multipart] when uploading */
