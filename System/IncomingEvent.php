@@ -39,7 +39,6 @@ class IncomingEvent
     {
         $this->event = new Event(Request::json());
         $this->telegram = (new BotApi())
-            ->setToken(getenv('TG_BOT_TOKEN'))
             ->setChatId($this->event->chat?->id ?? $this->event->from->id);
     }
 

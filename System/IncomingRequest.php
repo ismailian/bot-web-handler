@@ -36,7 +36,7 @@ class IncomingRequest
     {
         $this->request = new Request();
         $this->response = new Response();
-        $this->telegram = (new BotApi())->setToken(getenv('TG_BOT_TOKEN'));
+        $this->telegram = new BotApi();
     }
 
 }

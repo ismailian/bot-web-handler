@@ -53,6 +53,9 @@ trait HttpClient
     public function __construct()
     {
         $this->api = new Client();
+        $this->setToken(
+            getenv('TG_BOT_TOKEN', true)
+        );
     }
 
     /**
