@@ -10,8 +10,6 @@
 
 namespace TeleBot\System\Core;
 
-use TeleBot\System\Database\DbClient;
-
 class Queue
 {
 
@@ -30,7 +28,7 @@ class Queue
      */
     public static function init(): void
     {
-        self::$db ??= new DbClient();
+        self::$db ??= new Database();
 
         $tableExists = (bool)self::$db->getClient()->query("SHOW TABLES LIKE 'queue_jobs'")->rowCount();
         if (!$tableExists) {
@@ -66,7 +64,7 @@ class Queue
      */
     public static function listen(): void
     {
-        self::$db ??= new DbClient();
+        self::$db ??= new Database();
         while (true) {
             $reservedAt = (int)str_replace('.', '', microtime(true));
             $rows = self::$db->run('UPDATE `queue_jobs` SET `reserved_at` = ? WHERE `status` = ? ORDER BY `id` LIMIT 1', [$reservedAt, 0])->rowCount();
@@ -124,7 +122,7 @@ class Queue
      */
     public static function dispatch(string $job, array $data): void
     {
-        self::$db ??= new DbClient();
+        self::$db ??= new Database();
         self::$db->insert('queue_jobs', [
             'job' => $job,
             'data' => json_encode($data),

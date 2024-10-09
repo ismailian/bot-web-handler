@@ -10,14 +10,14 @@
 
 namespace TeleBot\System\Session\Drivers;
 
-use TeleBot\System\Database\DbClient;
+use TeleBot\System\Core\Database;
 use TeleBot\System\Interfaces\ISessionDriver;
 
 class DbDriver implements ISessionDriver
 {
 
-    /** @var DbClient|null $db db client */
-    protected static ?DbClient $db = null;
+    /** @var Database|null $db db client */
+    protected static ?Database $db = null;
 
     /** @var string $sessionId session id */
     protected string $sessionId;
@@ -32,7 +32,7 @@ class DbDriver implements ISessionDriver
     {
         $this->sessionId = $sessionId;
         if (!self::$db) {
-            self::$db = new DbClient();
+            self::$db = new Database();
         }
 
         // create session record (if not exists)

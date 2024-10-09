@@ -1,26 +1,19 @@
 <?php
 /*
- * This file is NOT part of the Bot Web Handler project.
- *
- * It was originally created by:
- * author: David Carr (dave@dcblog.dev)
- * package: https://github.com/dcblogdev/pdo-wrapper
- *
- * and modified to fit in this project by:
- * author: Ismail Aatif (ismail@ismailian.com)
- * project: https://github.com/ismailian/bot-web-handler
+ * This file is part of the Bot Web Handler project.
+ * Copyright 2024-2024 Ismail Aatif
+ * https://github.com/ismailian/bot-web-handler
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace TeleBot\System\Database;
+namespace TeleBot\System\Core;
 
 use PDO;
 use Exception;
-use TeleBot\System\Core\Logger;
 
-class DbClient
+class Database
 {
 
     /** @var PDO $db PDO instance */
@@ -175,17 +168,14 @@ class DbClient
      */
     public function insert(string $table, array $data): int|string|bool
     {
-        /** add columns into comma seperated string */
         $columns = implode(',', array_map(
                 fn($k) => ('`' . trim($k, '`') . '`'),
                 array_keys($data))
         );
 
-        /** get values */
         $values = array_values($data);
         $placeholders = array_map(fn($val) => '?', array_keys($data));
 
-        /** convert array into comma seperated string */
         $placeholders = join(',', array_values($placeholders));
 
         $this->run("INSERT INTO $table ($columns) VALUES ($placeholders)", $values);
@@ -221,7 +211,6 @@ class DbClient
         $fieldDetails = array_map(fn($key) => "`$key` = ?,", array_keys($data));
         $fieldDetails = rtrim(join('', $fieldDetails), ',');
 
-        /** setup where statement */
         $i = 0;
         $whereDetails = null;
         foreach ($where as $key => $value) {
@@ -244,10 +233,8 @@ class DbClient
      */
     public function delete(string $table, array $where, int $limit = 1): int|bool
     {
-        /** collect the values from collection */
         $values = array_values($where);
 
-        /** setup where */
         $i = 0;
         $whereDetails = null;
         foreach ($where as $key => $value) {
@@ -255,7 +242,6 @@ class DbClient
             $i++;
         }
 
-        /** if limit is a number use a limit on the query */
         if (is_numeric($limit)) {
             $limit = "LIMIT $limit";
         }

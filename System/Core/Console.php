@@ -12,7 +12,6 @@ namespace TeleBot\System\Core;
 
 use GuzzleHttp\Client;
 use TeleBot\System\Telegram\BotApi;
-use TeleBot\System\Database\DbClient;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Console
@@ -99,7 +98,7 @@ class Console
         ];
 
         Dotenv::load();
-        $db = new DbClient();
+        $db = new Database();
         $dbName = getenv('DATABASE_NAME', true);
 
         $tableNames = join(',', array_map(fn($tableName) => "'$tableName'", $tables));
