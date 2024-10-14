@@ -97,7 +97,7 @@ trait HttpClient
         $shouldLog = getenv('TG_LOG_EXCEPTIONS', true) === 'true';
 
         $thrown = $this->throw($exception);
-        if ($exception?->hasResponse()) {
+        if (method_exists($exception, 'getResponse')) {
             $code = $exception->getResponse()->getStatusCode();
             $description = $exception->getResponse()->getBody()->getContents();
             if (($json = json_decode($description, true))) {
