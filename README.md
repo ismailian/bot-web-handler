@@ -328,3 +328,38 @@ public function __invoke(): void
     }   
 }
 ```
+### Auto Deployments
+You can easily configure auto-deployment using GitHub webhooks by following these 2 steps:
+1. Environment Variables:
+   - set the path to the `git` executable
+   - set `GIT_AUTO_DEPLOY` to `true`
+   - set webhook secret for verification `GIT_WEBHOOK_SECRET`
+   - set comma-separated usernames allowed in auto-deployments `GIT_COMMIT_USERS`
+   - set comma-separated trigger keywords for auto-deployments `GIT_COMMIT_KEYWORDS`
+
+2. Git Routes:
+   - set custom route for github events in the `config.php` file
+    ```php
+    /**
+     * @var array $routes allowed routes
+     */
+    'routes' => [
+        'git' => [
+            'post' => [
+                '/git' => null
+            ],
+        ]
+    ],
+    ```
+
+Example:
+```dotenv
+# .env file
+
+GIT_PATH=/usr/bin/git
+GIT_AUTO_DEPLOY=true
+GIT_WEBHOOK_SECRET=1b785ac87f73bd8701d0a92ca9284bdc
+GIT_COMMIT_USERS=ismailian
+GIT_COMMIT_KEYWORDS=auto,merge
+```
+*whenever a verified incoming github webhook event comes in, that contains `#auto` or `#merge` in the commit message, and is committed by `ismailian`, it will trigger a `git pull` command.*
