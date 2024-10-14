@@ -47,6 +47,12 @@ A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 public function photos(IncomingPhoto $photo): void
 {
     echo '[+] File ID: ' . $photo->photos[0]->fileId;
+    
+    // to download photo
+    $photo->photos[0]->save(
+        filename: 'photo.png',           // optional
+        directory: '/path/to/save/photo' // optional
+    );
 }
 ```
 
@@ -62,6 +68,12 @@ public function photos(IncomingPhoto $photo): void
 public function videos(IncomingVideo $video): void
 {
     echo '[+] File ID: ' . $video->fileId;
+    
+    // to download video
+    $video->save(
+        filename: 'video.mp4',           // optional
+        directory: '/path/to/save/video' // optional
+    );
 }
 ```
 
@@ -219,7 +231,7 @@ Currently, the queue only uses database to manage jobs, in the future, other met
 3. create job:
    *typically, you would create the job in the `App\Jobs` directory where your jobs will live. Job classes must implement the `IJob` interface.*
 ```php
-use \TeleBot\System\Core\Queuable;
+use TeleBot\System\Core\Queuable;
 use TeleBot\System\Interfaces\IJob;
 
 readonly class UrlParserJob implements IJob
