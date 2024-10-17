@@ -317,9 +317,9 @@ class BotApi
      * @param array $files
      * @param string|null $caption
      * @param bool $asUrl
-     * @return bool
+     * @return IncomingMessage[]|null
      */
-    public function sendMediaGroup(string $type, array $files, string $caption = null, bool $asUrl = false): bool
+    public function sendMediaGroup(string $type, array $files, string $caption = null, bool $asUrl = false): ?array
     {
         $media = [];
         $attachments = [];
@@ -337,7 +337,9 @@ class BotApi
             ...$attachments
         ]);
 
-        return $data && $data['ok'] == true;
+        return $data && $data['ok']
+            ? array_map(fn($m) => new IncomingMessage($m), $data['result'])
+            : null;
     }
 
     /**
