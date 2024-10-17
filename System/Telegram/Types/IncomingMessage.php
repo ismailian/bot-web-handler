@@ -624,6 +624,15 @@ class IncomingMessage
                 $this->chatShared = new ChatShared($this->message['chat_shared']);
             }
 
+            /** <ExternalReply> */
+            if (array_key_exists('external_reply', $this->message)) {
+                $this->externalReply = new ExternalReplyInfo($this->message['external_reply']);
+            }
+
+            /** <PassportData> */
+            if (array_key_exists('passport_data', $this->message)) {
+                $this->passportData = new PassportData($this->message['passport_data']);
+            }
         } catch (\Exception $ex) {}
     }
 }
