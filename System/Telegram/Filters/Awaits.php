@@ -12,7 +12,6 @@ namespace TeleBot\System\Telegram\Filters;
 
 use Attribute;
 use TeleBot\System\Interfaces\IEvent;
-use TeleBot\System\Session\Session;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Awaits implements IEvent
@@ -31,6 +30,6 @@ class Awaits implements IEvent
      */
     public function apply(array $event): bool
     {
-        return Session::get($this->key) == $this->value;
+        return session()->get($this->key) == $this->value;
     }
 }

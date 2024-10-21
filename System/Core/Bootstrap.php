@@ -10,8 +10,7 @@
 
 namespace TeleBot\System\Core;
 
-use TeleBot\System\Http\Request;
-use TeleBot\System\Http\Response;
+use ReflectionException;
 use TeleBot\System\Filesystem\Collector;
 
 class Bootstrap
@@ -20,13 +19,11 @@ class Bootstrap
     /** @var array $config */
     public static array $config;
 
-    /** @var Router $router */
-    protected Router $router;
-
     /**
      * setup necessary configurations to run the app
      *
      * @return void
+     * @throws ReflectionException
      */
     public function setup(): void
     {
@@ -34,17 +31,18 @@ class Bootstrap
         set_error_handler(fn(...$args) => Logger::onError(...$args));
 
         Dotenv::load();
-        $this->router = new Router();
-        self::$config = require_once 'config.php';
+
+        self::$config = FileLoader::load('config.php');
+        FileLoader::load('System/Utils/*');
 
         /** git auto deployments */
-        if ($this->router->matches(self::$config['routes']['git'] ?? [])) {
+        if (router()->matches(self::$config['routes']['git'] ?? [])) {
             if (getenv('GIT_AUTO_DEPLOY', true) === 'true') {
                 Deployment::run();
             }
         }
 
-        if ($route = $this->router->matches(self::$config['routes']['web'] ?? [])) {
+        if ($route = router()->matches(self::$config['routes']['web'] ?? [])) {
             if ($handler = Collector::getNamespacedFile($route['handler'])) {
                 (new Handler())
                     ->setConfig(self::$config)
@@ -54,7 +52,7 @@ class Bootstrap
             }
 
             // end connection with a status based on whether handler is properly executed
-            Response::setStatusCode(($handler ? 200 : 404))->end();
+            response()->setStatusCode(($handler ? 200 : 404))->end();
         }
 
         $this->verifyIP()
@@ -64,12 +62,12 @@ class Bootstrap
 
         # blacklisted user or invalid payload
         if (!$this->verifyUserId()) {
-            Response::setStatusCode(401)->end();
+            response()->setStatusCode(401)->end();
         }
 
         if (!empty(($async = getenv('ASYNC')))) {
             if ($async == 'true') {
-                Response::close();
+                response()->close();
             }
         }
     }
@@ -81,7 +79,7 @@ class Bootstrap
      */
     private function verifyPayload(): void
     {
-        $payload = Request::json();
+        $payload = request()->json();
         $updates = [
             'message', 'edited_message', 'callback_query',
             'inline_query', 'chosen_inline_result',
@@ -96,7 +94,7 @@ class Bootstrap
         ];
 
         if (!isset($payload['update_id']) || empty(array_intersect($updates, array_keys($payload)))) {
-            Response::setStatusCode(401)->end();
+            response()->setStatusCode(401)->end();
         }
     }
 
@@ -109,8 +107,8 @@ class Bootstrap
     {
         if (!empty(($routes = self::$config['routes']))) {
             if (!empty($routes['telegram'])) {
-                if (!in_array(Request::uri(), $routes)) {
-                    Response::setStatusCode(401)->end();
+                if (!in_array(request()->uri(), $routes)) {
+                    response()->setStatusCode(401)->end();
                 }
             }
         }
@@ -126,9 +124,9 @@ class Bootstrap
     private function verifySignature(): self
     {
         if (!empty(($signature = self::$config['signature']))) {
-            $value = Request::headers('X-Telegram-Bot-Api-Secret-Token');
+            $value = request()->headers('X-Telegram-Bot-Api-Secret-Token');
             if (empty($value) || !hash_equals($signature, $value)) {
-                Response::setStatusCode(401)->end();
+                response()->setStatusCode(401)->end();
             }
         }
 
@@ -143,8 +141,8 @@ class Bootstrap
     private function verifyIP(): self
     {
         if (!empty(($sourceIp = self::$config['ip']))) {
-            if (!hash_equals($sourceIp, Request::ip())) {
-                Response::setStatusCode(401)->end();
+            if (!hash_equals($sourceIp, request()->ip())) {
+                response()->setStatusCode(401)->end();
             }
         }
 
@@ -158,7 +156,7 @@ class Bootstrap
      */
     private function verifyUserId(): bool
     {
-        $payload = Request::json();
+        $payload = request()->json();
         unset($payload['update_id']);
         $keys = array_keys($payload);
         $userId = $payload[$keys[0]]['from']['id'];

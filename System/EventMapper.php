@@ -14,7 +14,6 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionException;
 use TeleBot\System\Core\Handler;
-use TeleBot\System\Http\Request;
 use TeleBot\System\Core\Delegate;
 use TeleBot\System\Core\Bootstrap;
 use TeleBot\System\Filesystem\Collector;
@@ -74,7 +73,7 @@ class EventMapper
             if (is_subclass_of($method->class, Delegate::class)) {
                 $filter->newInstance()();
             } else {
-                if (!($filter->newInstance()->apply(Request::json()))) {
+                if (!($filter->newInstance()->apply(request()->json()))) {
                     return false;
                 }
             }
@@ -97,7 +96,7 @@ class EventMapper
         $eventResult = null;
         foreach ($method->getAttributes() as $attr) {
             if (!str_contains($attr->getName(), 'Filters')) {
-                $eventResult = $attr->newInstance()->apply(Request::json());
+                $eventResult = $attr->newInstance()->apply(request()->json());
                 if (!$eventResult) return false;
             }
         }

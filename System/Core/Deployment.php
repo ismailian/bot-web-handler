@@ -10,9 +10,6 @@
 
 namespace TeleBot\System\Core;
 
-use TeleBot\System\Http\Request;
-use TeleBot\System\Http\Response;
-
 class Deployment
 {
 
@@ -23,10 +20,10 @@ class Deployment
      */
     public static function run(): void
     {
-        Response::close();
+        response()->close();
         if (!self::verify()) return;
 
-        $event = Request::json();
+        $event = request()->json();
 
         $message = $event['head_commit']['message'];
         $committer = $event['head_commit']['committer']['username'];
@@ -48,8 +45,8 @@ class Deployment
      */
     protected static function verify(): bool
     {
-        $signature = Request::headers('X-Hub-Signature-256');
-        if (empty($signature) || empty(Request::json())) {
+        $signature = request()->headers('X-Hub-Signature-256');
+        if (empty($signature) || empty(request()->json())) {
             return false;
         }
 
@@ -58,7 +55,7 @@ class Deployment
             $signature = explode('=', $signature)[1];
         }
 
-        $hash = hash_hmac('sha256', json_encode(Request::json(), JSON_UNESCAPED_SLASHES), $secret);
+        $hash = hash_hmac('sha256', json_encode(request()->json(), JSON_UNESCAPED_SLASHES), $secret);
         return hash_equals($hash, $signature);
     }
 

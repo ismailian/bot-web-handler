@@ -25,14 +25,14 @@ class Router
     {
         if (
             empty($routes) || (
-                empty($routes[Request::method()])
-                && empty($routes[strtoupper(Request::method())])
+                empty($routes[request()->method()])
+                && empty($routes[strtoupper(request()->method())])
             )) {
             return false;
         }
 
-        $uri = Request::uri();
-        $routes = $routes[Request::method()] ?? $routes[strtoupper(Request::method())];
+        $uri = request()->uri();
+        $routes = $routes[request()->method()] ?? $routes[strtoupper(request()->method())];
         foreach ($routes as $route => $handler) {
             if ($this->isDynamic($route)) {
                 $routeMeta = $this->getUrlInfo($uri, $route);
