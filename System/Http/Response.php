@@ -21,7 +21,7 @@ class Response
      * @param int $code
      * @return self
      */
-    public static function setStatusCode(int $code = 200): self
+    public function setStatusCode(int $code = 200): self
     {
         http_response_code($code);
 
@@ -36,7 +36,7 @@ class Response
      * @return void
      * @throws Exception
      */
-    public static function send(string|array|object $body, bool $asJson = false): void
+    public function send(string|array|object $body, bool $asJson = false): void
     {
         if (is_array($body) || is_object($body)) {
             if (!$asJson) {
@@ -57,7 +57,7 @@ class Response
      * @param string $value
      * @return self
      */
-    public static function addHeader(string $key, string $value): self
+    public function addHeader(string $key, string $value): self
     {
         header("$key: $value");
 
@@ -69,7 +69,7 @@ class Response
      *
      * @return void
      */
-    public static function end(): void
+    public function end(): void
     {
         die();
     }
@@ -81,7 +81,7 @@ class Response
      *
      * @return void
      */
-    public static function close(): void
+    public function close(): void
     {
         if (is_callable('fastcgi_finish_request')) {
             session_write_close();

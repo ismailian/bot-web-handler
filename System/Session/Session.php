@@ -11,7 +11,6 @@
 namespace TeleBot\System\Session;
 
 use Exception;
-use TeleBot\System\Http\Request;
 use TeleBot\System\Session\Drivers\DbDriver;
 use TeleBot\System\Interfaces\ISessionDriver;
 use TeleBot\System\Session\Drivers\FileDriver;
@@ -21,10 +20,10 @@ class Session
 {
 
     /** @var ISessionDriver|null $adapter */
-    protected static ?ISessionDriver $adapter = null;
+    protected ?ISessionDriver $adapter = null;
 
     /** @var string|mixed $sessionId */
-    protected static string $sessionId;
+    protected string $sessionId;
 
     /**
      * re-start session with custom session id
@@ -32,9 +31,9 @@ class Session
      * @param string $sessionId
      * @return Session
      */
-    public static function withId(string $sessionId): Session
+    public function withId(string $sessionId): Session
     {
-        return self::init($sessionId);
+        return $this->init($sessionId);
     }
 
     /**
@@ -44,9 +43,9 @@ class Session
      * @param mixed $value
      * @return bool
      */
-    public static function set(string $key, mixed $value): bool
+    public function set(string $key, mixed $value): bool
     {
-        $data = self::init()::$adapter->read();
+        $data = $this->init()->adapter->read();
 
         if ($key !== '*') {
             $keys = explode('.', $key);
@@ -59,7 +58,7 @@ class Session
             $value = $data;
         }
 
-        return self::$adapter->write($value);
+        return $this->adapter->write($value);
     }
 
     /**
@@ -68,9 +67,9 @@ class Session
      * @param string $key
      * @return bool
      */
-    public static function unset(string $key): bool
+    public function unset(string $key): bool
     {
-        $data = self::init()::$adapter->read();
+        $data = $this->init()->adapter->read();
         $keys = explode('.', $key);
         $temp =& $data;
         foreach ($keys as $key) {
@@ -85,7 +84,7 @@ class Session
         foreach ($keys as $key) $temp =& $temp[$key];
         unset($temp[$lastKey]);
 
-        return self::$adapter->write($data);
+        return $this->adapter->write($data);
     }
 
     /**
@@ -94,30 +93,30 @@ class Session
      * @param string|null $sessionId
      * @return self
      */
-    protected static function init(string $sessionId = null): self
+    protected function init(string $sessionId = null): self
     {
         try {
-            if (empty(self::$sessionId) || !self::$adapter) {
+            if (empty($this->sessionId) || !$this->adapter) {
                 if ($sessionId) {
-                    self::$sessionId = $sessionId;
+                    $this->sessionId = $sessionId;
                 } else {
-                    $event = Request::json();
+                    $event = request()->json();
                     foreach (array_keys($event) as $key) {
                         if ($key !== 'update_id') {
-                            self::$sessionId = $event[$key]['from']['id'];
+                            $this->sessionId = $event[$key]['from']['id'];
                             break;
                         }
                     }
                 }
 
-                self::$adapter = match (getenv('SESSION', true)) {
-                    'filesystem' => new FileDriver(self::$sessionId),
-                    'database' => new DbDriver(self::$sessionId),
-                    'redis' => new RedisDriver(self::$sessionId),
+                $this->adapter = match (getenv('SESSION', true)) {
+                    'filesystem' => new FileDriver($this->sessionId),
+                    'database' => new DbDriver($this->sessionId),
+                    'redis' => new RedisDriver($this->sessionId),
                 };
             }
         } catch (Exception) {}
-        return (new self);
+        return $this;
     }
 
     /**
@@ -126,9 +125,9 @@ class Session
      * @param string|null $key
      * @return mixed
      */
-    public static function get(string $key = null): mixed
+    public function get(string $key = null): mixed
     {
-        $data = self::init()::$adapter->read();
+        $data = $this->init()->adapter->read();
         if (!$key) return $data;
 
         $keys = explode('.', $key);
@@ -148,9 +147,9 @@ class Session
      *
      * @return int|bool
      */
-    public static function destroy(): int|bool
+    public function destroy(): int|bool
     {
-        return self::init()::$adapter->delete();
+        return $this->init()->adapter->delete();
     }
 
 }

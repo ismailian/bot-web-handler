@@ -13,19 +13,15 @@ namespace TeleBot\System\Core;
 trait Queuable
 {
 
-    /** @var Database|null $db database client */
-    protected static ?Database $db = null;
-
     /**
      * add a job to the queue
      *
      * @param array $data data to pass to the job class
      * @return void
      */
-    public static function dispatch(array $data): void
+    public function dispatch(array $data): void
     {
-        self::$db ??= new Database();
-        self::$db->insert('queue_jobs', [
+        database()->insert('queue_jobs', [
             'job' => self::class,
             'data' => json_encode($data),
         ]);

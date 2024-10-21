@@ -14,16 +14,16 @@ class Request
 {
 
     /** @var array|null $_query */
-    protected static ?array $_query;
+    protected ?array $_query;
 
     /** @var ?string $_json */
-    protected static ?string $_json;
+    protected ?string $_json;
 
     /** @var ?array $_body */
-    protected static ?array $_body;
+    protected ?array $_body;
 
     /** @var ?array $event */
-    protected static ?array $event;
+    protected ?array $event;
 
     /**
      * return request headers
@@ -31,7 +31,7 @@ class Request
      * @param string|null $key
      * @return array|string|null
      */
-    public static function headers(string $key = null): array|string|null
+    public function headers(string $key = null): array|string|null
     {
         if (!$key) return getallheaders();
         foreach (getallheaders() as $k => $v) {
@@ -48,7 +48,7 @@ class Request
      *
      * @return string
      */
-    public static function ip(): string
+    public function ip(): string
     {
         return $_SERVER['REMOTE_ADDR'];
     }
@@ -57,7 +57,7 @@ class Request
      * get
      * @return string
      */
-    public static function uri(): string
+    public function uri(): string
     {
         if (array_key_exists('REDIRECT_URL', $_SERVER)) {
             return $_SERVER['REDIRECT_URL'];
@@ -80,7 +80,7 @@ class Request
      *
      * @return string
      */
-    public static function method(): string
+    public function method(): string
     {
         return strtolower($_SERVER['REQUEST_METHOD']);
     }
@@ -91,27 +91,14 @@ class Request
      * @param string|null $key
      * @return string|array|null
      */
-    public static function query(string $key = null): string|array|null
+    public function query(string $key = null): string|array|null
     {
-        self::$_query = $_GET;
+        $this->_query = $_GET;
         if (!is_null($key)) {
-            return self::$_query[$key] ?? null;
+            return $this->_query[$key] ?? null;
         }
 
-        return self::$_query;
-    }
-
-    /**
-     * get json body
-     *
-     * @return array
-     */
-    public static function json(): array
-    {
-        if (($json = json_decode(file_get_contents('php://input'), true)))
-            return $json;
-
-        return [];
+        return $this->_query;
     }
 
     /**
@@ -120,17 +107,31 @@ class Request
      * @param bool $raw
      * @return array|string
      */
-    public static function body(bool $raw = false): array|string
+    public function body(bool $raw = false): array|string
     {
         if ($raw) {
             return file_get_contents('php://input');
         }
 
-        $body = self::$_body ?? (self::$_body = $_POST);
+        $body = $this->_body ?? ($this->_body = $_POST);
         return [
             ...$body,
-            ...self::json()
+            ...$this->json()
         ];
+    }
+
+    /**
+     * get json body
+     *
+     * @return array
+     */
+    public function json(): array
+    {
+        if (($json = json_decode(file_get_contents('php://input'), true))) {
+            return $json;
+        }
+
+        return [];
     }
 
 }
