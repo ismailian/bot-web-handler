@@ -301,8 +301,8 @@ To create a delegate, simply add new class to the `App\Delegates` directory, and
 This example demonstrates how to verify that the http request is coming from the admin.
 
 Example `Web` Handler:
+
 ```php
-use TeleBot\System\Core\Delegate;
 use TeleBot\App\Delegates\IsAdmin;
 
 /**

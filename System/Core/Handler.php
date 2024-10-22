@@ -10,9 +10,10 @@
 
 namespace TeleBot\System\Core;
 
-use ReflectionMethod;
 use ReflectionException;
+use ReflectionMethod;
 use TeleBot\System\Filesystem\Collector;
+use TeleBot\System\Core\Attributes\Delegate;
 
 class Handler
 {
