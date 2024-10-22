@@ -10,6 +10,7 @@
 
 use TeleBot\System\Core\Queue;
 use TeleBot\System\Core\Router;
+use TeleBot\System\Cache\Cache;
 use TeleBot\System\Http\Request;
 use TeleBot\System\Http\Response;
 use TeleBot\System\Core\Database;
@@ -28,7 +29,6 @@ if (!function_exists('router')) {
         if ($router === null) {
             $router = new Router();
         }
-
         return $router;
     }
 }
@@ -45,7 +45,6 @@ if (!function_exists('request')) {
         if ($request === null) {
             $request = new Request();
         }
-
         return $request;
     }
 }
@@ -62,7 +61,6 @@ if (!function_exists('response')) {
         if ($response === null) {
             $response = new Response();
         }
-
         return $response;
     }
 }
@@ -79,7 +77,6 @@ if (!function_exists('bot')) {
         if ($bot === null) {
             $bot = new BotApi();
         }
-
         return $bot;
     }
 }
@@ -96,7 +93,6 @@ if (!function_exists('session')) {
         if ($session === null) {
             $session = new Session();
         }
-
         return $session;
     }
 }
@@ -113,7 +109,6 @@ if (!function_exists('queue')) {
         if ($queue === null) {
             $queue = new Queue();
         }
-
         return $queue;
     }
 }
@@ -130,7 +125,22 @@ if (!function_exists('database')) {
         if ($database === null) {
             $database = new Database();
         }
-
         return $database;
+    }
+}
+
+if (!function_exists('cache')) {
+    /**
+     * get cache instance
+     *
+     * @return Cache
+     */
+    function cache(): Cache
+    {
+        static $cache = null;
+        if ($cache === null) {
+            $cache = new Cache();
+        }
+        return $cache;
     }
 }
