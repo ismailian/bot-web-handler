@@ -20,6 +20,20 @@ class Bootstrap
     public static array $config;
 
     /**
+     * load config/helper files
+     *
+     * @return void
+     */
+    public static function init(): void
+    {
+        Dotenv::load();
+        [self::$config] = FileLoader::load([
+            'config.php',
+            'System/Utils/*',
+        ]);
+    }
+
+    /**
      * setup necessary configurations to run the app
      *
      * @return void
@@ -30,10 +44,7 @@ class Bootstrap
         set_exception_handler(fn($e) => Logger::onException($e));
         set_error_handler(fn(...$args) => Logger::onError(...$args));
 
-        Dotenv::load();
-
-        self::$config = FileLoader::load('config.php');
-        FileLoader::load('System/Utils/*');
+        self::init();
 
         /** git auto deployments */
         if (router()->matches(self::$config['routes']['git'] ?? [])) {

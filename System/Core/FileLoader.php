@@ -14,20 +14,41 @@ class FileLoader
 {
 
     /**
-     * load file(s)
+     * load helper files
      *
-     * @param string $path
+     * @param mixed $path
      * @return mixed
      */
-    public static function load(string $path): mixed
+    public static function load(mixed $path): mixed
     {
-        if (!str_ends_with($path, '*') && file_exists($path)) {
-            return require_once $path;
+        if (is_string($path)) {
+            return self::requireFile($path);
         }
 
-        if (str_ends_with($path, '*')) {
-            $phpFiles = glob($path . ".php");
-            return array_map(fn($f) => require_once $f, $phpFiles);
+        if (is_array($path)) {
+            return array_map(fn($f) => self::requireFile($f), $path);
+        }
+
+        return null;
+    }
+
+    /**
+     * require files
+     *
+     * @param string $filePath
+     * @return mixed
+     */
+    protected static function requireFile(string $filePath): mixed
+    {
+        if (str_ends_with($filePath, '*')) {
+            return array_map(
+                fn($f) => require_once $f,
+                glob($filePath . ".php")
+            );
+        } else {
+            if (file_exists($filePath)) {
+                return require_once $filePath;
+            }
         }
 
         return null;

@@ -119,7 +119,6 @@ class Queue
      */
     public function dispatch(string $job, array $data): void
     {
-        $this->db ??= database();
         database()->insert('queue_jobs', [
             'job' => $job,
             'data' => json_encode($data),

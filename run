@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-use TeleBot\System\Core\Dotenv;
+use TeleBot\System\Core\Bootstrap;
 use TeleBot\System\Interfaces\IScript;
 
 require __DIR__ . '/vendor/autoload.php';
@@ -22,6 +22,6 @@ if (count($argv) < 2) return;
 $script = $argv[1];
 $script = "TeleBot\App\Scripts\\$script";
 if (is_subclass_of($script, IScript::class)) {
-    Dotenv::load();
+    Bootstrap::init();
     (new $script())->run();
 }
