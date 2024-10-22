@@ -10,7 +10,7 @@
 
 namespace TeleBot\System\Core;
 
-trait Queuable
+trait Queueable
 {
 
     /**
@@ -19,7 +19,7 @@ trait Queuable
      * @param array $data data to pass to the job class
      * @return void
      */
-    public function dispatch(array $data): void
+    public static function dispatch(array $data): void
     {
         database()->insert('queue_jobs', [
             'job' => self::class,
