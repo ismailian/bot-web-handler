@@ -19,8 +19,8 @@ use TeleBot\System\Session\Drivers\RedisDriver;
 class Session
 {
 
-    /** @var ISessionDriver|null $adapter */
-    protected ?ISessionDriver $adapter = null;
+    /** @var ISessionDriver|null $client */
+    protected ?ISessionDriver $client = null;
 
     /** @var string|mixed $sessionId */
     protected string $sessionId;
@@ -45,7 +45,7 @@ class Session
      */
     public function set(string $key, mixed $value): bool
     {
-        $data = $this->init()->adapter->read();
+        $data = $this->init()->client->read();
 
         if ($key !== '*') {
             $keys = explode('.', $key);
@@ -58,7 +58,7 @@ class Session
             $value = $data;
         }
 
-        return $this->adapter->write($value);
+        return $this->client->write($value);
     }
 
     /**
@@ -69,7 +69,7 @@ class Session
      */
     public function unset(string $key): bool
     {
-        $data = $this->init()->adapter->read();
+        $data = $this->init()->client->read();
         $keys = explode('.', $key);
         $temp =& $data;
         foreach ($keys as $key) {
@@ -84,7 +84,7 @@ class Session
         foreach ($keys as $key) $temp =& $temp[$key];
         unset($temp[$lastKey]);
 
-        return $this->adapter->write($data);
+        return $this->client->write($data);
     }
 
     /**
@@ -96,7 +96,7 @@ class Session
     protected function init(string $sessionId = null): self
     {
         try {
-            if (empty($this->sessionId) || !$this->adapter) {
+            if (empty($this->sessionId) || !$this->client) {
                 if ($sessionId) {
                     $this->sessionId = $sessionId;
                 } else {
@@ -109,7 +109,7 @@ class Session
                     }
                 }
 
-                $this->adapter = match (getenv('SESSION', true)) {
+                $this->client = match (getenv('SESSION', true)) {
                     'filesystem' => new FileDriver($this->sessionId),
                     'database' => new DbDriver($this->sessionId),
                     'redis' => new RedisDriver($this->sessionId),
@@ -127,7 +127,7 @@ class Session
      */
     public function get(string $key = null): mixed
     {
-        $data = $this->init()->adapter->read();
+        $data = $this->init()->client->read();
         if (!$key) return $data;
 
         $keys = explode('.', $key);
@@ -149,7 +149,7 @@ class Session
      */
     public function destroy(): int|bool
     {
-        return $this->init()->adapter->delete();
+        return $this->init()->client->delete();
     }
 
 }
