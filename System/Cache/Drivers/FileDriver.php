@@ -10,13 +10,10 @@
 
 namespace TeleBot\System\Cache\Drivers;
 
-use TeleBot\System\Core\Traits\Cacheable;
 use TeleBot\System\Interfaces\ICacheDriver;
 
 class FileDriver implements ICacheDriver
 {
-
-    use Cacheable;
 
     /**
      * @inheritDoc
