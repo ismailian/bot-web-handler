@@ -10,8 +10,6 @@
 
 namespace TeleBot\System\Http;
 
-use Exception;
-
 class Response
 {
 
@@ -25,29 +23,38 @@ class Response
     {
         http_response_code($code);
 
-        return new static();
+        return $this;
     }
 
     /**
      * send response to client
      *
-     * @param string|array|object $body
-     * @param bool $asJson send as json
+     * @param string|array|object|null $data
      * @return void
-     * @throws Exception
      */
-    public function send(string|array|object $body, bool $asJson = false): void
+    public function send(string|array|object $data = null): void
     {
-        if (is_array($body) || is_object($body)) {
-            if (!$asJson) {
-                throw new \Exception('cannot respond with ' . gettype($body) . ' as text/plain');
+        if (!empty($data)) {
+            if (is_array($data) || is_object($data)) {
+                $data = json_encode($data, JSON_UNESCAPED_SLASHES);
             }
-
-            self::addHeader('Content-Type', 'application/json');
-            $body = json_encode($body, JSON_UNESCAPED_SLASHES);
         }
 
-        die($body);
+        die($data ?? "");
+    }
+
+    /**
+     * set downloadable attachment headers
+     *
+     * @param string $filename
+     * @return self
+     */
+    public function attachment(string $filename): self
+    {
+        self::addHeader('Content-Type', 'application/octet-stream');
+        self::addHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        return $this;
     }
 
     /**
@@ -61,7 +68,20 @@ class Response
     {
         header("$key: $value");
 
-        return new static();
+        return $this;
+    }
+
+    /**
+     * send response as json
+     *
+     * @param array $data
+     * @return void
+     */
+    public function json(array $data): void
+    {
+        self::addHeader('Content-Type', 'application/json');
+
+        die(json_encode($data));
     }
 
     /**
