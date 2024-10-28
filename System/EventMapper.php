@@ -11,15 +11,15 @@
 namespace TeleBot\System;
 
 use ReflectionClass;
-use ReflectionException;
 use ReflectionMethod;
-use TeleBot\System\Core\Attributes\Delegate;
-use TeleBot\System\Core\Bootstrap;
+use ReflectionException;
 use TeleBot\System\Core\Handler;
+use TeleBot\System\Core\Bootstrap;
 use TeleBot\System\Filesystem\Collector;
-use TeleBot\System\Telegram\Filters\Awaits;
 use TeleBot\System\Telegram\Filters\Chat;
 use TeleBot\System\Telegram\Filters\Only;
+use TeleBot\System\Telegram\Filters\Awaits;
+use TeleBot\System\Core\Attributes\Delegate;
 
 class EventMapper
 {
