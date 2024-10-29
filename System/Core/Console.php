@@ -177,17 +177,17 @@ class Console
      * get list of commits
      *
      * @param string|null $startDate
-     * @param string|null $endTime
+     * @param string|null $endDate
      * @param bool $autoFetchFiles
      * @return array
      */
-    protected static function getCommits(string $startDate = null, string $endTime = null, bool $autoFetchFiles = false): array
+    protected static function getCommits(string $startDate = null, string $endDate = null, bool $autoFetchFiles = false): array
     {
         try {
             $query = [];
             $uri = '/repos/' . self::$owner . '/' . self::$repo . '/commits';
             if ($startDate) $query['since'] = $startDate;
-            if ($endTime) $query['until'] = $startDate;
+            if ($endDate) $query['until'] = $startDate;
 
             $response = self::getClient()->get($uri, ['query' => $query])->getBody();
             return array_reverse(array_map(function ($commit) use ($autoFetchFiles) {
@@ -350,7 +350,6 @@ class Console
      *
      * @param array $args
      * @return void
-     * @throws GuzzleException
      */
     public static function setWebhook(array $args): void
     {
@@ -380,12 +379,10 @@ class Console
      * unset bot webhook
      *
      * @return void
-     * @throws GuzzleException
      */
     public static function unsetWebhook(): void
     {
-        $api = (new BotApi())->setToken(getenv('TG_BOT_TOKEN', true));
-        if (!$api->deleteWebhook()) {
+        if (!bot()->deleteWebhook()) {
             die('[-] failed to delete bot webhook!' . PHP_EOL);
         }
 
