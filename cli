@@ -10,17 +10,12 @@
  */
 
 use Clue\Commander\Router;
-use TeleBot\System\Core\Queue;
-use TeleBot\System\Core\Dotenv;
-use TeleBot\System\Core\Console;
+use TeleBot\System\Core\{Bootstrap, Console};
 
 require_once 'vendor/autoload.php';
 
-Dotenv::load();
+Bootstrap::init();
 
-/**
- * registered commands
- */
 $router = new Router();
 
 /* system update command */
@@ -36,8 +31,8 @@ $router->add('handler:delete <name>', fn($args) => Console::deleteHandler($args)
 $router->add('migrate [<tables>...]', fn($args) => Console::migrate($args));
 
 /* queue commands */
-$router->add('queue:init', fn($args) => Queue::init());
-$router->add('queue:work', fn($args) => Queue::listen());
+$router->add('queue:init', fn($args) => queue()->init());
+$router->add('queue:work', fn($args) => queue()->listen());
 
 /* webhook commands */
 $router->add('webhook:set [<uri>]', fn($args) => Console::setWebhook($args));

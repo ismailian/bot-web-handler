@@ -13,13 +13,10 @@ namespace TeleBot\System;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionException;
-use TeleBot\System\Core\Handler;
-use TeleBot\System\Core\Bootstrap;
 use TeleBot\System\Filesystem\Collector;
-use TeleBot\System\Telegram\Filters\Chat;
-use TeleBot\System\Telegram\Filters\Only;
-use TeleBot\System\Telegram\Filters\Awaits;
 use TeleBot\System\Core\Attributes\Delegate;
+use TeleBot\System\Core\{Bootstrap, Handler};
+use TeleBot\System\Telegram\Filters\{Awaits, Chat, Only};
 
 class EventMapper
 {

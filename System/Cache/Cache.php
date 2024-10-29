@@ -12,8 +12,7 @@ namespace TeleBot\System\Cache;
 
 use TeleBot\System\Core\Traits\Cacheable;
 use TeleBot\System\Interfaces\ICacheDriver;
-use TeleBot\System\Cache\Drivers\FileDriver;
-use TeleBot\System\Cache\Drivers\RedisDriver;
+use TeleBot\System\Cache\Drivers\{FileDriver, RedisDriver};
 
 class Cache
 {

@@ -8,14 +8,11 @@
  * file that was distributed with this source code.
  */
 
-use TeleBot\System\Core\Queue;
-use TeleBot\System\Core\Router;
 use TeleBot\System\Cache\Cache;
-use TeleBot\System\Http\Request;
-use TeleBot\System\Http\Response;
-use TeleBot\System\Core\Database;
 use TeleBot\System\Session\Session;
 use TeleBot\System\Telegram\BotApi;
+use TeleBot\System\Http\{Request, Response};
+use TeleBot\System\Core\{Database, Router, Queue};
 
 if (!function_exists('router')) {
     /**

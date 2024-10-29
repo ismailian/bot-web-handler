@@ -11,10 +11,12 @@
 namespace TeleBot\System\Session;
 
 use Exception;
-use TeleBot\System\Session\Drivers\DbDriver;
 use TeleBot\System\Interfaces\ISessionDriver;
-use TeleBot\System\Session\Drivers\FileDriver;
-use TeleBot\System\Session\Drivers\RedisDriver;
+use TeleBot\System\Session\Drivers\{
+    DbDriver,
+    FileDriver,
+    RedisDriver,
+};
 
 class Session
 {
@@ -34,6 +36,39 @@ class Session
     public function withId(string $sessionId): Session
     {
         return $this->init($sessionId);
+    }
+
+    /**
+     * initialize session adapter
+     *
+     * @param string|null $sessionId
+     * @return self
+     */
+    protected function init(string $sessionId = null): self
+    {
+        try {
+            if (empty($this->sessionId) || !$this->client) {
+                if ($sessionId) {
+                    $this->sessionId = $sessionId;
+                } else {
+                    $event = request()->json();
+                    foreach (array_keys($event) as $key) {
+                        if ($key !== 'update_id') {
+                            $this->sessionId = $event[$key]['from']['id'];
+                            break;
+                        }
+                    }
+                }
+
+                $this->client = match (getenv('SESSION', true)) {
+                    'filesystem' => new FileDriver($this->sessionId),
+                    'database' => new DbDriver($this->sessionId),
+                    'redis' => new RedisDriver($this->sessionId),
+                };
+            }
+        } catch (Exception) {
+        }
+        return $this;
     }
 
     /**
@@ -85,38 +120,6 @@ class Session
         unset($temp[$lastKey]);
 
         return $this->client->write($data);
-    }
-
-    /**
-     * initialize session adapter
-     *
-     * @param string|null $sessionId
-     * @return self
-     */
-    protected function init(string $sessionId = null): self
-    {
-        try {
-            if (empty($this->sessionId) || !$this->client) {
-                if ($sessionId) {
-                    $this->sessionId = $sessionId;
-                } else {
-                    $event = request()->json();
-                    foreach (array_keys($event) as $key) {
-                        if ($key !== 'update_id') {
-                            $this->sessionId = $event[$key]['from']['id'];
-                            break;
-                        }
-                    }
-                }
-
-                $this->client = match (getenv('SESSION', true)) {
-                    'filesystem' => new FileDriver($this->sessionId),
-                    'database' => new DbDriver($this->sessionId),
-                    'redis' => new RedisDriver($this->sessionId),
-                };
-            }
-        } catch (Exception) {}
-        return $this;
     }
 
     /**

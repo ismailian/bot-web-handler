@@ -13,8 +13,7 @@ namespace TeleBot\System;
 use Exception;
 use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Telegram\Types\Event;
-use TeleBot\System\Exceptions\InvalidUpdate;
-use TeleBot\System\Exceptions\InvalidMessage;
+use TeleBot\System\Exceptions\{InvalidUpdate, InvalidMessage};
 
 class IncomingEvent
 {
