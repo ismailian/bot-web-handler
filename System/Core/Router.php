@@ -10,8 +10,6 @@
 
 namespace TeleBot\System\Core;
 
-use TeleBot\System\Http\Request;
-
 class Router
 {
 

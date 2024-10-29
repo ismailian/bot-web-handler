@@ -13,8 +13,6 @@ namespace TeleBot\System\Core;
 class Queue
 {
 
-    use Queuable;
-
     /** @var int $SLEEP_TIME */
     protected int $SLEEP_TIME = 300_000;
 
