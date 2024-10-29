@@ -113,9 +113,8 @@ class Request
             return file_get_contents('php://input');
         }
 
-        $body = $this->_body ?? ($this->_body = $_POST);
         return [
-            ...$body,
+            ...($this->_body ?? ($this->_body = $_POST)),
             ...$this->json()
         ];
     }
