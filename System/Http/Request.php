@@ -16,8 +16,8 @@ class Request
     /** @var array|null $_query */
     protected ?array $_query;
 
-    /** @var ?string $_json */
-    protected ?string $_json;
+    /** @var ?array $_json */
+    protected ?array $_json;
 
     /** @var ?array $_body */
     protected ?array $_body;
@@ -127,11 +127,13 @@ class Request
      */
     public function json(): array
     {
-        if (($json = json_decode(file_get_contents('php://input'), true))) {
-            return $json;
+        if (empty($this->_json)) {
+            if (!($this->_json = json_decode(file_get_contents('php://input'), true))) {
+                $this->_json = [];
+            }
         }
 
-        return [];
+        return $this->_json;
     }
 
 }
