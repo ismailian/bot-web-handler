@@ -375,3 +375,31 @@ GIT_COMMIT_USERS=ismailian
 GIT_COMMIT_KEYWORDS=auto,merge
 ```
 *whenever a verified incoming github webhook event comes in, that contains `#auto` or `#merge` in the commit message, and is committed by `ismailian`, it will trigger a `git pull` command.*
+
+### Basic Caching
+use the `Cache` or `cache()` to access the cache interface. Data can be stored globally or per user.
+
+Globally:
+```php
+if (($weatherData = cache()->get('weather_data'))) {
+    response()->json($weatherData);
+}
+
+$weatherData = []; // get data from API
+
+cache()->remember('weather_data');
+response()->json($weatherData);
+```
+
+Per User:
+```php
+$cacheKey = cache()->fingerprint();
+if (($weatherData = cache()->get($cacheKey))) {
+    response()->json($weatherData);
+}
+
+$weatherData = []; // get data from API
+
+cache()->remember($cacheKey);
+response()->json($weatherData);
+```
