@@ -12,12 +12,33 @@ namespace TeleBot\System\Core;
 
 use ReflectionException;
 use TeleBot\System\Filesystem\Collector;
+use TeleBot\System\Core\Traits\Verifiable;
 
 class Bootstrap
 {
 
+    use Verifiable;
+
     /** @var array $config */
     public static array $config;
+
+    /**
+     * setup necessary configurations to run the app
+     *
+     * @return void
+     * @throws ReflectionException
+     */
+    public function boot(): void
+    {
+        set_exception_handler(fn($e) => Logger::onException($e));
+        set_error_handler(fn(...$args) => Logger::onError(...$args));
+
+        self::init();
+
+        $this->handleIncomingDeployments();
+        $this->handleIncomingRequests();
+        $this->handleIncomingEvents();
+    }
 
     /**
      * load config/helper files
@@ -34,25 +55,27 @@ class Bootstrap
     }
 
     /**
-     * setup necessary configurations to run the app
+     * handles incoming deployments
      *
      * @return void
-     * @throws ReflectionException
      */
-    public function setup(): void
+    protected function handleIncomingDeployments(): void
     {
-        set_exception_handler(fn($e) => Logger::onException($e));
-        set_error_handler(fn(...$args) => Logger::onError(...$args));
-
-        self::init();
-
-        /** git auto deployments */
         if (router()->matches(self::$config['routes']['git'] ?? [])) {
             if (getenv('GIT_AUTO_DEPLOY', true) === 'true') {
                 Deployment::run();
             }
         }
+    }
 
+    /**
+     * handle incoming web requests
+     *
+     * @return void
+     * @throws ReflectionException
+     */
+    protected function handleIncomingRequests(): void
+    {
         if ($route = router()->matches(self::$config['routes']['web'] ?? [])) {
             if ($handler = Collector::getNamespacedFile($route['handler'])) {
                 (new Handler())
@@ -65,13 +88,20 @@ class Bootstrap
             // end connection with a status based on whether handler is properly executed
             response()->setStatusCode(($handler ? 200 : 404))->end();
         }
+    }
 
+    /**
+     * verifies telegram events
+     *
+     * @return void
+     */
+    protected function handleIncomingEvents(): void
+    {
         $this->verifyIP()
             ->verifySignature()
             ->verifyRoute()
             ->verifyPayload();
 
-        # blacklisted user or invalid payload
         if (!$this->verifyUserId()) {
             response()->setStatusCode(401)->end();
         }
@@ -81,104 +111,6 @@ class Bootstrap
                 response()->close();
             }
         }
-    }
-
-    /**
-     * verify payload
-     *
-     * @return void
-     */
-    private function verifyPayload(): void
-    {
-        $payload = request()->json();
-        $updates = [
-            'message', 'edited_message', 'callback_query',
-            'inline_query', 'chosen_inline_result',
-            'shipping_query', 'pre_checkout_query',
-            'channel_post', 'edited_channel_post',
-            'poll', 'poll_answer',
-            'my_chat_member', 'chat_member', 'chat_join_request',
-            'business_connection', 'business_message',
-            'edited_business_message', 'deleted_business_messages',
-            'message_reaction', 'message_reaction_count',
-            'chat_boost', 'removed_chat_boost'
-        ];
-
-        if (!isset($payload['update_id']) || empty(array_intersect($updates, array_keys($payload)))) {
-            response()->setStatusCode(401)->end();
-        }
-    }
-
-    /**
-     * verify request route
-     *
-     * @return Bootstrap
-     */
-    private function verifyRoute(): self
-    {
-        if (!empty(($routes = self::$config['routes']))) {
-            if (!empty($routes['telegram'])) {
-                if (!in_array(request()->uri(), $routes)) {
-                    response()->setStatusCode(401)->end();
-                }
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * verify request signature
-     *
-     * @return Bootstrap
-     */
-    private function verifySignature(): self
-    {
-        if (!empty(($signature = self::$config['signature']))) {
-            $value = request()->headers('X-Telegram-Bot-Api-Secret-Token');
-            if (empty($value) || !hash_equals($signature, $value)) {
-                response()->setStatusCode(401)->end();
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * verify source IP address
-     *
-     * @return Bootstrap
-     */
-    private function verifyIP(): self
-    {
-        if (!empty(($sourceIp = self::$config['ip']))) {
-            if (!hash_equals($sourceIp, request()->ip())) {
-                response()->setStatusCode(401)->end();
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * verify user id
-     *
-     * @return bool
-     */
-    private function verifyUserId(): bool
-    {
-        $payload = request()->json();
-        unset($payload['update_id']);
-        $keys = array_keys($payload);
-        $userId = $payload[$keys[0]]['from']['id'];
-
-        $whitelist = self::$config['users']['whitelist'];
-        $blacklist = self::$config['users']['blacklist'];
-
-        if (!empty($whitelist)) return in_array($userId, $whitelist);
-        if (!empty($blacklist)) return !in_array($userId, $blacklist);
-
-        return true;
     }
 
 }

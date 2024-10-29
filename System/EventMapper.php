@@ -31,7 +31,7 @@ class EventMapper
      */
     public function init(): bool
     {
-        (new Bootstrap())->setup();
+        (new Bootstrap())->boot();
         $this->handler = (new Handler())->setConfig(Bootstrap::$config);
 
         $handlers = Collector::getNamespacedFiles('App/Handlers');
