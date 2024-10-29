@@ -10,9 +10,12 @@
 
 namespace TeleBot\System\Core;
 
-use ReflectionException;
+use Exception;
 use ReflectionMethod;
+use ReflectionException;
+use TeleBot\System\IncomingEvent;
 use TeleBot\System\Filesystem\Collector;
+use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Core\Attributes\Delegate;
 
 class Handler
@@ -25,8 +28,6 @@ class Handler
     private string $method;
 
     private mixed $args;
-
-    private array $event;
 
     /**
      * set bot configurations
@@ -75,21 +76,6 @@ class Handler
     }
 
     /**
-     * handle fallback
-     *
-     * @return void
-     */
-    public function fallback(): void
-    {
-        if (!empty($this->config['fallback'])) {
-            [$class, $method] = explode('::', $this->config['fallback']);
-            call_user_func_array(
-                [new (Collector::getNamespacedFile($class)), $method], []
-            );
-        }
-    }
-
-    /**
      * execute any available delegates
      *
      * @return void
@@ -104,6 +90,37 @@ class Handler
 
         foreach ($delegates as $delegate) {
             $delegate->newInstance()();
+        }
+    }
+
+    /**
+     * handle fallback
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function fallback(): void
+    {
+        if (!empty($this->config['fallback'])) {
+            $fallback = $this->config['fallback'];
+
+            /** callable */
+            if (is_callable($fallback)) {
+                $fallback(new Event(request()->json()));
+                return;
+            }
+
+            /** invokable class */
+            if (is_subclass_of($fallback, IncomingEvent::class)) {
+                $fallback();
+                return;
+            }
+
+            /** handler */
+            [$class, $method] = explode('::', $fallback);
+            call_user_func_array(
+                [new (Collector::getNamespacedFile($class)), $method], []
+            );
         }
     }
 
