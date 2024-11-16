@@ -47,6 +47,9 @@ trait HttpClient
         'unhook' => 'deleteWebhook',
     ];
 
+    /** @var int $retryUpload number of attempts to retry failed upload */
+    protected int $retryUpload = 3;
+
     /**
      * default constructor
      */
@@ -117,9 +120,10 @@ trait HttpClient
      *
      * @param string $action
      * @param array $data
+     * @param int $attempts
      * @return array|null
      */
-    protected function post(string $action, array $data): ?array
+    protected function post(string $action, array $data, int $attempts = 1): ?array
     {
         try {
             $endpoint = $this->baseUrl . $this->endpointMap[$action];
@@ -160,6 +164,12 @@ trait HttpClient
             $this->options = [];
             return $body['ok'] ? $body : null;
         } catch (GuzzleException|RequestException $e) {
+            if ($withBuffer) {
+                if ($this->retryUpload > 0 && $attempts < $this->retryUpload) {
+                    return $this->post($action, $data, $attempts + 1);
+                }
+            }
+
             $this->log($e);
         }
 
