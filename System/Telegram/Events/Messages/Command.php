@@ -39,7 +39,7 @@ class Command implements IEvent
             $this->command = str_starts_with($this->command, '/') ? '' : "/{$this->command}";
 
         foreach ($event[$key]['entities'] ?? [] as $entity) {
-            if ($entity['type'] == 'bot_command') {
+            if ($entity['type'] === 'bot_command') {
                 if (!$this->command || substr($event[$key]['text'], $entity['offset'], $entity['length']) == $this->command) {
                     return new IncomingCommand($event[$key]['text'], $entity);
                 }

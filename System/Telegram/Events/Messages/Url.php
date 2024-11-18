@@ -40,7 +40,7 @@ class Url implements IEvent
         if (!array_key_exists('text', $event[$key])) return false;
 
         foreach ($event[$key]['entities'] ?? [] as $entity) {
-            if ($entity['type'] == 'url') {
+            if ($entity['type'] === 'url') {
                 $url = new IncomingUrl($event[$key]['text'], $entity);
                 if (!$this->Validator || $this->Validator->isValid($url)) {
                     return $url;
