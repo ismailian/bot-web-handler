@@ -8,6 +8,7 @@
  * file that was distributed with this source code.
  */
 
+use GuzzleHttp\Client;
 use TeleBot\System\Cache\Cache;
 use TeleBot\System\Session\Session;
 use TeleBot\System\Telegram\BotApi;
@@ -139,5 +140,22 @@ if (!function_exists('cache')) {
             $cache = new Cache();
         }
         return $cache;
+    }
+}
+
+if (!function_exists('http')) {
+    /**
+     * get http client instance
+     *
+     * @param array $config
+     * @return Client
+     */
+    function http(array $config = []): Client
+    {
+        static $http = null;
+        if ($http === null) {
+            $http = new Client($config);
+        }
+        return $http;
     }
 }
