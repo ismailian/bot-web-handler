@@ -150,7 +150,7 @@ public function text(IncomingMessage $message): void
 #[Command('age')]
 public function age(): void
 {
-    Session::set('input', 'age');
+    session()->set('input', 'age');
     $this->telegram->sendMessage('Please type in your age:');
 }
 
@@ -164,7 +164,7 @@ public function age(): void
 public function setAge(IncomingMessage $message): void
 {
     $age = $message->text;
-    Session::unset('input');
+    session()->unset('input');
 }
 ```
 
@@ -268,7 +268,7 @@ public function urls(IncomingUrl $url): void
     UrlParserJob::dispatch(['url' => $url]);
     
     // or:
-    Queue::dispatch(UrlParserJob::class, [
+    queue()->dispatch(UrlParserJob::class, [
         'url' => $url
     ]);
     
@@ -316,7 +316,7 @@ public function users(): void
     // some logic to fetch users
     $users = [];
     
-    Response::send(['users' => $users], true);
+    response()->send(['users' => $users], true);
 }
 ```
 
@@ -329,14 +329,14 @@ public function users(): void
  */
 public function __invoke(): void
 {
-    $apiKey = Response::headers('X-Admin-Api-Key');
+    $apiKey = response()->headers('X-Admin-Api-Key');
     if (empty($apiKey)) {
-        Response::setStatusCode(401)->end();
+        response()->setStatusCode(401)->end();
     }
 
     $secret = getenv('ADMIN_API_KEY');
     if (!hash_equals($secret, $apiKey)) {
-        Response::setStatusCode(401)->end();
+        response()->setStatusCode(401)->end();
     }   
 }
 ```
@@ -387,7 +387,7 @@ if (($weatherData = cache()->get('weather_data'))) {
 
 $weatherData = []; // get data from API
 
-cache()->remember('weather_data');
+cache()->remember('weather_data', $weatherData);
 response()->json($weatherData);
 ```
 
@@ -400,6 +400,6 @@ if (($weatherData = cache()->get($cacheKey))) {
 
 $weatherData = []; // get data from API
 
-cache()->remember($cacheKey);
+cache()->remember($cacheKey, $weatherData);
 response()->json($weatherData);
 ```
