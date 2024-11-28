@@ -95,7 +95,9 @@ class Bootstrap
         /** handler class */
         if (is_string($handler) && str_contains($handler, '::')) {
             [$class, $method] = explode('::', $handler);
-            (new $class)->{$method}();
+            call_user_func_array(
+                [new (Collector::getNamespacedFile($class)), $method], []
+            );
         }
 
         response()->end();
