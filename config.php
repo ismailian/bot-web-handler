@@ -68,4 +68,8 @@ return [
      */
     'fallback' => null,
 
+    /**
+     * @var string|callable $maintenance handler to trigger when maintenance mode is enabled
+     */
+    'maintenance' => null,
 ];

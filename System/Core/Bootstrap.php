@@ -10,7 +10,9 @@
 
 namespace TeleBot\System\Core;
 
+use Exception;
 use ReflectionException;
+use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Filesystem\Collector;
 use TeleBot\System\Core\Traits\Verifiable;
 
@@ -27,6 +29,7 @@ class Bootstrap
      *
      * @return void
      * @throws ReflectionException
+     * @throws Exception
      */
     public function boot(): void
     {
@@ -36,6 +39,7 @@ class Bootstrap
         self::init();
 
         $this->handleIncomingDeployments();
+        $this->handleMaintenanceMode();
         $this->handleIncomingRequests();
         $this->handleIncomingEvents();
     }
@@ -66,6 +70,35 @@ class Bootstrap
                 Deployment::run();
             }
         }
+    }
+
+    /**
+     * handle maintenance mode
+     *
+     * @return void
+     * @throws Exception
+     */
+    protected function handleMaintenanceMode(): void
+    {
+        $mode = getenv('MAINTENANCE_MODE', true);
+        if (empty($mode) || $mode !== 'down') {
+            return;
+        }
+
+        $handler = self::$config['maintenance'];
+
+        /** callable function */
+        if (is_callable($handler)) {
+            $handler(new Event(request()->json()));
+        }
+
+        /** handler class */
+        if (is_string($handler) && str_contains($handler, '::')) {
+            [$class, $method] = explode('::', $handler);
+            (new $class)->{$method}();
+        }
+
+        response()->end();
     }
 
     /**
