@@ -11,7 +11,7 @@
 namespace TeleBot\System\Telegram\Traits;
 
 use TeleBot\System\Telegram\BotApi;
-use GuzzleHttp\Exception\GuzzleException;
+use TeleBot\System\Telegram\Types\InlineKeyboard;
 
 trait Extensions
 {
@@ -67,6 +67,31 @@ trait Extensions
     public function setChatId(string $chatId): self
     {
         $this->chatId = $chatId;
+        return $this;
+    }
+
+    /**
+     * add an inline keyboard
+     *
+     * @param callable $keyboardBuilder
+     * @return BotApi|Extensions
+     */
+    public function withInlineKeyboard(callable $keyboardBuilder): self
+    {
+        $inlineKeyboard = $keyboardBuilder(new InlineKeyboard());
+        if (!($inlineKeyboard instanceof InlineKeyboard) && !is_array($inlineKeyboard)) {
+            return $this;
+        }
+
+        if ($inlineKeyboard instanceof InlineKeyboard) {
+            $inlineKeyboard = $inlineKeyboard->toArray();
+        }
+
+        $this->options['reply_markup'] = [
+            ...$this->options['reply_markup'],
+            ...$inlineKeyboard
+        ];
+
         return $this;
     }
 
