@@ -71,4 +71,14 @@ class User
         $this->canReadAllGroupMessages = $this->user['can_read_all_group_messages'] ?? false;
     }
 
+    /**
+     * get array representation of this object
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return $this->user;
+    }
+
 }
