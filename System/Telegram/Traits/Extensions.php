@@ -22,8 +22,8 @@ trait Extensions
     /** @var string $token */
     protected string $token = '';
 
-    /** @var string $mode */
-    protected string $mode = 'html';
+    /** @var string|null $mode */
+    protected ?string $mode = null;
 
     /** @var array $options options to send with the message */
     protected array $options = [];

@@ -40,7 +40,7 @@ class BotApi
         if ($withAction) $this->withAction('typing');
         $data = $this->post('message', [
             'text' => $text,
-            'parse_mode' => $this->mode,
+            ...($this->mode ? ['parse_mode' => $this->mode] : []),
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -69,7 +69,7 @@ class BotApi
         $data = $this->post('photo', [
             'photo' => $asUrl ? $imagePath : Utils::tryFopen($imagePath, 'r'),
             'caption' => $caption ?? '',
-            'parse_mode' => $this->mode
+            ...($this->mode ? ['parse_mode' => $this->mode] : [])
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -103,7 +103,7 @@ class BotApi
         $data = $this->post('video', [
             'video' => $asUrl ? $videoPath : Utils::tryFopen($videoPath, 'r'),
             'caption' => $caption ?? '',
-            'parse_mode' => $this->mode
+            ...($this->mode ? ['parse_mode' => $this->mode] : [])
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -137,7 +137,7 @@ class BotApi
         $data = $this->post('audio', [
             'audio' => $asUrl ? $audioFile : Utils::tryFopen($audioFile, 'r'),
             'caption' => $caption ?? '',
-            'parse_mode' => $this->mode
+            ...($this->mode ? ['parse_mode' => $this->mode] : [])
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -166,7 +166,7 @@ class BotApi
         $data = $this->post('animation', [
             'animation' => $asUrl ? $filePath : Utils::tryFopen($filePath, 'r'),
             'caption' => $caption ?? '',
-            'parse_mode' => $this->mode
+            ...($this->mode ? ['parse_mode' => $this->mode] : [])
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -200,7 +200,7 @@ class BotApi
         $data = $this->post('document', [
             'document' => $asUrl ? $fileUrl : Utils::tryFopen($fileUrl, 'r'),
             'caption' => $caption ?? '',
-            'parse_mode' => $this->mode
+            ...($this->mode ? ['parse_mode' => $this->mode] : [])
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -272,7 +272,7 @@ class BotApi
         $data = $this->post('edit', [
             'message_id' => $messageId,
             'text' => $text,
-            'parse_mode' => $this->mode
+            ...($this->mode ? ['parse_mode' => $this->mode] : [])
         ]);
 
         return $data && $data['ok'] == true;
@@ -301,7 +301,7 @@ class BotApi
             'media' => json_encode([
                 'type' => $type,
                 'caption' => $caption ?? '',
-                'parse_mode' => $this->mode,
+                ...($this->mode ? ['parse_mode' => $this->mode] : []),
                 'media' => 'attach://media_file',
             ]),
             'media_file' => $asUrl ? $mediaPath : Utils::tryFopen($mediaPath, 'r'),
