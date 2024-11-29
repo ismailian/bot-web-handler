@@ -161,7 +161,9 @@ trait HttpClient
                 }
             }
 
+            $this->mode = null;
             $this->options = [];
+
             return $body['ok'] ? $body : null;
         } catch (GuzzleException|RequestException $e) {
             if ($withBuffer) {
