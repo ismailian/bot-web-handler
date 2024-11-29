@@ -12,6 +12,7 @@ namespace TeleBot\System\Telegram\Traits;
 
 use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Telegram\Types\InlineKeyboard;
+use TeleBot\System\Telegram\Support\EntityBuilder;
 
 trait Extensions
 {
@@ -92,6 +93,27 @@ trait Extensions
             ...$inlineKeyboard
         ];
 
+        return $this;
+    }
+
+    /**
+     * add message entities
+     *
+     * @param callable $entityBuilder
+     * @return Extensions|BotApi
+     */
+    public function withEntities(callable $entityBuilder): self
+    {
+        $entities = $entityBuilder(new EntityBuilder());
+        if (!($entities instanceof EntityBuilder) && !is_array($entities)) {
+            return $this;
+        }
+
+        if ($entities instanceof EntityBuilder) {
+            $entities = $entities->toArray();
+        }
+
+        $this->options['entities'] = $entities;
         return $this;
     }
 
