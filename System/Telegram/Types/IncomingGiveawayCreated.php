@@ -18,6 +18,6 @@ readonly class IncomingGiveawayCreated
      *
      * @param array $incomingGiveawayCreated
      */
-    public function __construct(protected readonly array $incomingGiveawayCreated) {}
+    public function __construct(protected array $incomingGiveawayCreated) {}
 
 }
