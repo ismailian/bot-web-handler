@@ -88,7 +88,7 @@ trait Extensions
         }
 
         $this->options['reply_markup'] = [
-            ...$this->options['reply_markup'],
+            ...($this->options['reply_markup'] ?? []),
             ...$inlineKeyboard
         ];
 
