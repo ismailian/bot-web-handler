@@ -57,7 +57,11 @@ class InlineKeyboard
      * @param InlineKeyboardType $type
      * @return $this
      */
-    public function addButton(string $text, mixed $value, InlineKeyboardType $type = InlineKeyboardType::URL): InlineKeyboard
+    public function addButton(
+        string             $text,
+        mixed              $value,
+        InlineKeyboardType $type = InlineKeyboardType::CALLBACK_DATA
+    ): InlineKeyboard
     {
         $this->buttons[] = [
             'text' => $text,
