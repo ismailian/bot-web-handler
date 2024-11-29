@@ -131,22 +131,6 @@ trait Extensions
     }
 
     /**
-     * send an action
-     *
-     * @param string $action action to send
-     * @return BotApi|Extensions
-     */
-    public function withAction(string $action): self
-    {
-        $this->post('action', [
-            'chat_id' => $this->chatId,
-            'action' => $action
-        ]);
-
-        return $this;
-    }
-
-    /**
      * set message to reply to
      *
      * @param int $messageId
@@ -161,41 +145,6 @@ trait Extensions
         }
 
         return $this;
-    }
-
-    /**
-     * delete last message sent by bot
-     *
-     * @return BotApi|Extensions
-     */
-    public function deleteLastMessage(): self
-    {
-        if (!empty($this->lastMessageId)) {
-            $this->deleteMessage($this->lastMessageId);
-            $this->lastMessageId = null;
-        }
-
-        return $this;
-    }
-
-    /**
-     * get last sent message id
-     *
-     * @return int|null
-     */
-    public function getLastMessageId(): ?int
-    {
-        return $this->lastMessageId ?? null;
-    }
-
-    /**
-     * get last sent video id
-     *
-     * @return string|null
-     */
-    public function getLastUploadId(): ?string
-    {
-        return $this->lastUploadId;
     }
 
 }
