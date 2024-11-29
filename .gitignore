@@ -7,3 +7,4 @@ logs
 tests
 todos.txt
 history.json
+/qodana.yaml
