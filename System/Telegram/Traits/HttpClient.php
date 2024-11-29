@@ -24,54 +24,20 @@ trait HttpClient
     /** @var string $baseUrl */
     protected string $baseUrl = 'https://api.telegram.org/bot{token}/';
 
-    /** @var array $endpointMap */
-    protected array $endpointMap = [
-        'updates' => 'getUpdates',
-        'message' => 'sendMessage',
-        'photo' => 'sendPhoto',
-        'video' => 'sendVideo',
-        'audio' => 'sendAudio',
-        'document' => 'sendDocument',
-        'animation' => 'sendAnimation',
-        'delete' => 'deleteMessage',
-        'action' => 'sendChatAction',
-        'user' => 'getChatMember',
-        'dice' => 'sendDice',
-        'edit' => 'editMessageText',
-        'editMedia' => 'editMessageMedia',
-        'sendMediaGroup' => 'sendMediaGroup',
-        'invoice' => 'sendInvoice',
-        'checkout' => 'answerPreCheckoutQuery',
-        'callbackQuery' => 'answerCallbackQuery',
-        'hook' => 'setWebhook',
-        'unhook' => 'deleteWebhook',
-    ];
-
     /** @var int $retryUpload number of attempts to retry failed upload */
     protected int $retryUpload = 3;
 
     /**
-     * default constructor
-     */
-    public function __construct()
-    {
-        $this->api = new Client();
-        $this->setToken(
-            getenv('TG_BOT_TOKEN', true)
-        );
-    }
-
-    /**
-     * send request to API
+     * get data from Bot API
      *
-     * @param string $action
+     * @param string $method
      * @param array $query
      * @return array|null
      */
-    protected function get(string $action, array $query): ?array
+    protected function get(string $method, array $query = []): ?array
     {
         try {
-            $endpoint = $this->baseUrl . $this->endpointMap[$action];
+            $endpoint = $this->baseUrl . $method;
             $endpoint = str_replace('{token}', $this->token, $endpoint);
             $response = $this->api->request('GET', $endpoint, [
                 'query' => ['chat_id' => $this->chatId, ...$query]
@@ -118,20 +84,20 @@ trait HttpClient
     /**
      * send request to API
      *
-     * @param string $action
+     * @param string $method
      * @param array $data
      * @param int $attempts
      * @return array|null
      */
-    protected function post(string $action, array $data, int $attempts = 1): ?array
+    protected function post(string $method, array $data, int $attempts = 1): ?array
     {
         try {
-            $endpoint = $this->baseUrl . $this->endpointMap[$action];
+            $endpoint = $this->baseUrl . $method;
             $endpoint = str_replace('{token}', $this->token, $endpoint);
 
             /** use [multipart] when uploading */
             $withBuffer = ['photo', 'video', 'audio', 'document', 'voice', 'editMedia', 'sendMediaGroup'];
-            if (in_array($action, $withBuffer)) {
+            if (in_array($method, $withBuffer)) {
                 $ak = fn($arr) => array_keys($arr);
                 $av = fn($arr) => array_values($arr);
                 $jsonify = fn($input) => is_array($input) ? json_encode($input) : $input;
@@ -152,12 +118,14 @@ trait HttpClient
             $body = json_decode($response->getBody(), true);
 
             /* store last message id */
-            if (in_array($action, ['message', 'photo', 'video', 'audio', 'voice', 'document', 'contact'])) {
+            // todo: refactor this to reflect used method instead
+            if (in_array($method, ['message', 'photo', 'video', 'audio', 'voice', 'document', 'contact'])) {
                 $this->lastMessageId = $body['result']['message_id'];
 
                 /** store last upload id */
-                if (in_array($action, ['photo', 'video', 'audio', 'voice', 'document'])) {
-                    $this->lastUploadId = $body['result'][$action]['file_id'] ?? null;
+                // todo: refactor this to reflect used method instead
+                if (in_array($method, ['photo', 'video', 'audio', 'voice', 'document'])) {
+                    $this->lastUploadId = $body['result'][$method]['file_id'] ?? null;
                 }
             }
 
@@ -168,7 +136,7 @@ trait HttpClient
         } catch (GuzzleException|RequestException $e) {
             if ($withBuffer) {
                 if ($this->retryUpload > 0 && $attempts < $this->retryUpload) {
-                    return $this->post($action, $data, $attempts + 1);
+                    return $this->post($method, $data, $attempts + 1);
                 }
             }
 
