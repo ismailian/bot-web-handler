@@ -39,8 +39,14 @@ trait HttpClient
         try {
             $endpoint = $this->baseUrl . $method;
             $endpoint = str_replace('{token}', $this->token, $endpoint);
+
+            $queryData = [];
+            if (!empty($query)) {
+                $queryData = ['chat_id' => $this->chatId, ...$query];
+            }
+
             $response = $this->api->request('GET', $endpoint, [
-                'query' => ['chat_id' => $this->chatId, ...$query]
+                'query' => $queryData
             ]);
 
             if ($response->getStatusCode() !== 200) return null;
