@@ -20,6 +20,8 @@ use TeleBot\System\Telegram\Traits\Methods\Edit;
 use TeleBot\System\Telegram\Traits\Methods\Answer;
 use TeleBot\System\Telegram\Traits\Methods\Delete;
 use TeleBot\System\Telegram\Traits\Methods\Actions;
+use TeleBot\System\Telegram\Traits\Methods\Forward;
+use TeleBot\System\Telegram\Traits\Methods\Session;
 use TeleBot\System\Telegram\Traits\Methods\Webhook;
 
 class BotApi
@@ -39,6 +41,8 @@ class BotApi
     use Answer;
     use Webhook;
     use Actions;
+    use Session;
+    use Forward;
 
     /**
      * default constructor
