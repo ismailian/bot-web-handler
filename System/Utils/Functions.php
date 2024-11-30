@@ -12,6 +12,7 @@ use GuzzleHttp\Client;
 use TeleBot\System\Cache\Cache;
 use TeleBot\System\Session\Session;
 use TeleBot\System\Telegram\BotApi;
+use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Http\{Request, Response};
 use TeleBot\System\Core\{Database, Router, Queue};
 
@@ -157,5 +158,26 @@ if (!function_exists('http')) {
             $http = new Client($config);
         }
         return $http;
+    }
+}
+
+if (!function_exists('event')) {
+    /**
+     * get telegram event instance
+     *
+     * @return Event
+     * @throws Exception
+     */
+    function event(): Event
+    {
+        static $event = null;
+        if ($event === null) {
+            try {
+                $event = new Event(request()->json());
+            } catch (\Exception $e) {
+                throw new Exception("failed to parse incoming event: " . $e->getMessage());
+            }
+        }
+        return $event;
     }
 }
