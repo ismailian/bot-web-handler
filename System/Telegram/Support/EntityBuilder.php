@@ -10,9 +10,10 @@
 
 namespace TeleBot\System\Telegram\Support;
 
+use TeleBot\System\Interfaces\IBuilder;
 use TeleBot\System\Telegram\Types\User;
 
-class EntityBuilder
+class EntityBuilder implements IBuilder
 {
 
     /**
