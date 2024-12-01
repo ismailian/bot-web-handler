@@ -14,6 +14,7 @@ use GuzzleHttp\Client;
 use TeleBot\System\Telegram\Traits\Catchable;
 use TeleBot\System\Telegram\Traits\Extensions;
 use TeleBot\System\Telegram\Traits\HttpClient;
+use TeleBot\System\Telegram\Traits\Methods\Copy;
 use TeleBot\System\Telegram\Traits\Methods\Get;
 use TeleBot\System\Telegram\Traits\Methods\Send;
 use TeleBot\System\Telegram\Traits\Methods\Edit;
@@ -37,6 +38,7 @@ class BotApi
     use Get;
     use Send;
     use Edit;
+    use Copy;
     use Delete;
     use Answer;
     use Webhook;
