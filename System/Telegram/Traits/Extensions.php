@@ -13,6 +13,8 @@ namespace TeleBot\System\Telegram\Traits;
 use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Telegram\Types\InlineKeyboard;
 use TeleBot\System\Telegram\Support\EntityBuilder;
+use TeleBot\System\Telegram\Support\ReplyMarkupBuilder;
+use TeleBot\System\Telegram\Support\ReplyParametersBuilder;
 
 trait Extensions
 {
@@ -68,6 +70,56 @@ trait Extensions
     public function setChatId(string $chatId): self
     {
         $this->chatId = $chatId;
+        return $this;
+    }
+
+    /**
+     * add reply markup
+     *
+     * @param callable $markupBuilder
+     * @return Extensions|BotApi
+     */
+    public function withReplyMarkup(callable $markupBuilder): self
+    {
+        $replyMarkup = $markupBuilder(new ReplyMarkupBuilder());
+        if (!($replyMarkup instanceof ReplyMarkupBuilder) && !is_array($replyMarkup)) {
+            return $this;
+        }
+
+        if ($replyMarkup instanceof ReplyMarkupBuilder) {
+            $replyMarkup = $replyMarkup->toArray();
+        }
+
+        $this->options['reply_markup'] = [
+            ...($this->options['reply_markup'] ?? []),
+            ...$replyMarkup
+        ];
+
+        return $this;
+    }
+
+    /**
+     * add reply parameters
+     *
+     * @param callable $parametersBuilder
+     * @return Extensions|BotApi
+     */
+    public function withReplyParameters(callable $parametersBuilder): self
+    {
+        $replyParameters = $parametersBuilder(new ReplyParametersBuilder());
+        if (!($replyParameters instanceof ReplyParametersBuilder) && !is_array($replyParameters)) {
+            return $this;
+        }
+
+        if ($replyParameters instanceof ReplyParametersBuilder) {
+            $replyParameters = $replyParameters->toArray();
+        }
+
+        $this->options['reply_parameters'] = [
+            ...($this->options['reply_parameters'] ?? []),
+            ...$replyParameters
+        ];
+
         return $this;
     }
 
