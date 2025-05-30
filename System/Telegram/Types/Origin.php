@@ -51,7 +51,7 @@ class Origin
         if ($this->type == 'user') {
             $this->from = new User($this->origin['sender_user']);
         } else {
-            $this->chat = new Chat($this->origin['chat']);
+            $this->chat = new Chat($this->origin['sender_chat']);
         }
     }
 
