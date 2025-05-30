@@ -12,6 +12,7 @@ namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
 use Exception;
+use TeleBot\System\Telegram\Enums\OriginType;
 
 class Origin
 {
@@ -22,8 +23,8 @@ class Origin
     /** @var DateTime $date message date */
     public DateTime $date;
 
-    /** @var string $type origin type */
-    public string $type = 'user';
+    /** @var OriginType $type origin type */
+    public OriginType $type = OriginType::USER;
 
     /** @var string|null $signature author signature */
     public ?string $signature = null;
@@ -45,11 +46,13 @@ class Origin
         $this->id = $this->origin['message_id'] ?? null;
         $this->date = new DateTime(date('Y-m-d H:i:s T', $this->origin['date']));
 
-        $this->type = $this->origin['type'];
+        $this->type = OriginType::tryFrom($this->origin['type']);
         $this->signature = $this->origin['author_signature'] ?? null;
 
-        if ($this->type == 'user') {
+        if ($this->type === OriginType::USER) {
             $this->from = new User($this->origin['sender_user']);
+        } else if ($this->type === OriginType::CHANNEL) {
+            $this->chat = new Chat($this->origin['chat']);
         } else {
             $this->chat = new Chat($this->origin['sender_chat']);
         }
