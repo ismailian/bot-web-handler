@@ -100,8 +100,8 @@ class Bootstrap
         if (is_string($handler) && str_contains($handler, '::')) {
             [$class, $method] = explode('::', $handler);
             $class = Collector::getNamespacedFile($class);
-            if (Runtime::is(RuntimeType::TELEGRAM) && is_subclass_of($class, IncomingEvent::class)
-                || Runtime::is(RuntimeType::REQUEST) && is_subclass_of($class, IncomingRequest::class)
+            if ((Runtime::is(RuntimeType::TELEGRAM) && is_subclass_of($class, IncomingEvent::class))
+                || (Runtime::is(RuntimeType::REQUEST) && is_subclass_of($class, IncomingRequest::class))
             ) {
                 call_user_func_array([new $class, $method], []);
             }
