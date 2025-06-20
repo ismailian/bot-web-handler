@@ -50,7 +50,7 @@ trait Verifiable
     {
         if (!empty(($routes = self::$config['routes']))) {
             if (!empty($routes['telegram'])) {
-                if (!in_array(request()->uri(), $routes)) {
+                if (!in_array(request()->uri(), $routes['telegram'])) {
                     response()->setStatusCode(401)->end();
                 }
             }

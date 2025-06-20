@@ -11,6 +11,7 @@
 namespace TeleBot\System\Telegram\Traits;
 
 use TeleBot\System\Telegram\BotApi;
+use TeleBot\System\Telegram\Enums\ParseMode;
 use TeleBot\System\Telegram\Types\InlineKeyboard;
 use TeleBot\System\Telegram\Support\EntityBuilder;
 use TeleBot\System\Telegram\Support\ReplyMarkupBuilder;
@@ -25,8 +26,8 @@ trait Extensions
     /** @var string $token */
     protected string $token = '';
 
-    /** @var string|null $mode */
-    protected ?string $mode = null;
+    /** @var ParseMode|null $mode */
+    protected ?ParseMode $mode = null;
 
     /** @var array $options options to send with the message */
     protected array $options = [];
@@ -52,10 +53,10 @@ trait Extensions
     /**
      * set message parse mode
      *
-     * @param string $mode mode to use with message
+     * @param ParseMode $mode mode to use with a message
      * @return BotApi|Extensions
      */
-    public function setParseMode(string $mode = 'text'): self
+    public function setParseMode(ParseMode $mode): self
     {
         $this->mode = $mode;
         return $this;

@@ -11,6 +11,7 @@
 namespace TeleBot\System\Telegram\Traits\Methods;
 
 use GuzzleHttp\Psr7\Utils;
+use TeleBot\System\Telegram\Enums\ChatActions;
 use TeleBot\System\Telegram\Types\IncomingDice;
 use TeleBot\System\Telegram\Types\IncomingPhoto;
 use TeleBot\System\Telegram\Types\IncomingVideo;
@@ -31,10 +32,10 @@ trait Send
      */
     public function sendMessage(string $text, bool $withAction = false): IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(self::TYPING);
+        if ($withAction) $this->sendChatAction(ChatActions::TYPING);
         $data = $this->post(__FUNCTION__, [
             'text' => $text,
-            ...($this->mode ? ['parse_mode' => $this->mode] : []),
+            ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -59,11 +60,11 @@ trait Send
         bool   $asUrl = false
     ): IncomingPhoto|IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(self::UPLOAD_PHOTO);
+        if ($withAction) $this->sendChatAction(ChatActions::UPLOAD_PHOTO);
         $data = $this->post(__FUNCTION__, [
             'photo' => $asUrl ? $imagePath : Utils::tryFopen($imagePath, 'r'),
             'caption' => $caption ?? '',
-            ...($this->mode ? ['parse_mode' => $this->mode] : [])
+            ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -93,11 +94,11 @@ trait Send
         bool   $asUrl = false
     ): IncomingVideo|IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(self::UPLOAD_VIDEO);
+        if ($withAction) $this->sendChatAction(ChatActions::UPLOAD_VIDEO);
         $data = $this->post(__FUNCTION__, [
             'video' => $asUrl ? $videoPath : Utils::tryFopen($videoPath, 'r'),
             'caption' => $caption ?? '',
-            ...($this->mode ? ['parse_mode' => $this->mode] : [])
+            ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -112,7 +113,7 @@ trait Send
     }
 
     /**
-     * send audio file
+     * send an audio file
      *
      * @param string $audioFile
      * @param string|null $caption
@@ -128,7 +129,7 @@ trait Send
         $data = $this->post(__FUNCTION__, [
             'audio' => $asUrl ? $audioFile : Utils::tryFopen($audioFile, 'r'),
             'caption' => $caption ?? '',
-            ...($this->mode ? ['parse_mode' => $this->mode] : [])
+            ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -158,11 +159,11 @@ trait Send
         bool   $asUrl = false
     ): IncomingAnimation|IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(self::CHOOSE_STICKER);
+        if ($withAction) $this->sendChatAction(ChatActions::CHOOSE_STICKER);
         $data = $this->post(__FUNCTION__, [
             'animation' => $asUrl ? $filePath : Utils::tryFopen($filePath, 'r'),
             'caption' => $caption ?? '',
-            ...($this->mode ? ['parse_mode' => $this->mode] : [])
+            ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
 
         if ($data && array_key_exists('result', $data)) {
@@ -192,11 +193,11 @@ trait Send
         bool   $asUrl = false
     ): IncomingDocument|IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(self::UPLOAD_DOCUMENT);
+        if ($withAction) $this->sendChatAction(ChatActions::UPLOAD_DOCUMENT);
         $data = $this->post(__FUNCTION__, [
             'document' => $asUrl ? $fileUrl : Utils::tryFopen($fileUrl, 'r'),
             'caption' => $caption ?? '',
-            ...($this->mode ? ['parse_mode' => $this->mode] : [])
+            ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
 
         if ($data && array_key_exists('result', $data)) {

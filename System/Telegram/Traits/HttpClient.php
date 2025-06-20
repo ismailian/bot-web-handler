@@ -123,21 +123,18 @@ trait HttpClient
             if ($response->getStatusCode() !== 200) return null;
             $body = json_decode($response->getBody(), true);
 
-            /* store last message id */
-            // todo: refactor this to reflect used method instead
+            /** store last message id */
             if (in_array($method, ['message', 'photo', 'video', 'audio', 'voice', 'document', 'contact'])) {
+                $this->mode = null;
                 $this->lastMessageId = $body['result']['message_id'];
 
                 /** store last upload id */
-                // todo: refactor this to reflect used method instead
                 if (in_array($method, ['photo', 'video', 'audio', 'voice', 'document'])) {
                     $this->lastUploadId = $body['result'][$method]['file_id'] ?? null;
                 }
             }
 
-            $this->mode = null;
             $this->options = [];
-
             return $body['ok'] ? $body : null;
         } catch (GuzzleException|RequestException $e) {
             if ($withBuffer) {
