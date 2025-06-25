@@ -41,7 +41,7 @@ class Cache
     protected function init(): ICacheDriver
     {
         if ($this->client === null) {
-            $driver = getenv('CACHE_DRIVER', true);
+            $driver = env('CACHE_DRIVER');
             $this->client = match ($driver) {
                 'redis' => new RedisDriver(),
                 'filesystem' => new FileDriver(),

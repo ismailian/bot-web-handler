@@ -27,12 +27,12 @@ class Deployment
 
         $message = $event['head_commit']['message'];
         $committer = $event['head_commit']['committer']['username'];
-        $allowedUsers = explode(',', getenv('GIT_COMMIT_USERS'));
-        $allowedKeywords = str_replace(',', '|', getenv('GIT_COMMIT_KEYWORDS'));
+        $allowedUsers = explode(',', env('GIT_COMMIT_USERS'));
+        $allowedKeywords = str_replace(',', '|', env('GIT_COMMIT_KEYWORDS'));
 
         if (in_array($committer, $allowedUsers)) {
             if (preg_match("/(?<=\s)#({$allowedKeywords})\b/i", $message)) {
-                $gitPath = getenv('GIT_PATH', true);
+                $gitPath = env('GIT_PATH');
                 Process::run("{$gitPath} pull");
             }
         }
@@ -50,7 +50,7 @@ class Deployment
             return false;
         }
 
-        $secret = getenv('GIT_WEBHOOK_SECRET', true);
+        $secret = env('GIT_WEBHOOK_SECRET');
         if (str_contains($signature, 'sha256=')) {
             $signature = explode('=', $signature)[1];
         }

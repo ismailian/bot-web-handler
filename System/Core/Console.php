@@ -97,9 +97,9 @@ class Console
                 ) COLLATE='utf8mb4_unicode_ci';"
         ];
 
-        Dotenv::load();
+        Bootstrap::init();
         $db = new Database();
-        $dbName = getenv('DATABASE_NAME', true);
+        $dbName = env('DATABASE_NAME');
 
         $tableNames = join(',', array_map(fn($tableName) => "'$tableName'", $tables));
         $existingTables = $db->getClient()->query("show tables where Tables_in_{$dbName} in ($tableNames)")->fetchAll();
@@ -174,7 +174,7 @@ class Console
     }
 
     /**
-     * get list of commits
+     * get a list of commits
      *
      * @param string|null $startDate
      * @param string|null $endDate
@@ -353,7 +353,7 @@ class Console
      */
     public static function setWebhook(array $args): void
     {
-        $webhookUrl = getenv('APP_DOMAIN', true);
+        $webhookUrl = env('APP_DOMAIN');
         if (empty($webhookUrl)) {
             die('[APP_DOMAIN] in .env file is required!');
         }
@@ -367,8 +367,8 @@ class Console
             $webhookUrl = rtrim($webhookUrl, '/') . '/' . ltrim($args['uri'], '/');
         }
 
-        $api = (new BotApi())->setToken(getenv('TG_BOT_TOKEN', true));
-        if (!$api->setWebhook($webhookUrl, getenv('TG_WEBHOOK_SIGNATURE', true))) {
+        $api = (new BotApi())->setToken(env('TG_BOT_TOKEN'));
+        if (!$api->setWebhook($webhookUrl, env('TG_WEBHOOK_SIGNATURE'))) {
             die('[-] failed to set bot webhook!' . PHP_EOL);
         }
 

@@ -70,7 +70,7 @@ class Bootstrap
     protected function handleIncomingDeployments(): void
     {
         if (router()->matches(self::$config['routes']['git'] ?? [])) {
-            if (getenv('GIT_AUTO_DEPLOY', true) === 'true') {
+            if (env('GIT_AUTO_DEPLOY') === 'true') {
                 Deployment::run();
             }
         }
@@ -84,7 +84,7 @@ class Bootstrap
      */
     protected function handleMaintenanceMode(): void
     {
-        $mode = getenv('MAINTENANCE_MODE', true);
+        $mode = env('MAINTENANCE_MODE');
         if (empty($mode) || $mode !== 'down') {
             return;
         }
@@ -127,7 +127,7 @@ class Bootstrap
                     )->run();
             }
 
-            // end connection with a status based on whether handler is properly executed
+            // end connection with a status based on whether the handler is properly executed
             response()->setStatusCode(($handler ? 200 : 404))->end();
         }
     }
@@ -148,7 +148,7 @@ class Bootstrap
             response()->setStatusCode(401)->end();
         }
 
-        if (!empty(($async = getenv('ASYNC')))) {
+        if (!empty(($async = env('ASYNC')))) {
             if ($async == 'true') {
                 response()->close();
             }

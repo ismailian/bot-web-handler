@@ -31,7 +31,7 @@ class FileDriver implements ISessionDriver
     {
         $this->sessionId = $sessionId;
         $this->sessionFilePath = join('/', [
-            getenv('SESSION_DIR', true),
+            env('SESSION_DIR', 'session'),
             $this->sessionId . '.json'
         ]);
 

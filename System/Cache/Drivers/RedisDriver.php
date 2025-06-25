@@ -33,7 +33,7 @@ class RedisDriver implements ICacheDriver
      */
     public function __construct()
     {
-        if (empty($token = getenv('TG_BOT_TOKEN', true))) {
+        if (empty($token = env('TG_BOT_TOKEN'))) {
             throw new MissingToken;
         }
 
@@ -41,10 +41,10 @@ class RedisDriver implements ICacheDriver
         $this->prefix = "tg:bots:$token:cache";
         $this->client = new Client([
             'scheme' => 'tcp',
-            'host' => getenv('REDIS_HOST', true),
-            'port' => getenv('REDIS_PORT', true),
-            'user' => getenv('REDIS_USER', true),
-            'password' => getenv('REDIS_PASSWORD', true)
+            'host' => env('REDIS_HOST'),
+            'port' => env('REDIS_PORT'),
+            'user' => env('REDIS_USER'),
+            'password' => env('REDIS_PASSWORD')
         ]);
     }
 

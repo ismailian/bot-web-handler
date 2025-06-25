@@ -35,7 +35,7 @@ class RedisDriver implements ISessionDriver
      */
     public function __construct(string $sessionId)
     {
-        if (empty($token = getenv('TG_BOT_TOKEN', true))) {
+        if (empty($token = env('TG_BOT_TOKEN'))) {
             throw new MissingToken;
         }
 
@@ -43,10 +43,10 @@ class RedisDriver implements ISessionDriver
         $this->sessionId = $sessionId;
         $this->client = new Client([
             'scheme' => 'tcp',
-            'host' => getenv('REDIS_HOST', true),
-            'port' => getenv('REDIS_PORT', true),
-            'user' => getenv('REDIS_USER', true),
-            'password' => getenv('REDIS_PASSWORD', true)
+            'host' => env('REDIS_HOST'),
+            'port' => env('REDIS_PORT'),
+            'user' => env('REDIS_USER'),
+            'password' => env('REDIS_PASSWORD')
         ]);
     }
 

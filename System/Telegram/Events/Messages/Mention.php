@@ -28,7 +28,7 @@ class Mention implements IEvent
     public function __construct(public ?string $username = null)
     {
         if ($this->username == 'bot') {
-            $this->username = getenv('TG_BOT_USERNAME', true);
+            $this->username = env('TG_BOT_USERNAME');
         }
     }
 

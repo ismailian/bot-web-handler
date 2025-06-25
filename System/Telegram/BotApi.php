@@ -53,7 +53,7 @@ class BotApi
     {
         $this->api = new Client();
         $this->setToken(
-            getenv('TG_BOT_TOKEN', true)
+            env('TG_BOT_TOKEN')
         );
     }
 }

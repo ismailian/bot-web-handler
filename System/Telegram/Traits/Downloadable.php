@@ -53,7 +53,7 @@ trait Downloadable
     {
         try {
             $uri = "/bot{token}/getFile";
-            $token = getenv('TG_BOT_TOKEN', true);
+            $token = env('TG_BOT_TOKEN');
             $response = $this->api()->get(
                 str_replace('{token}', $token, $uri),
                 ['query' => ['file_id' => $this->fileId]]
@@ -92,7 +92,7 @@ trait Downloadable
     {
         try {
             $uri = "/file/bot{token}/" . $this->filePath;
-            $token = getenv('TG_BOT_TOKEN', true);
+            $token = env('TG_BOT_TOKEN');
             $response = $this->api()->get(str_replace('{token}', $token, $uri));
 
             if ($response->getStatusCode() !== 200) return null;

@@ -26,21 +26,21 @@ class Database
      */
     public function __construct()
     {
-        if (empty(getenv('DATABASE_NAME'))) {
+        if (empty(env('DATABASE_NAME'))) {
             throw new Exception('Database name not defined');
         }
 
-        if (empty(getenv('DATABASE_USER'))) {
+        if (empty(env('DATABASE_USER'))) {
             throw new Exception('Database username not defined');
         }
 
-        $type = getenv('DATABASE_TYPE', true) ?? 'mysql';
-        $host = getenv('DATABASE_HOST', true) ?? 'localhost';
-        $port = getenv('DATABASE_PORT', true) ?? '3306';
-        $username = getenv('DATABASE_USER', true) ?? '';
-        $password = getenv('DATABASE_PASS', true) ?? '';
-        $database = getenv('DATABASE_NAME', true);
-        $charset = getenv('DATABASE_CHARSET', true) ?? 'utf8';
+        $type = env('DATABASE_TYPE', 'mysql');
+        $host = env('DATABASE_HOST', 'localhost');
+        $port = env('DATABASE_PORT', '3306');
+        $username = env('DATABASE_USER', '');
+        $password = env('DATABASE_PASS', '');
+        $database = env('DATABASE_NAME', '');
+        $charset = env('DATABASE_CHARSET', 'utf8');
 
         $this->db = new PDO(
             "$type:host=$host;port=$port;dbname=$database;charset=$charset",

@@ -69,7 +69,7 @@ trait HttpClient
     protected function log($exception): void
     {
         $resolved = false;
-        $shouldLog = getenv('TG_LOG_EXCEPTIONS', true) === 'true';
+        $shouldLog = env('TG_LOG_EXCEPTIONS') === 'true';
 
         $thrown = $this->throw($exception);
         if (method_exists($exception, 'getResponse')) {

@@ -60,7 +60,7 @@ class Session
                     }
                 }
 
-                $this->client = match (getenv('SESSION', true)) {
+                $this->client = match (env('SESSION', 'filesystem')) {
                     'filesystem' => new FileDriver($this->sessionId),
                     'database' => new DbDriver($this->sessionId),
                     'redis' => new RedisDriver($this->sessionId),
