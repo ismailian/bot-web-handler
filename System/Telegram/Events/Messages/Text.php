@@ -25,10 +25,10 @@ class Text implements IEvent
     /**
      * default constructor
      *
-     * @param bool $cleanText capture plain-text only
-     * this will only capture text messages without mentions, urls or commands
+     * @param bool $cleanText capture plain-text only. This will only capture text messages without mentions, urls or commands
+     * @param IValidator|null $validator
      */
-    public function __construct(public bool $cleanText = false, public ?IValidator $Validator = null) {}
+    public function __construct(public bool $cleanText = false, public ?IValidator $validator = null) {}
 
     /**
      * @inheritDoc
@@ -45,7 +45,7 @@ class Text implements IEvent
                 fn($entity) => in_array($entity['type'], ['bot_command', 'url', 'mention'])
             ));
 
-        if ($isCleanText && (!$this->Validator || $this->Validator->isValid($event[$key]['text']))) {
+        if ($isCleanText && (!$this->validator || $this->validator->isValid($event[$key]['text']))) {
             return new IncomingMessage($event[$key]);
         }
 

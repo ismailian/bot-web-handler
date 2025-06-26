@@ -25,9 +25,9 @@ class Video implements IEvent
     /**
      * default constructor
      *
-     * @param IValidator|null $Validator
+     * @param IValidator|null $validator
      */
-    public function __construct(public ?IValidator $Validator = null) {}
+    public function __construct(public ?IValidator $validator = null) {}
 
     /**
      * @inheritDoc
@@ -39,7 +39,7 @@ class Video implements IEvent
         $key = $this->first(array_keys($event));
         if (!array_key_exists('video', $event[$key])) return false;
 
-        if ($this->Validator && !$this->Validator->isValid($event[$key]['video'])) return false;
+        if ($this->validator && !$this->validator->isValid($event[$key]['video'])) return false;
         return new IncomingVideo($event[$key]['video']);
     }
 }

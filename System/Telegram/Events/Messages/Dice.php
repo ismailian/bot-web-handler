@@ -25,9 +25,9 @@ class Dice implements IEvent
     /**
      * default constructor
      *
-     * @param IValidator|null $Validator
+     * @param IValidator|null $validator
      */
-    public function __construct(public ?IValidator $Validator = null) {}
+    public function __construct(public ?IValidator $validator = null) {}
 
     /**
      * @inheritDoc
@@ -38,7 +38,7 @@ class Dice implements IEvent
         $key = $this->first(array_keys($event));
 
         if (!array_key_exists('dice', $event[$key])) return false;
-        if ($this->Validator && !$this->Validator->isValid($event[$key]['dice']))
+        if ($this->validator && !$this->validator->isValid($event[$key]['dice']))
             return false;
 
         return new IncomingDice($event[$key]['dice']);

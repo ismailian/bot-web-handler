@@ -23,9 +23,9 @@ class InlineQuery implements IEvent
      * default constructor
      *
      * @param bool $allowEmpty capture empty query
-     * @param IValidator|null $Validator query validator
+     * @param IValidator|null $validator query validator
      */
-    public function __construct(public bool $allowEmpty = true, public ?IValidator $Validator = null) {}
+    public function __construct(public bool $allowEmpty = true, public ?IValidator $validator = null) {}
 
     /**
      * @inheritDoc
@@ -34,7 +34,7 @@ class InlineQuery implements IEvent
     {
         if (!isset($event['inline_query'])) return false;
         if (!$this->allowEmpty && empty($event['inline_query']['query'])) return false;
-        if ($this->Validator && !$this->Validator->isValid($event['inline_query']['query'])) return false;
+        if ($this->validator && !$this->validator->isValid($event['inline_query']['query'])) return false;
 
         return new IncomingInlineQuery($event['inline_query']);
     }

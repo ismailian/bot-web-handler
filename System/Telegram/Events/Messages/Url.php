@@ -25,9 +25,9 @@ class Url implements IEvent
     /**
      * default constructor
      *
-     * @param IValidator|null $Validator
+     * @param IValidator|null $validator
      */
-    public function __construct(public ?IValidator $Validator = null) {}
+    public function __construct(public ?IValidator $validator = null) {}
 
     /**
      * @inheritDoc
@@ -42,7 +42,7 @@ class Url implements IEvent
         foreach ($event[$key]['entities'] ?? [] as $entity) {
             if ($entity['type'] === 'url') {
                 $url = new IncomingUrl($event[$key]['text'], $entity);
-                if (!$this->Validator || $this->Validator->isValid($url)) {
+                if (!$this->validator || $this->validator->isValid($url)) {
                     return $url;
                 }
             }
