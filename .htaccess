@@ -3,5 +3,5 @@
     RewriteBase /
     Options -Indexes
 
-    RewriteRule ^ main.php [L,QSA]
+    RewriteRule ^ init.php [L,QSA]
 </IfModule>
