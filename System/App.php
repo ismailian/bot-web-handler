@@ -16,11 +16,11 @@ class App extends EventMapper
 {
 
     /**
-     * start event monitoring
+     * handle incoming request
      *
      * @return void
      */
-    public function start(): void
+    public function handle(): void
     {
         try {
             if ($this->init()) {
