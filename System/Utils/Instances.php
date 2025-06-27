@@ -14,7 +14,7 @@ use TeleBot\System\Session\Session;
 use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Http\{Request, Response};
-use TeleBot\System\Core\{Database, Router, Queue, Runtime};
+use TeleBot\System\Core\{Database, Logger, Router, Queue, Runtime};
 
 if (!function_exists('router')) {
     /**
@@ -195,5 +195,21 @@ if (!function_exists('runtime')) {
             $runtime = Runtime::getInstance();
         }
         return $runtime;
+    }
+}
+
+if (!function_exists('logger')) {
+    /**
+     * get logger
+     *
+     * @return Logger
+     */
+    function logger(): Logger
+    {
+        static $logger = null;
+        if ($logger === null) {
+            $logger = Logger::getInstance();
+        }
+        return $logger;
     }
 }

@@ -10,8 +10,15 @@
 
 namespace TeleBot\System\Core;
 
+use TeleBot\System\Core\Traits\Loggable;
+
 class Logger
 {
+
+    /** @var string LOG_DIR */
+    const LOG_DIR = 'logs';
+
+    use Loggable;
 
     /**
      * handle runtime errors
@@ -34,7 +41,7 @@ class Logger
     }
 
     /**
-     * save log file
+     * save a log file
      *
      * @param array $data
      * @return void
@@ -56,10 +63,10 @@ class Logger
 
         /** create log dir if it does not already exist */
         if (!file_exists('logs') && !is_dir('logs')) {
-            mkdir('logs');
+            mkdir(self::LOG_DIR);
         }
 
-        $logPath = 'logs/' . date('Y-m-d__H-i-s') . '.log';
+        $logPath = self::LOG_DIR . '/' . date('Y-m-d__H-i-s') . '.log';
         $encodedData = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         if (!$encodedData) {
             unset($data['trace']);
@@ -93,6 +100,16 @@ class Logger
             'error' => $exception->getMessage(),
             'trace' => $exception->getTrace()
         ]);
+    }
+
+    /**
+     * Get logger instance
+     *
+     * @return Logger
+     */
+    public static function getInstance(): Logger
+    {
+        return new static;
     }
 
 }
