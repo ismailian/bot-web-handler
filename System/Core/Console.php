@@ -191,9 +191,10 @@ class Console
 
             $response = self::getClient()->get($uri, ['query' => $query])->getBody();
             return array_reverse(array_map(function ($commit) use ($autoFetchFiles) {
+                $author = $commit['author']['login'] ?? $commit['commit']['author']['name'];
                 return [
                     'id' => $commit['sha'],
-                    'author' => $commit['author']['login'],
+                    'author' => $author,
                     'message' => $commit['commit']['message'],
                     'files' => $autoFetchFiles ? self::getCommitFiles($commit['sha']) : [],
                 ];
