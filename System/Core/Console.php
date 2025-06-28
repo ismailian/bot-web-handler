@@ -97,12 +97,10 @@ class Console
                 ) COLLATE='utf8mb4_unicode_ci';"
         ];
 
-        Bootstrap::init();
-        $db = new Database();
         $dbName = env('DATABASE_NAME');
 
         $tableNames = join(',', array_map(fn($tableName) => "'$tableName'", $tables));
-        $existingTables = $db->getClient()->query("show tables where Tables_in_{$dbName} in ($tableNames)")->fetchAll();
+        $existingTables = database()->getClient()->query("show tables where Tables_in_{$dbName} in ($tableNames)")->fetchAll();
         $existingTables = array_column($existingTables, 'Tables_in_' . $dbName);
 
         foreach ($tables as $table) {
@@ -112,7 +110,7 @@ class Console
             }
 
             echo "[+] running migration for: $table" . PHP_EOL;
-            $db->raw($migrations[$table]);
+            database()->raw($migrations[$table]);
         }
 
         echo "\n[OK] migrations completed!\n";
