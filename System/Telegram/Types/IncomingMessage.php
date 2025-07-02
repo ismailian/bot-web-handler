@@ -11,9 +11,14 @@
 namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
+use TeleBot\System\Telegram\Traits\{
+    CanReply, CanDelete, CanForward
+};
 
 class IncomingMessage
 {
+
+    use CanDelete, CanForward, CanReply;
 
     /** @var int $id message id */
     public int $id;
