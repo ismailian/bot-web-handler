@@ -66,6 +66,21 @@ class Request
     }
 
     /**
+     * get host name
+     *
+     * @return string|null
+     */
+    public function origin(): ?string
+    {
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? null;
+        if (!empty($origin)) {
+            $origin = parse_url($origin, PHP_URL_HOST);
+        }
+
+        return trim($origin);
+    }
+
+    /**
      * get
      * @return string
      */
