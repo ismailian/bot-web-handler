@@ -13,6 +13,9 @@ namespace TeleBot\System\Http;
 class Request
 {
 
+    /** @var array $headers request headers */
+    protected array $headers = [];
+
     /** @var array|null $_query */
     protected ?array $_query;
 
@@ -26,21 +29,30 @@ class Request
     protected ?array $event;
 
     /**
+     * Get header
+     *
+     * @param string $key
+     * @return string|null
+     */
+    public function header(string $key): ?string
+    {
+        return $this->headers()[strtolower($key)] ?? null;
+    }
+
+    /**
      * return request headers
      *
-     * @param string|null $key
      * @return array|string|null
      */
-    public function headers(string $key = null): array|string|null
+    public function headers(): array|string|null
     {
-        if (!$key) return getallheaders();
-        foreach (getallheaders() as $k => $v) {
-            if (strtolower($k) == strtolower($key)) {
-                return $v;
+        if (empty($this->headers)) {
+            foreach (getallheaders() as $name => $value) {
+                $this->headers[strtolower($name)] = $value;
             }
         }
 
-        return null;
+        return $this->headers;
     }
 
     /**

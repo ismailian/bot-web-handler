@@ -13,6 +13,9 @@ namespace TeleBot\System\Http;
 class Response
 {
 
+    /** @var array $headers response headers */
+    protected static array $headers = [];
+
     /**
      * set http status code
      *
@@ -66,9 +69,21 @@ class Response
      */
     public function addHeader(string $key, string $value): self
     {
+        self::$headers[strtolower($key)] = $value;
         header("$key: $value");
 
         return $this;
+    }
+
+    /**
+     * Get header
+     *
+     * @param string $key
+     * @return string|null
+     */
+    public function getHeader(string $key): ?string
+    {
+        return self::$headers[strtolower($key)] ?? null;
     }
 
     /**
