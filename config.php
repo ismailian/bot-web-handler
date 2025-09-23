@@ -31,11 +31,6 @@ return [
     'ip' => getenv('TG_WEBHOOK_SOURCE_IP', true),
 
     /**
-     * @var array $routes allowed routes
-     */
-    'routes' => [],
-
-    /**
      * @var array $authorization property holding request signature
      */
     'signature' => getenv('TG_WEBHOOK_SIGNATURE', true),
@@ -62,6 +57,11 @@ return [
          */
         'blacklist' => [],
     ],
+
+    /**
+     * @var array $routes allowed routes
+     */
+    'routes' => [],
 
     /**
      * @var string $fallback fallback property for unhandled telegram events
