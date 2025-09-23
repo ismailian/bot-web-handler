@@ -68,6 +68,7 @@ class Handler
      */
     public function run(): void
     {
+        $this->setCors();
         $this->executeDelegates();
 
         call_user_func_array(
@@ -90,6 +91,33 @@ class Handler
 
         foreach ($delegates as $delegate) {
             $delegate->newInstance()();
+        }
+    }
+
+    /**
+     * Configure CORS
+     *
+     * @return void
+     */
+    private function setCors(): void
+    {
+        $cors = $this->config['cors'];
+        if (empty(request()->origin())) {
+            return;
+        }
+
+        $origin = request()->origin();
+        if (array_key_exists($origin, $cors)) {
+            response()->addHeader('Access-Control-Allow-Origin', $origin);
+            response()->addHeader('Access-Control-Allow-Methods', join(',', $cors[$origin]['methods']));
+            response()->addHeader('Access-Control-Allow-Headers', join(',', $cors[$origin]['headers']));
+            if ($cors[$origin]['allow_credentials']) {
+                response()->addHeader('Access-Control-Allow-Credentials', 'true');
+            }
+
+            if (request()->method() === 'options') {
+                response()->setStatusCode(204)->end();
+            }
         }
     }
 
