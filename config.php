@@ -59,11 +59,6 @@ return [
     ],
 
     /**
-     * @var array $routes allowed routes
-     */
-    'routes' => [],
-
-    /**
      * @var string $fallback fallback property for unhandled telegram events
      */
     'fallback' => null,
@@ -72,4 +67,14 @@ return [
      * @var string|callable $maintenance handler to trigger when maintenance mode is enabled
      */
     'maintenance' => null,
+
+    /**
+     * @var array $routes allowed routes
+     */
+    'routes' => [],
+
+    /**
+     * @var array $cors CORS configurations
+     */
+    'cors' => [],
 ];
