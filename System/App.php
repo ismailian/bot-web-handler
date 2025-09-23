@@ -29,7 +29,9 @@ class App extends EventMapper
             }
 
             $this->handler->fallback();
-        } catch (Exception $ex) {}
+        } catch (Exception $ex) {
+            logger()->error($ex->getMessage());
+        }
     }
 
 }
