@@ -10,6 +10,8 @@
 
 namespace TeleBot\System\Core;
 
+use DateTime;
+use Exception;
 use GuzzleHttp\Client;
 use TeleBot\System\Telegram\BotApi;
 use GuzzleHttp\Exception\GuzzleException;
@@ -36,7 +38,7 @@ class Console
 
         if (!file_exists(self::$history)) {
             file_put_contents(self::$history, json_encode([
-                'date' => (new \DateTime())->format('Y-m-d\TH:i:s\Z'),
+                'date' => new DateTime()->format('Y-m-d\TH:i:s\Z'),
                 'changes' => [],
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
@@ -100,7 +102,7 @@ class Console
         $dbName = env('DATABASE_NAME');
 
         $tableNames = join(',', array_map(fn($tableName) => "'$tableName'", $tables));
-        $existingTables = database()->getClient()->query("show tables where Tables_in_{$dbName} in ($tableNames)")->fetchAll();
+        $existingTables = database()->getClient()->query("show tables where Tables_in_$dbName in ($tableNames)")->fetchAll();
         $existingTables = array_column($existingTables, 'Tables_in_' . $dbName);
 
         foreach ($tables as $table) {
@@ -123,7 +125,7 @@ class Console
      */
     public static function update(): void
     {
-        $lastUpdate = (new \DateTime())->format('Y-m-d\T00:00:00\Z');
+        $lastUpdate = new DateTime()->format('Y-m-d\T00:00:00\Z');
         if (file_exists(self::$history)) {
             $history = json_decode(file_get_contents(self::$history), true);
             $lastUpdate = $history['date'];
@@ -143,7 +145,7 @@ class Console
                     'renamed' => ['renaming', '1;34']
                 };
 
-                echo "[+] \033[{$color}m{$action}\033[0m: {$file['filename']}" . PHP_EOL;
+                echo "[+] \033[{$color}m$action\033[0m: {$file['filename']}" . PHP_EOL;
                 if ($action == 'deleting') {
                     @unlink($file['filename']);
                 } else {
@@ -164,7 +166,7 @@ class Console
 
         /** save last update details */
         file_put_contents(self::$history, json_encode([
-            'date' => (new \DateTime())->format('Y-m-d\TH:i:s\Z'),
+            'date' => new DateTime()->format('Y-m-d\TH:i:s\Z'),
             'changes' => $updates,
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
@@ -179,7 +181,7 @@ class Console
      * @param bool $autoFetchFiles
      * @return array
      */
-    protected static function getCommits(string $startDate = null, string $endDate = null, bool $autoFetchFiles = false): array
+    protected static function getCommits(?string $startDate = null, ?string $endDate = null, bool $autoFetchFiles = false): array
     {
         try {
             $query = [];
@@ -263,7 +265,7 @@ class Console
      */
     public static function check(): void
     {
-        $lastUpdate = (new \DateTime())->format('Y-m-d\T00:00:00\Z');
+        $lastUpdate = new DateTime()->format('Y-m-d\T00:00:00\Z');
         if (file_exists(self::$history)) {
             $history = json_decode(file_get_contents(self::$history), true);
             $lastUpdate = $history['date'];
@@ -319,7 +321,7 @@ class Console
             fclose($handler);
 
             die("[+] handler created successfully!" . PHP_EOL);
-        } catch (\Exception) {}
+        } catch (Exception) {}
         die("[-] failed to create handler!" . PHP_EOL);
     }
 
@@ -366,7 +368,7 @@ class Console
             $webhookUrl = rtrim($webhookUrl, '/') . '/' . ltrim($args['uri'], '/');
         }
 
-        $api = (new BotApi())->setToken(env('TG_BOT_TOKEN'));
+        $api = new BotApi()->setToken(env('TG_BOT_TOKEN'));
         if (!$api->setWebhook($webhookUrl, env('TG_WEBHOOK_SIGNATURE'))) {
             die('[-] failed to set bot webhook!' . PHP_EOL);
         }

@@ -10,12 +10,14 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use Exception;
+
 readonly class PassportData
 {
 
     /**
      * @var EncryptedPassportElement[] $data Array with information about documents
-     * and other Telegram Passport elements that was shared with the bot
+     * and other Telegram Passport elements that were shared with the bot
      */
     public array $data;
 
@@ -28,6 +30,7 @@ readonly class PassportData
      * default constructor
      *
      * @param array $passportData
+     * @throws Exception
      */
     public function __construct(protected array $passportData)
     {

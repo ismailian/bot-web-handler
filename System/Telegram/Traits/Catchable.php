@@ -33,7 +33,7 @@ trait Catchable
      * @param IValidator|null $validator
      * @return Catchable|BotApi
      */
-    public function on(int $code, callable $callback, IValidator $validator = null): self
+    public function on(int $code, callable $callback, ?IValidator $validator = null): self
     {
         $this->callbacks["$code"] = $callback;
         if ($validator !== null) {

@@ -27,7 +27,7 @@ trait Messageable
      * @param string|null $strict
      * @return bool
      */
-    public function isMessage(array $keys, string $strict = null): bool
+    public function isMessage(array $keys, ?string $strict = null): bool
     {
         if (!is_null($strict)) {
             return

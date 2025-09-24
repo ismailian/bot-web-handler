@@ -16,7 +16,7 @@ class Logger
 {
 
     /** @var string LOG_DIR */
-    const LOG_DIR = 'logs';
+    const string LOG_DIR = 'logs';
 
     use Loggable;
 
@@ -30,7 +30,7 @@ class Logger
      * @param array $context
      * @return void
      */
-    public static function onError(int $code, string $message, string $file = null, int $line = null, array $context = []): void
+    public static function onError(int $code, string $message, ?string $file = null, ?int $line = null, array $context = []): void
     {
         self::log([
             'file' => $file,

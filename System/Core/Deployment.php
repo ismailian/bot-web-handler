@@ -31,9 +31,9 @@ class Deployment
         $allowedKeywords = str_replace(',', '|', env('GIT_COMMIT_KEYWORDS'));
 
         if (in_array($committer, $allowedUsers)) {
-            if (preg_match("/(?<=\s)#({$allowedKeywords})\b/i", $message)) {
+            if (preg_match("/(?<=\s)#($allowedKeywords)\b/i", $message)) {
                 $gitPath = env('GIT_PATH');
-                Process::run("{$gitPath} pull");
+                Process::run("$gitPath pull");
             }
         }
     }
@@ -45,7 +45,7 @@ class Deployment
      */
     protected static function verify(): bool
     {
-        $signature = request()->headers('X-Hub-Signature-256');
+        $signature = request()->header('X-Hub-Signature-256');
         if (empty($signature) || empty(request()->json())) {
             return false;
         }

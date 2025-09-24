@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection SpellCheckingInspection */
+
 /*
  * This file is part of the Bot Web Handler project.
  * Copyright 2024-2024 Ismail Aatif

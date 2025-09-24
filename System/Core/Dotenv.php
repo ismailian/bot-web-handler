@@ -10,6 +10,8 @@
 
 namespace TeleBot\System\Core;
 
+use SplFileObject;
+
 class Dotenv
 {
 
@@ -24,7 +26,7 @@ class Dotenv
     public static function load(): void
     {
         if (file_exists(self::$envFilename) && is_file(self::$envFilename)) {
-            $envFile = new \SplFileObject(self::$envFilename);
+            $envFile = new SplFileObject(self::$envFilename);
             while (!$envFile->eof()) {
                 $validLine = preg_match('/^(?<key>[!a-zA-Z]\S+)=(?<value>.+)?$/', ($line = trim($envFile->fgets())));
                 if ($validLine) putenv(str_replace('"', '', $line));

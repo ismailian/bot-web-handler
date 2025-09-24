@@ -54,7 +54,7 @@ class RedisDriver implements ICacheDriver
     public function read(string $key): mixed
     {
         if (empty($this->cache)) {
-            $data = $this->client->get("{$this->prefix}:{$key}");
+            $data = $this->client->get("$this->prefix:$key");
             if (!empty($data) && ($json = json_decode($data, true))) {
                 $this->cache = $json;
             }
@@ -73,7 +73,7 @@ class RedisDriver implements ICacheDriver
             $data = json_encode($data);
         }
 
-        $result = $this->client->set("{$this->prefix}:{$key}", $data);
+        $result = $this->client->set("$this->prefix:$key", $data);
 
         return !!$result;
     }
@@ -83,6 +83,6 @@ class RedisDriver implements ICacheDriver
      */
     public function delete(string $key): bool
     {
-        return $this->client->del("{$this->prefix}:{$key}");
+        return $this->client->del("$this->prefix:$key");
     }
 }

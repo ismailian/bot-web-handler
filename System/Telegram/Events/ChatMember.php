@@ -34,6 +34,6 @@ class ChatMember implements IEvent
     {
         if (!array_key_exists("chat_member", $event)) return false;
         return !$this->status
-            || (new IncomingChatMember($event['chat_member']))->memberStatus->status == $this->status;
+            || new IncomingChatMember($event['chat_member'])->memberStatus->status == $this->status;
     }
 }

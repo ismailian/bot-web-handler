@@ -44,7 +44,7 @@ class Session
      * @param string|null $sessionId
      * @return self
      */
-    protected function init(string $sessionId = null): self
+    protected function init(?string $sessionId = null): self
     {
         try {
             if (empty($this->sessionId) || !$this->client) {
@@ -128,7 +128,7 @@ class Session
      * @param string|null $key
      * @return mixed
      */
-    public function get(string $key = null): mixed
+    public function get(?string $key = null): mixed
     {
         $data = $this->init()->client->read();
         if (!$key) return $data;

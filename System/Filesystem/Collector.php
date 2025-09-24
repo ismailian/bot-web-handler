@@ -14,7 +14,7 @@ class Collector
 {
 
     /** @var string default project namespace */
-    const DEFAULT_NS = 'TeleBot';
+    const string DEFAULT_NS = 'TeleBot';
 
     /**
      * recursively collect files in a path based on their extension

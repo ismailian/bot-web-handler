@@ -26,7 +26,7 @@ trait Downloadable
      * @param string|null $directory
      * @return string|bool
      */
-    public function save(string $filename = null, string $directory = null): string|bool
+    public function save(?string $filename = null, ?string $directory = null): string|bool
     {
         if (!$this->filePath) {
             if (!($this->filePath = $this->getFilePath())) {
@@ -63,7 +63,7 @@ trait Downloadable
             $body = json_decode($response->getBody(), true);
 
             return $body['ok'] ? $body['result']['file_path'] : null;
-        } catch (GuzzleException $e) {}
+        } catch (GuzzleException) {}
         return null;
     }
 
@@ -97,7 +97,7 @@ trait Downloadable
 
             if ($response->getStatusCode() !== 200) return null;
             return $response->getBody()->getContents();
-        } catch (GuzzleException $e) {}
+        } catch (GuzzleException) {}
         return null;
     }
 

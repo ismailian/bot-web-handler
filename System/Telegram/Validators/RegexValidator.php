@@ -27,6 +27,6 @@ class RegexValidator implements IValidator
      */
     public function isValid(mixed $data): bool
     {
-        return (bool) preg_match("/{$this->regex}/i", $data);
+        return (bool) preg_match("/$this->regex/i", $data);
     }
 }

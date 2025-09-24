@@ -36,7 +36,7 @@ class TextValidator implements IValidator
         if (
             ($this->minLength && $this->minLength > strlen($data))
             || ($this->equals && $this->equals !== $data)
-            || ($this->regex && !((bool)preg_match("/{$this->regex}/i", $data)))
+            || ($this->regex && !(preg_match("/$this->regex/i", $data)))
         ) return false;
         return true;
     }

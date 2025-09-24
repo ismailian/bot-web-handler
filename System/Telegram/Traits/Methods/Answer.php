@@ -21,7 +21,7 @@ trait Answer
      * @param string|null $errorMessage
      * @return bool
      */
-    public function answerPreCheckoutQuery(string $queryId, bool $ok, string $errorMessage = null): bool
+    public function answerPreCheckoutQuery(string $queryId, bool $ok, ?string $errorMessage = null): bool
     {
         $data = $this->post(__FUNCTION__, [
             'ok' => $ok,
@@ -43,11 +43,11 @@ trait Answer
      * @return bool
      */
     public function answerCallbackQuery(
-        string $callbackQueryId,
-        string $text = null,
-        bool   $showAlert = false,
-        string $url = null,
-        int    $cacheTime = 0
+        string  $callbackQueryId,
+        ?string $text = null,
+        bool    $showAlert = false,
+        ?string $url = null,
+        int     $cacheTime = 0
     ): bool
     {
         $data = $this->post(__FUNCTION__, [

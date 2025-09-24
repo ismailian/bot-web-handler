@@ -10,6 +10,8 @@
 
 namespace TeleBot\System\Core;
 
+use Exception;
+
 class Queue
 {
 
@@ -45,7 +47,7 @@ class Queue
                 echo '[+] creating jobs directory.. ';
                 @mkdir('App/Jobs');
                 die('[OK]');
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 die("failed!" . PHP_EOL . $e->getMessage() . PHP_EOL);
             }
         }
@@ -83,7 +85,7 @@ class Queue
     }
 
     /**
-     * execute job
+     * execute a job
      *
      * @param object $job
      * @param int $attempts
@@ -95,8 +97,8 @@ class Queue
         $status = 2;
 
         try {
-            (new $job->job($job->id, $payload))->process();
-        } catch (\Exception $e) {
+            new $job->job($job->id, $payload)->process();
+        } catch (Exception) {
             if ($attempts < $this->RETRIES) {
                 self::runJob($job, $attempts + 1);
                 return;

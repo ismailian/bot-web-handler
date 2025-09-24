@@ -44,11 +44,11 @@ trait Edit
      * @return bool
      */
     public function editMessageMedia(
-        string $messageId,
-        string $type,
-        string $mediaPath,
-        string $caption = null,
-        bool   $asUrl = false
+        string  $messageId,
+        string  $type,
+        string  $mediaPath,
+        ?string $caption = null,
+        bool    $asUrl = false
     ): bool
     {
         $data = $this->post(__FUNCTION__, [

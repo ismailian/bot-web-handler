@@ -93,7 +93,7 @@ class EntityBuilder implements IBuilder
      * @param string|null $language
      * @return self
      */
-    public function pre(int $offset, int $length, string $language = null): self
+    public function pre(int $offset, int $length, ?string $language = null): self
     {
         $this->entities[] = [
             'type' => __FUNCTION__,
@@ -149,7 +149,7 @@ class EntityBuilder implements IBuilder
      * @param string|null $url
      * @return self
      */
-    public function textLink(int $offset, int $length, string $url = null): self
+    public function textLink(int $offset, int $length, ?string $url = null): self
     {
         $this->entities[] = [
             'type' => 'text_link',
@@ -169,7 +169,7 @@ class EntityBuilder implements IBuilder
      * @param User|null $user
      * @return self
      */
-    public function textMention(int $offset, int $length, User $user = null): self
+    public function textMention(int $offset, int $length, ?User $user = null): self
     {
         $this->entities[] = [
             'type' => 'text_mention',
@@ -377,7 +377,7 @@ class EntityBuilder implements IBuilder
      * @param string|null $customEmojiId
      * @return self
      */
-    public function customEmoji(int $offset, int $length, string $customEmojiId = null): self
+    public function customEmoji(int $offset, int $length, ?string $customEmojiId = null): self
     {
         $this->entities[] = [
             'type' => 'custom_emoji',

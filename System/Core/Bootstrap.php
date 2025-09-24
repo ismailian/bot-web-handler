@@ -120,7 +120,7 @@ class Bootstrap
     {
         if ($route = router()->matches(self::$config['routes']['web'] ?? [])) {
             if ($handler = Collector::getNamespacedFile($route['handler'])) {
-                (new Handler())
+                new Handler()
                     ->setConfig(self::$config)
                     ->assign(new $handler,
                         explode('::', $route['handler'])[1], array_values($route['params'])

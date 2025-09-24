@@ -11,4 +11,4 @@
 require_once 'vendor/autoload.php';
 
 /** run app instance */
-(new TeleBot\System\App())->handle();
+new TeleBot\System\App()->handle();

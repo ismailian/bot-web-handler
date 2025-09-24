@@ -23,5 +23,5 @@ $script = $argv[1];
 $script = "TeleBot\App\Scripts\\$script";
 if (is_subclass_of($script, IScript::class)) {
     Bootstrap::init();
-    (new $script())->run();
+    new $script()->run();
 }

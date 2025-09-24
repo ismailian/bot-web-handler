@@ -16,7 +16,7 @@ if (!function_exists('env')) {
      * @param string|null $default default value
      * @return string|null returns env value, default value or null
      */
-    function env(string $key, string $default = null): ?string
+    function env(string $key, ?string $default = null): ?string
     {
         return getenv($key, true) ?: $default;
     }

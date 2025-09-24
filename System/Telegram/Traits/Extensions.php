@@ -190,7 +190,7 @@ trait Extensions
      * @param string|null $chatId
      * @return BotApi|Extensions
      */
-    public function replyTo(int $messageId, string $chatId = null): self
+    public function replyTo(int $messageId, ?string $chatId = null): self
     {
         $this->options['reply_parameters']['message_id'] = $messageId;
         if ($chatId) {

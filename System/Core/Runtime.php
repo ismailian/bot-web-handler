@@ -31,7 +31,7 @@ class Runtime
 
         /** verify signature */
         if (!empty(($signature = $config['signature']))) {
-            $value = request()->headers('X-Telegram-Bot-Api-Secret-Token');
+            $value = request()->header('X-Telegram-Bot-Api-Secret-Token');
             if (empty($value) || !hash_equals($signature, $value)) {
                 $isTelegram = false;
             }

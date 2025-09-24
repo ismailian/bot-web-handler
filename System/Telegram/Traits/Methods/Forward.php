@@ -30,12 +30,12 @@ trait Forward
      * @throws Exception
      */
     public function forwardMessage(
-        string $chatId,
-        string $messageId,
-        string $fromChatId = null,
-        string $messageThreadId = null,
-        bool   $disableNotification = null,
-        bool   $protectContent = null,
+        string  $chatId,
+        string  $messageId,
+        ?string $fromChatId = null,
+        ?string $messageThreadId = null,
+        ?bool   $disableNotification = null,
+        ?bool   $protectContent = null,
     ): IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
@@ -67,12 +67,12 @@ trait Forward
      * @throws Exception
      */
     public function forwardMessages(
-        string $chatId,
-        array  $messageIds,
-        string $fromChatId = null,
-        string $messageThreadId = null,
-        bool   $disableNotification = null,
-        bool   $protectContent = null,
+        string  $chatId,
+        array   $messageIds,
+        ?string $fromChatId = null,
+        ?string $messageThreadId = null,
+        ?bool   $disableNotification = null,
+        ?bool   $protectContent = null,
     ): array|bool
     {
         $data = $this->post(__FUNCTION__, [

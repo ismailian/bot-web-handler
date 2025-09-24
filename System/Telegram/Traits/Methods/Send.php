@@ -32,7 +32,7 @@ trait Send
      */
     public function sendMessage(string $text, bool $withAction = false): IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(ChatActions::TYPING);
+        if ($withAction) $this->sendChatAction();
         $data = $this->post(__FUNCTION__, [
             'text' => $text,
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
@@ -54,10 +54,10 @@ trait Send
      * @return IncomingPhoto|IncomingMessage|bool returns IncomingPhoto on success, otherwise false
      */
     public function sendPhoto(
-        string $imagePath,
-        string $caption = null,
-        bool   $withAction = false,
-        bool   $asUrl = false
+        string  $imagePath,
+        ?string $caption = null,
+        bool    $withAction = false,
+        bool    $asUrl = false
     ): IncomingPhoto|IncomingMessage|bool
     {
         if ($withAction) $this->sendChatAction(ChatActions::UPLOAD_PHOTO);
@@ -88,10 +88,10 @@ trait Send
      * @return IncomingVideo|IncomingMessage|bool returns IncomingVideo on success, otherwise false
      */
     public function sendVideo(
-        string $videoPath,
-        string $caption = null,
-        bool   $withAction = false,
-        bool   $asUrl = false
+        string  $videoPath,
+        ?string $caption = null,
+        bool    $withAction = false,
+        bool    $asUrl = false
     ): IncomingVideo|IncomingMessage|bool
     {
         if ($withAction) $this->sendChatAction(ChatActions::UPLOAD_VIDEO);
@@ -121,9 +121,9 @@ trait Send
      * @return IncomingAudio|IncomingMessage|bool
      */
     public function sendAudio(
-        string $audioFile,
-        string $caption = null,
-        bool   $asUrl = false
+        string  $audioFile,
+        ?string $caption = null,
+        bool    $asUrl = false
     ): IncomingAudio|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
@@ -153,10 +153,10 @@ trait Send
      * @return IncomingAnimation|IncomingMessage|bool
      */
     public function sendAnimation(
-        string $filePath,
-        string $caption = null,
-        bool   $withAction = false,
-        bool   $asUrl = false
+        string  $filePath,
+        ?string $caption = null,
+        bool    $withAction = false,
+        bool    $asUrl = false
     ): IncomingAnimation|IncomingMessage|bool
     {
         if ($withAction) $this->sendChatAction(ChatActions::CHOOSE_STICKER);
@@ -187,10 +187,10 @@ trait Send
      * @return IncomingDocument|IncomingMessage|bool returns IncomingDocument on success, otherwise false
      */
     public function sendDocument(
-        string $fileUrl,
-        string $caption = null,
-        bool   $withAction = false,
-        bool   $asUrl = false
+        string  $fileUrl,
+        ?string $caption = null,
+        bool    $withAction = false,
+        bool    $asUrl = false
     ): IncomingDocument|IncomingMessage|bool
     {
         if ($withAction) $this->sendChatAction(ChatActions::UPLOAD_DOCUMENT);
@@ -236,10 +236,10 @@ trait Send
      * @return IncomingMessage[]|null
      */
     public function sendMediaGroup(
-        string $type,
-        array  $files,
-        string $caption = null,
-        bool   $asUrl = false
+        string  $type,
+        array   $files,
+        ?string $caption = null,
+        bool    $asUrl = false
     ): ?array
     {
         $media = [];
@@ -277,14 +277,14 @@ trait Send
      * @return bool
      */
     public function sendInvoice(
-        string $title,
-        string $description,
-        string $payload,
-        array  $prices,
-        string $currency = 'USD',
-        string $startParameter = 'single-chat',
-        string $providerToken = null,
-        string $photoUrl = null
+        string  $title,
+        string  $description,
+        string  $payload,
+        array   $prices,
+        string  $currency = 'USD',
+        string  $startParameter = 'single-chat',
+        ?string $providerToken = null,
+        ?string $photoUrl = null
     ): bool
     {
         $data = $this->post(__FUNCTION__, [

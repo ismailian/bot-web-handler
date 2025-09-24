@@ -63,7 +63,7 @@ class IncomingSuccessfulPayment
      * @param string|null $prefix
      * @return float|string
      */
-    public function getNormalizedAmount(string $prefix = null): float|string
+    public function getNormalizedAmount(?string $prefix = null): float|string
     {
         $normalized = ($this->totalAmount / 100);
         return $prefix ? $prefix . $normalized : $normalized;

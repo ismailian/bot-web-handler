@@ -56,7 +56,7 @@ class RedisDriver implements ISessionDriver
     public function read(): array
     {
         if (empty($this->cache)) {
-            $data = $this->client->get("{$this->prefix}:{$this->sessionId}");
+            $data = $this->client->get("$this->prefix:{$this->sessionId}");
             if (!empty($data) && ($json = json_decode($data, true))) {
                 $this->cache = $json;
             }
@@ -71,7 +71,7 @@ class RedisDriver implements ISessionDriver
     public function write(array $data): bool
     {
         $this->cache = $data;
-        $result = $this->client->set("{$this->prefix}:{$this->sessionId}", json_encode($data));
+        $result = $this->client->set("$this->prefix:$this->sessionId", json_encode($data));
 
         return !!$result;
     }
@@ -81,6 +81,6 @@ class RedisDriver implements ISessionDriver
      */
     public function delete(): int
     {
-        return $this->client->del("{$this->prefix}:{$this->sessionId}");
+        return $this->client->del("$this->prefix:$this->sessionId");
     }
 }

@@ -34,16 +34,16 @@ trait Copy
      * @throws Exception
      */
     public function copyMessage(
-        string        $chatId,
-        string        $messageId,
-        string        $fromChatId = null,
-        string        $messageThreadId = null,
-        string        $caption = null,
-        EntityBuilder $captionEntities = null,
-        bool          $protectContent = false,
-        bool          $allowPaidBroadcast = false,
-        bool          $disableNotification = false,
-        bool          $showCaptionAboveMedia = false,
+        string         $chatId,
+        string         $messageId,
+        ?string        $fromChatId = null,
+        ?string        $messageThreadId = null,
+        ?string        $caption = null,
+        ?EntityBuilder $captionEntities = null,
+        bool           $protectContent = false,
+        bool           $allowPaidBroadcast = false,
+        bool           $disableNotification = false,
+        bool           $showCaptionAboveMedia = false,
     ): MessageId|bool
     {
         $data = $this->post(__FUNCTION__, [
@@ -81,13 +81,13 @@ trait Copy
      * @throws Exception
      */
     public function copyMessages(
-        string $chatId,
-        array  $messageIds,
-        string $fromChatId = null,
-        string $messageThreadId = null,
-        bool   $protectContent = false,
-        bool   $disableNotification = false,
-        bool   $removeCaption = false,
+        string  $chatId,
+        array   $messageIds,
+        ?string $fromChatId = null,
+        ?string $messageThreadId = null,
+        bool    $protectContent = false,
+        bool    $disableNotification = false,
+        bool    $removeCaption = false,
     ): array|bool
     {
         $data = $this->post(__FUNCTION__, [

@@ -32,7 +32,7 @@ readonly class Delegate
      */
     public function __invoke(): void
     {
-        (new $this->delegateTo())();
+        new $this->delegateTo()();
     }
 
 }

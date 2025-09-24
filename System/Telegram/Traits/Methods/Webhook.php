@@ -20,7 +20,7 @@ trait Webhook
      * @param string|null $secretToken secret token (optional)
      * @return bool
      */
-    public function setWebhook(string $webhookUrl, string $secretToken = null): bool
+    public function setWebhook(string $webhookUrl, ?string $secretToken = null): bool
     {
         $data = $this->post(__FUNCTION__, [
             'url' => $webhookUrl,

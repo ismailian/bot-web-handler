@@ -11,6 +11,7 @@
 namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
+use Exception;
 use TeleBot\System\Telegram\Traits\{
     CanReply, CanDelete, CanForward
 };
@@ -638,6 +639,6 @@ class IncomingMessage
             if (array_key_exists('passport_data', $this->message)) {
                 $this->passportData = new PassportData($this->message['passport_data']);
             }
-        } catch (\Exception $ex) {}
+        } catch (Exception) {}
     }
 }

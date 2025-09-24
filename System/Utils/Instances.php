@@ -174,7 +174,7 @@ if (!function_exists('event')) {
         if ($event === null) {
             try {
                 $event = new Event(request()->json());
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new Exception("failed to parse incoming event: " . $e->getMessage());
             }
         }

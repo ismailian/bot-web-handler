@@ -115,7 +115,7 @@ class Database
             } else {
                 $stmt->execute($args);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Logger::onException($e);
         }
 
@@ -185,10 +185,9 @@ class Database
     /**
      * get primary key of last inserted record
      *
-     * @param bool $asInt cast ID to integer
      * @return int|string|bool
      */
-    public function lastInsertId(bool $asInt = false): int|string|bool
+    public function lastInsertId(): int|string|bool
     {
         if (is_int($lastId = $this->db->lastInsertId())) {
             return (int)$lastId;

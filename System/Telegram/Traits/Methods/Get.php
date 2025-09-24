@@ -52,9 +52,9 @@ trait Get
      * @return array
      */
     public function getUpdates(
-        int   $offset = null,
-        int   $limit = null,
-        int   $timeout = null,
+        ?int  $offset = null,
+        ?int  $limit = null,
+        ?int  $timeout = null,
         array $allowedUpdated = []
     ): array
     {

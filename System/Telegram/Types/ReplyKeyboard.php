@@ -54,7 +54,7 @@ class ReplyKeyboard
      * @param string|null $type
      * @return $this
      */
-    public function addButton(string $text, mixed $value, string $type = null): ReplyKeyboard
+    public function addButton(string $text, mixed $value, ?string $type = null): ReplyKeyboard
     {
         $this->buttons[] = [];
         return $this;

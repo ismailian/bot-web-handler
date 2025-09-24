@@ -67,7 +67,7 @@ trait Verifiable
     private function verifySignature(): self
     {
         if (!empty(($signature = self::$config['signature']))) {
-            $value = request()->headers('X-Telegram-Bot-Api-Secret-Token');
+            $value = request()->header('X-Telegram-Bot-Api-Secret-Token');
             if (empty($value) || !hash_equals($signature, $value)) {
                 response()->setStatusCode(401)->end();
             }

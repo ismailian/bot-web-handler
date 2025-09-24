@@ -118,7 +118,7 @@ class Request
      * @param string|null $key
      * @return string|array|null
      */
-    public function query(string $key = null): string|array|null
+    public function query(?string $key = null): string|array|null
     {
         $this->_query = $_GET;
         if (!is_null($key)) {
