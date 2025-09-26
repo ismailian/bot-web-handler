@@ -72,12 +72,7 @@ class Request
      */
     public function origin(): ?string
     {
-        $origin = $_SERVER['HTTP_ORIGIN'] ?? null;
-        if (!empty($origin)) {
-            $origin = parse_url($origin, PHP_URL_HOST);
-        }
-
-        return trim($origin);
+        return $_SERVER['HTTP_ORIGIN'] ?? null;
     }
 
     /**
@@ -110,6 +105,17 @@ class Request
     public function method(): string
     {
         return strtolower($_SERVER['REQUEST_METHOD']);
+    }
+
+    /**
+     * Check if request method matches the provided one
+     *
+     * @param string $method
+     * @return bool
+     */
+    public function isMethod(string $method): bool
+    {
+        return $this->method() === strtolower($method);
     }
 
     /**
