@@ -63,6 +63,33 @@ class Bootstrap
     }
 
     /**
+     * Configure CORS
+     *
+     * @return void
+     */
+    protected function setCors(): void
+    {
+        $cors = self::$config['cors'];
+        if (empty(request()->origin())) {
+            return;
+        }
+
+        $origin = request()->origin();
+        if (array_key_exists($origin, $cors)) {
+            response()->addHeader('Access-Control-Allow-Origin', $origin);
+            response()->addHeader('Access-Control-Allow-Methods', join(',', $cors[$origin]['methods']));
+            response()->addHeader('Access-Control-Allow-Headers', join(',', $cors[$origin]['headers']));
+            if ($cors[$origin]['allow_credentials']) {
+                response()->addHeader('Access-Control-Allow-Credentials', 'true');
+            }
+        }
+
+        if (request()->isMethod('OPTIONS')) {
+            response()->setStatusCode(204)->end();
+        }
+    }
+
+    /**
      * handles incoming deployments
      *
      * @return void
@@ -118,6 +145,7 @@ class Bootstrap
      */
     protected function handleIncomingRequests(): void
     {
+        $this->setCors();
         if ($route = router()->matches(self::$config['routes']['web'] ?? [])) {
             if ($handler = Collector::getNamespacedFile($route['handler'])) {
                 new Handler()
