@@ -10,11 +10,24 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Support\MediaIterator;
+
 class IncomingPhoto
 {
 
-    /** @var PhotoSize[] $photos */
-    public array $photos;
+    use MediaIterator;
+
+    /** @var PhotoSize[] $variations */
+    public array $variations;
+
+    /** @var PhotoSize $small the smallest variation of the photo */
+    public PhotoSize $small;
+
+    /** @var PhotoSize $medium medium variation of the photo */
+    public PhotoSize $medium;
+
+    /** @var PhotoSize $large the largest variation of the photo */
+    public PhotoSize $large;
 
     /**
      * default constructor
@@ -23,10 +36,19 @@ class IncomingPhoto
      */
     public function __construct(protected readonly array $incomingPhoto)
     {
-        $this->photos = array_map(
+        $this->variations = array_map(
             fn($photoSize) => new PhotoSize($photoSize),
             $this->incomingPhoto
         );
+
+        usort($this->variations, function (PhotoSize $a, PhotoSize $b) {
+            return $a->width <=> $b->width;
+        });
+
+        $this->small = $this->variations[0];
+        $this->medium = $this->variations[1];
+        $this->large = $this->variations[2];
+        $this->variable = 'variations';
     }
 
 }
