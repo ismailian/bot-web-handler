@@ -1,5 +1,4 @@
-<?php /** @noinspection ALL */
-/** @noinspection SpellCheckingInspection */
+<?php
 
 /*
  * This file is part of the Bot Web Handler project.
@@ -37,7 +36,7 @@ class Response
      * @param string|array|object|null $data
      * @return void
      */
-    public function send(string|array|object $data = null): void
+    public function send(string|array|object|null $data = null): void
     {
         if (!empty($data)) {
             if (is_array($data) || is_object($data)) {
