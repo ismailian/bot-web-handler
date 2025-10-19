@@ -1,6 +1,11 @@
 # Bot Web Handler
 A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 
+**Requirements**
+
+##### PHP Version: 8.4
+
+
 **Steps**
 1. `git clone https://github.com/ismailian/bot-web-handler my-bot`
 2. `cd my-bot`
@@ -48,7 +53,7 @@ public function photos(IncomingPhoto $photo): void
 {
     echo '[+] File ID: ' . $photo->photos[0]->fileId;
     
-    // to download photo
+    // to download the photo
     $photo->photos[0]->save(
         filename: 'photo.png',           // optional
         directory: '/path/to/save/photo' // optional
@@ -195,7 +200,7 @@ public function purchase(): void
 }
 
 /**
- * handle incoming pre checkout query
+ * handle an incoming pre-checkout query
  *
  * @param IncomingPreCheckoutQuery $preCheckoutQuery
  * @return void
@@ -218,7 +223,7 @@ public function preCheckout(IncomingPreCheckoutQuery $preCheckoutQuery): void
 #[SuccessfulPayment]
 public function paid(IncomingSuccessfulPayment $successfulPayment): void
 {
-    // save payment info and send thank you message
+    // save payment info and send a thank you message
 }
 ```
 
@@ -337,11 +342,11 @@ public function __invoke(): void
     $secret = getenv('ADMIN_API_KEY');
     if (!hash_equals($secret, $apiKey)) {
         response()->setStatusCode(401)->end();
-    }   
+    }
 }
 ```
 ### Auto Deployments
-You can easily configure auto-deployment using GitHub webhooks by following these 2 steps:
+You can configure auto-deployment using GitHub webhooks by following these 2 steps:
 1. Environment Variables:
    - set the path to the `git` executable
    - set `GIT_AUTO_DEPLOY` to `true`
@@ -374,10 +379,10 @@ GIT_WEBHOOK_SECRET=1b785ac87f73bd8701d0a92ca9284bdc
 GIT_COMMIT_USERS=ismailian
 GIT_COMMIT_KEYWORDS=auto,merge
 ```
-*whenever a verified incoming github webhook event comes in, that contains `#auto` or `#merge` in the commit message, and is committed by `ismailian`, it will trigger a `git pull` command.*
+*whenever a verified incoming GitHub webhook event comes in, that contains `#auto` or `#merge` in the commit message, and is committed by `ismailian`, it will trigger a `git pull` command.*
 
 ### Basic Caching
-use the `Cache` or `cache()` to access the cache interface. Data can be stored globally or per user.
+Use `Cache` or `cache()` to access the cache interface. Data can be stored globally or per user.
 
 Globally:
 ```php
@@ -402,4 +407,33 @@ $weatherData = []; // get data from API
 
 cache()->remember($cacheKey, $weatherData);
 response()->json($weatherData);
+```
+
+### Maintenance
+You can configure maintenance mode by setting `MAINTENANCE_MODE` in the env file to `DOWN`
+and set a handler in `config.php` like this example:
+```php
+/**
+* @var string|callable $maintenance handler to trigger when maintenance mode is enabled
+*/
+'maintenance' => 'Maintenance::handle',
+```
+
+### CORS (Cross-Origin Resource Sharing)
+You can configure Cors in `config.php` for acceptable domains like this example:
+```php
+/**
+* @var array $cors CORS configurations
+*/
+'cors' => [
+  'example1.com' => [
+      'methods' => ['GET', 'POST', 'OPTIONS'],
+      'headers' => ['Accept', 'Authorization'],
+      'allow_credentials' => true,
+  ],
+  'example2.net' => [
+      'methods' => '*',
+      'headers' => '*',
+  ],
+],
 ```
