@@ -1,12 +1,13 @@
 # Bot Web Handler
+
 A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 
 **Requirements**
 
 ##### PHP Version: 8.4
 
-
 **Steps**
+
 1. `git clone https://github.com/ismailian/bot-web-handler my-bot`
 2. `cd my-bot`
 3. `composer install`
@@ -15,32 +16,37 @@ A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 **Configurations**
 
 #### 1. Set the following properties in the `.env` file
+
 - domain url `APP_DOMAIN`
 - bot token `BOT_TOKEN`
 - webhook secret `TG_WEBHOOK_SIGNATURE` (Optional)
 - Telegram source IP `TG_WEBHOOK_SOURCE_IP` (Optional)
-  - I don't recommend setting this, because the Telegram IP will definitely change.
+    - I don't recommend setting this, because the Telegram IP will definitely change.
 
 #### 2. Set the following properties in the `config.php` file
+
 - routes - routes to accept requests from (Optional)
 - whitelist - list of allowed user ids (Optional)
 - blacklist - list of disallowed user ids (Optional)
 
 #### 3. Useful commands
-| Command                         | Description                                |
-|---------------------------------|--------------------------------------------|
-| `php cli update:check`          | check for available updates                |
-| `php cli update:apply`          | apply available updates                    |
-| `php cli handler:make <name>`   | create new handler                         |
-| `php cli handler:delete <name>` | delete a handler                           |
-| `php cli webhook:set [uri]`     | set bot webhook (URI is optional)          |
-| `php cli webhook:unset`         | unset bot webhook                          |
-| `php cli migrate <tables>`      | migrate tables (users, events, sessions)   |
-| `php cli queue:init`            | create queue table + jobs directory        |
-| `php cli queue:work`            | run queue                                  |
+
+| Command                         | Description                              |
+|---------------------------------|------------------------------------------|
+| `php cli update:check`          | check for available updates              |
+| `php cli update:apply`          | apply available updates                  |
+| `php cli handler:make <name>`   | create new handler                       |
+| `php cli handler:delete <name>` | delete a handler                         |
+| `php cli webhook:set [uri]`     | set bot webhook (URI is optional)        |
+| `php cli webhook:unset`         | unset bot webhook                        |
+| `php cli migrate <tables>`      | migrate tables (users, events, sessions) |
+| `php cli queue:init`            | create queue table + jobs directory      |
+| `php cli queue:work`            | run queue                                |
 
 ## Examples
+
 #### Photos
+
 ```php
 /**
  * handle all incoming photos
@@ -51,17 +57,18 @@ A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 #[Photo]
 public function photos(IncomingPhoto $photo): void
 {
-    echo '[+] File ID: ' . $photo->photos[0]->fileId;
+    // access 3 sizes of the photo (small, medium, large)
+    $smallPhotoFileId = $photo->small->fileId;
     
-    // to download the photo
-    $photo->photos[0]->save(
-        filename: 'photo.png',           // optional
-        directory: '/path/to/save/photo' // optional
-    );
+    // or iterate through each one:
+    $photo->each(function (PhotoSize $photoSize) {
+        $photoSize->save(directory: 'tmp/images');
+    });
 }
 ```
 
 #### Videos
+
 ```php
 /**
  * handle all incoming videos
@@ -83,6 +90,7 @@ public function videos(IncomingVideo $video): void
 ```
 
 #### Commands
+
 ```php
 /**
  * handle start command
@@ -97,6 +105,7 @@ public function onStart(IncomingCommand $command): void
 ```
 
 #### Callback Queries
+
 ```php
 /**
  * handle incoming callback query
@@ -112,6 +121,7 @@ public function callbacks(IncomingCallbackQuery $query): void
 ```
 
 #### Accept Only Private Chats
+
 ```php
 /**
  * handle incoming text from private chats
@@ -126,7 +136,8 @@ public function text(IncomingMessage $message): void
 }
 ```
 
-#### Accept Only From User(s) 
+#### Accept Only From User(s)
+
 ```php
 /**
  * handle incoming text from specific user/users
@@ -142,8 +153,10 @@ public function text(IncomingMessage $message): void
 ```
 
 #### Accept User Input (note: this filter requires session to work)
+
 1. we would set the `input` value to `age` in order to be able to intercept it later
-2. remove the `input` property from the session once you've used it, otherwise any text message containing a number will be captured by the handler.
+2. remove the `input` property from the session once you've used it, otherwise any text message containing a number will
+   be captured by the handler.
 3. `new NumberValidator` is used to ensure that the handler only intercepts numeric text messages
 
 ```php
@@ -174,6 +187,7 @@ public function setAge(IncomingMessage $message): void
 ```
 
 #### Handling Payments (in 3 steps)
+
 1. Create invoice and send it to users
 2. Answer pre-checkout query by confirming `the product` is available
 3. Process successful payments
@@ -228,13 +242,17 @@ public function paid(IncomingSuccessfulPayment $successfulPayment): void
 ```
 
 ## Simple Queue
+
 Currently, the queue only uses database to manage jobs, in the future, other methods will be integrated.
 
 #### configure queue in 3 steps:
+
 1. run migration: `php cli queue:init`
 2. run queue worker: `php cli queue:work`
 3. create job:
-   *typically, you would create the job in the `App\Jobs` directory where your jobs will live. Job classes must implement the `IJob` interface.*
+   *typically, you would create the job in the `App\Jobs` directory where your jobs will live. Job classes must
+   implement the `IJob` interface.*
+
 ```php
 use TeleBot\System\Core\Queuable;
 use TeleBot\System\Interfaces\IJob;
@@ -260,6 +278,7 @@ readonly class UrlParserJob implements IJob
 ```
 
 #### dispatching jobs:
+
 ```php
 /**
  * handle incoming urls
@@ -282,7 +301,9 @@ public function urls(IncomingUrl $url): void
 ```
 
 ### Accepting requests other than Telegram's.
+
 In `config.php`, you can configure your routes to handle other requests.
+
 ```php
  /**
   * @var array $routes allowed routes
@@ -300,6 +321,7 @@ In `config.php`, you can configure your routes to handle other requests.
 ```
 
 ### Delegates (middlewares)
+
 delegates are meant to intercept incoming requests before hitting the final handler.
 To create a delegate, simply add new class to the `App\Delegates` directory, and implement the `IDelegate` interface.
 
@@ -326,6 +348,7 @@ public function users(): void
 ```
 
 `IsAdmin` delegate:
+
 ```php
 /**
  * check if request is coming from the admin
@@ -345,46 +368,13 @@ public function __invoke(): void
     }
 }
 ```
-### Auto Deployments
-You can configure auto-deployment using GitHub webhooks by following these 2 steps:
-1. Environment Variables:
-   - set the path to the `git` executable
-   - set `GIT_AUTO_DEPLOY` to `true`
-   - set webhook secret for verification `GIT_WEBHOOK_SECRET`
-   - set comma-separated usernames allowed in auto-deployments `GIT_COMMIT_USERS`
-   - set comma-separated trigger keywords for auto-deployments `GIT_COMMIT_KEYWORDS`
-
-2. Git Routes:
-   - set custom route for github events in the `config.php` file
-    ```php
-    /**
-     * @var array $routes allowed routes
-     */
-    'routes' => [
-        'git' => [
-            'post' => [
-                '/git' => null
-            ],
-        ]
-    ],
-    ```
-
-Example:
-```dotenv
-# .env file
-
-GIT_PATH=/usr/bin/git
-GIT_AUTO_DEPLOY=true
-GIT_WEBHOOK_SECRET=1b785ac87f73bd8701d0a92ca9284bdc
-GIT_COMMIT_USERS=ismailian
-GIT_COMMIT_KEYWORDS=auto,merge
-```
-*whenever a verified incoming GitHub webhook event comes in, that contains `#auto` or `#merge` in the commit message, and is committed by `ismailian`, it will trigger a `git pull` command.*
 
 ### Basic Caching
+
 Use `Cache` or `cache()` to access the cache interface. Data can be stored globally or per user.
 
 Globally:
+
 ```php
 if (($weatherData = cache()->get('weather_data'))) {
     response()->json($weatherData);
@@ -397,6 +387,7 @@ response()->json($weatherData);
 ```
 
 Per User:
+
 ```php
 $cacheKey = cache()->fingerprint();
 if (($weatherData = cache()->get($cacheKey))) {
@@ -410,8 +401,10 @@ response()->json($weatherData);
 ```
 
 ### Maintenance
+
 You can configure maintenance mode by setting `MAINTENANCE_MODE` in the env file to `DOWN`
 and set a handler in `config.php` like this example:
+
 ```php
 /**
 * @var string|callable $maintenance handler to trigger when maintenance mode is enabled
@@ -420,7 +413,9 @@ and set a handler in `config.php` like this example:
 ```
 
 ### CORS (Cross-Origin Resource Sharing)
+
 You can configure Cors in `config.php` for acceptable domains like this example:
+
 ```php
 /**
 * @var array $cors CORS configurations
