@@ -17,12 +17,11 @@ trait MediaIterator
      * @param callable $callback callback to handle the current object
      * @param PassBy $passBy whether to pass the object by reference or value
      * @return void
-     * @throws Exception
      */
     public function each(callable $callback, PassBy $passBy = PassBy::Value): void
     {
         if (empty($this->variable) || empty($this->{$this->variable})) {
-            throw new Exception('invalid media objects: ' . $this->variable);
+            return;
         }
 
         foreach ($this->{$this->variable} as $mediaObject) {
