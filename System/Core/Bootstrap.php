@@ -97,7 +97,7 @@ class Bootstrap
     protected function handleIncomingDeployments(): void
     {
         if (router()->matches(self::$config['routes']['git'] ?? [])) {
-            if (env('GIT_AUTO_UPDATE') === 'true') {
+            if (env('GIT_AUTO_UPDATE', false)) {
                 Deployment::run();
             }
         }
@@ -176,10 +176,8 @@ class Bootstrap
             response()->setStatusCode(401)->end();
         }
 
-        if (!empty(($async = env('ASYNC')))) {
-            if ($async == 'true') {
-                response()->close();
-            }
+        if (env('ASYNC', false)) {
+            response()->close();
         }
     }
 
