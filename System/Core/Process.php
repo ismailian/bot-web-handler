@@ -21,7 +21,7 @@ class Process
      */
     public static function run(...$args): string|bool
     {
-        return system(join(' ', $args));
+        return exec(join(' ', $args));
     }
 
 }
