@@ -41,7 +41,7 @@ class GetMyId extends IncomingEvent
         $reply .= "Current chat ID: <strong>{$this->event->chat->id}</strong>";
 
         // we want to reply to the exact message that mentioned the bot
-        $this->telegram->replyTo($message->id)->sendMessage($reply);
+        $message->replyWithText($reply);
     }
 
 }
