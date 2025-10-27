@@ -42,7 +42,6 @@ class Bootstrap
         self::init();
         runtime()->init(self::$config);
 
-        $this->handleIncomingDeployments();
         $this->handleMaintenanceMode();
         $this->handleIncomingRequests();
         $this->handleIncomingEvents();
@@ -86,20 +85,6 @@ class Bootstrap
 
         if (request()->isMethod('OPTIONS')) {
             response()->setStatusCode(204)->end();
-        }
-    }
-
-    /**
-     * handles incoming deployments
-     *
-     * @return void
-     */
-    protected function handleIncomingDeployments(): void
-    {
-        if (router()->matches(self::$config['routes']['git'] ?? [])) {
-            if (env('GIT_AUTO_UPDATE', false)) {
-                Deployment::run();
-            }
         }
     }
 
