@@ -30,10 +30,13 @@ class Deployment
         $allowedUsers = explode(',', env('GIT_COMMIT_USERS'));
         $allowedKeywords = str_replace(',', '|', env('GIT_COMMIT_KEYWORDS'));
 
+        if (empty($committer)) {
+            $committer = $event['head_commit']['committer']['email'];
+        }
+
         if (in_array($committer, $allowedUsers)) {
             if (preg_match("/(?<=\s)#($allowedKeywords)\b/i", $message)) {
-                $gitPath = env('GIT_PATH');
-                Process::run("$gitPath pull");
+                Process::run(env('GIT_BIN', 'git'), 'pull');
             }
         }
     }
