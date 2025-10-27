@@ -14,10 +14,19 @@ if (!function_exists('env')) {
      *
      * @param string $key key for env variable
      * @param string|null $default default value
-     * @return string|null returns env value, default value or null
+     * @return mixed|null returns env value, default value or null
      */
-    function env(string $key, ?string $default = null): ?string
+    function env(string $key, ?string $default = null): mixed
     {
-        return getenv($key, true) ?: $default;
+        $value = getenv($key, true);
+        if ($value === false) {
+            return $default;
+        }
+
+        if (in_array($value, ['true', 'false'], true)) {
+            $value = $value === 'true';
+        }
+
+        return $value;
     }
 }
