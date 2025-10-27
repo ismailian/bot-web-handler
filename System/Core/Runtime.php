@@ -7,8 +7,8 @@ use TeleBot\System\Core\Enums\RuntimeType;
 class Runtime
 {
 
-    /** @var RuntimeType $runtime_type property indicating the runtime type */
-    protected static RuntimeType $runtime_type;
+    /** @var RuntimeType $runtimeType property indicating the runtime type */
+    protected static RuntimeType $runtimeType;
 
     /**
      * Initialize runtime checks
@@ -37,7 +37,7 @@ class Runtime
             }
         }
 
-        self::$runtime_type = $isTelegram ? RuntimeType::TELEGRAM : RuntimeType::REQUEST;
+        self::$runtimeType = $isTelegram ? RuntimeType::TELEGRAM : RuntimeType::REQUEST;
     }
 
     /**
@@ -47,29 +47,29 @@ class Runtime
      */
     public static function getType(): RuntimeType
     {
-        return self::$runtime_type;
+        return self::$runtimeType;
     }
 
     /**
      * Set runtime type
      *
-     * @param RuntimeType $runtime_type
+     * @param RuntimeType $runtimeType
      * @return void
      */
-    public static function setType(RuntimeType $runtime_type): void
+    public static function setType(RuntimeType $runtimeType): void
     {
-        self::$runtime_type = $runtime_type;
+        self::$runtimeType = $runtimeType;
     }
 
     /**
      * Check runtime type
      *
-     * @param RuntimeType $runtime_type
+     * @param RuntimeType $runtimeType
      * @return bool
      */
-    public static function is(RuntimeType $runtime_type): bool
+    public static function is(RuntimeType $runtimeType): bool
     {
-        return self::$runtime_type === $runtime_type;
+        return self::$runtimeType === $runtimeType;
     }
 
     /**
