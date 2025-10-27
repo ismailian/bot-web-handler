@@ -2,6 +2,8 @@
 
 namespace TeleBot\System\Telegram\Traits;
 
+use TeleBot\System\Telegram\Types\IncomingMessage;
+
 /**
  * This trait allows direct replies to an incoming message
  */
@@ -9,17 +11,14 @@ trait CanReply
 {
 
     /**
-     * Reply with a text
+     * Reply with a text message
      *
      * @param string $message
-     * @return void
+     * @return bool|IncomingMessage
      */
-    public function replyWithText(string $message): void
+    public function replyWithText(string $message): bool|IncomingMessage
     {
-        bot()->replyTo($this->id, $this->chat?->id);
-        if (!bot()->sendMessage($message)) {
-            logger()->error('failed to reply to message: ' . $this->id);
-        }
+        return bot()->replyTo($this->id, $this->chat?->id)->sendMessage($message);
     }
 
 }

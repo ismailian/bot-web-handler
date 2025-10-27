@@ -27,12 +27,10 @@ trait Send
      * send a text message
      *
      * @param string $text text message to send
-     * @param bool $withAction send action
      * @return IncomingMessage|bool returns true on success, otherwise false
      */
-    public function sendMessage(string $text, bool $withAction = false): IncomingMessage|bool
+    public function sendMessage(string $text): IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction();
         $data = $this->post(__FUNCTION__, [
             'text' => $text,
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
@@ -50,17 +48,14 @@ trait Send
      *
      * @param string $imagePath image path
      * @param string|null $caption caption to send with image
-     * @param bool $withAction send action indicator
      * @return IncomingPhoto|IncomingMessage|bool returns IncomingPhoto on success, otherwise false
      */
     public function sendPhoto(
         string  $imagePath,
         ?string $caption = null,
-        bool    $withAction = false,
         bool    $asUrl = false
     ): IncomingPhoto|IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(ChatActions::UPLOAD_PHOTO);
         $data = $this->post(__FUNCTION__, [
             'photo' => $asUrl ? $imagePath : Utils::tryFopen($imagePath, 'r'),
             'caption' => $caption ?? '',
@@ -83,18 +78,15 @@ trait Send
      *
      * @param string $videoPath the video url to send
      * @param string|null $caption caption to send with image
-     * @param bool $withAction send action indicator
      * @param bool $asUrl weather the provider video is an ID or Url
      * @return IncomingVideo|IncomingMessage|bool returns IncomingVideo on success, otherwise false
      */
     public function sendVideo(
         string  $videoPath,
         ?string $caption = null,
-        bool    $withAction = false,
         bool    $asUrl = false
     ): IncomingVideo|IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(ChatActions::UPLOAD_VIDEO);
         $data = $this->post(__FUNCTION__, [
             'video' => $asUrl ? $videoPath : Utils::tryFopen($videoPath, 'r'),
             'caption' => $caption ?? '',
@@ -148,18 +140,15 @@ trait Send
      *
      * @param string $filePath
      * @param string|null $caption
-     * @param bool $withAction
      * @param bool $asUrl
      * @return IncomingAnimation|IncomingMessage|bool
      */
     public function sendAnimation(
         string  $filePath,
         ?string $caption = null,
-        bool    $withAction = false,
         bool    $asUrl = false
     ): IncomingAnimation|IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(ChatActions::CHOOSE_STICKER);
         $data = $this->post(__FUNCTION__, [
             'animation' => $asUrl ? $filePath : Utils::tryFopen($filePath, 'r'),
             'caption' => $caption ?? '',
@@ -182,18 +171,15 @@ trait Send
      *
      * @param string $fileUrl
      * @param string|null $caption caption to send with image
-     * @param bool $withAction send action indicator
      * @param bool $asUrl
      * @return IncomingDocument|IncomingMessage|bool returns IncomingDocument on success, otherwise false
      */
     public function sendDocument(
         string  $fileUrl,
         ?string $caption = null,
-        bool    $withAction = false,
         bool    $asUrl = false
     ): IncomingDocument|IncomingMessage|bool
     {
-        if ($withAction) $this->sendChatAction(ChatActions::UPLOAD_DOCUMENT);
         $data = $this->post(__FUNCTION__, [
             'document' => $asUrl ? $fileUrl : Utils::tryFopen($fileUrl, 'r'),
             'caption' => $caption ?? '',

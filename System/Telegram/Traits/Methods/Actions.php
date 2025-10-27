@@ -23,9 +23,9 @@ trait Actions
      * @param ChatActions $action action to send
      * @return BotApi|Extensions
      */
-    public function sendChatAction(ChatActions $action = ChatActions::TYPING): self
+    public function withChatAction(ChatActions $action = ChatActions::TYPING): self
     {
-        $this->post(__FUNCTION__, [
+        $this->post('sendChatAction', [
             'chat_id' => $this->chatId,
             'action' => $action->value
         ]);
