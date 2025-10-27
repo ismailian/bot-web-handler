@@ -97,7 +97,7 @@ class Bootstrap
     protected function handleIncomingDeployments(): void
     {
         if (router()->matches(self::$config['routes']['git'] ?? [])) {
-            if (env('GIT_AUTO_DEPLOY') === 'true') {
+            if (env('GIT_AUTO_UPDATE') === 'true') {
                 Deployment::run();
             }
         }
