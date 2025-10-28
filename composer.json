@@ -11,7 +11,7 @@
   },
   "scripts": {
     "cli-init": [
-      "php cli update:init"
+      "php cli update init"
     ],
     "post-install-cmd": [
       "@cli-init"
@@ -26,7 +26,6 @@
   "require": {
     "guzzlehttp/guzzle": "^7.7",
     "ext-mbstring": "*",
-    "clue/commander": "^1.4",
     "predis/predis": "^2.2",
     "ext-pdo": "*"
   }
