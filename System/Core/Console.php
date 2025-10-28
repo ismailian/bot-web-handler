@@ -19,10 +19,16 @@ use GuzzleHttp\Exception\GuzzleException;
 class Console
 {
 
-    protected static string $payload = "PD9waHAKCm5hbWVzcGFjZSBUZWxlQm90XEFwcFxIYW5kbGVyc3t7aGFuZGxlclBhdGh9fTsKCnVzZSBUZWxlQm90XFN5c3RlbVxJbmNvbWluZ0V2ZW50OwoKY2xhc3Mge3toYW5kbGVyTmFtZX19IGV4dGVuZHMgSW5jb21pbmdFdmVudCB7fQ==";
-    protected static ?Client $client = null;
+    /** @var Client $client http client */
+    protected static Client $client;
+
+    /** @var string $owner repo owner username */
     protected static string $owner = 'ismailian';
+
+    /** @var string $repo repo id */
     protected static string $repo = 'bot-web-handler';
+
+    /** @var string $history history filename */
     protected static string $history = 'history.json';
 
     /**
@@ -216,7 +222,7 @@ class Console
     protected static function getClient(): Client
     {
         if (!self::$client) {
-            self::$client = new Client([
+            self::$client = http([
                 'verify' => false,
                 'base_uri' => 'https://api.github.com/',
                 'headers' => [
@@ -284,66 +290,6 @@ class Console
         }
 
         echo PHP_EOL;
-    }
-
-    /**
-     * create new handler
-     *
-     * @param array $args
-     * @return void
-     */
-    public static function makeHandler(array $args): void
-    {
-        try {
-            $segments = explode('/', $args['name']);
-            $fullPath = join(DIRECTORY_SEPARATOR, ['App', 'Handlers', ...$segments]);
-            if (count($segments) > 1) {
-                @mkdir(dirname($fullPath), recursive: true);
-            }
-
-            $fileName = basename($fullPath);
-            if (str_ends_with($fullPath, '.php')) {
-                $fullPath = str_replace('.php', '', $fullPath);
-                $fileName = basename($fullPath);
-            }
-
-            $payload = base64_decode(self::$payload);
-            $handlerPath = str_replace('.', '', dirname(join('\\', $segments)));
-            if (!empty($handlerPath)) {
-                $handlerPath = '\\' . $handlerPath;
-            }
-
-            $payload = str_replace('{{handlerPath}}', $handlerPath, $payload);
-            $payload = str_replace('{{handlerName}}', $fileName, $payload);
-
-            $handler = fopen("$fullPath.php", 'w');
-            fwrite($handler, $payload);
-            fclose($handler);
-
-            die("[+] handler created successfully!" . PHP_EOL);
-        } catch (Exception) {}
-        die("[-] failed to create handler!" . PHP_EOL);
-    }
-
-    /**
-     * delete existing handler
-     *
-     * @param array $args
-     * @return void
-     */
-    public static function deleteHandler(array $args): void
-    {
-        $segments = explode('/', $args['name']);
-        $fullPath = join(DIRECTORY_SEPARATOR, ['App', 'Handlers', ...$segments]);
-        if (!str_ends_with($fullPath, '.php')) {
-            $fullPath .= '.php';
-        }
-
-        if (@unlink($fullPath)) {
-            die("[+] handler deleted successfully!" . PHP_EOL);
-        }
-
-        echo "[-] failed to delete handler!" . PHP_EOL;
     }
 
     /**

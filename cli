@@ -23,10 +23,6 @@ $router->add('update:init', fn($args) => Console::init());
 $router->add('update:check', fn($args) => Console::check());
 $router->add('update:apply', fn($args) => Console::update());
 
-/* handler commands */
-$router->add('handler:make <name>', fn($args) => Console::makeHandler($args));
-$router->add('handler:delete <name>', fn($args) => Console::deleteHandler($args));
-
 /* migration commands */
 $router->add('migrate [<tables>...]', fn($args) => Console::migrate($args));
 
