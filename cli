@@ -9,29 +9,10 @@
  * file that was distributed with this source code.
  */
 
-use Clue\Commander\Router;
-use TeleBot\System\Core\{Bootstrap, Console};
+use TeleBot\System\Core\Bootstrap;
+use TeleBot\System\Core\Console\Console;
 
 require_once 'vendor/autoload.php';
 
 Bootstrap::init();
-
-$router = new Router();
-
-/* system update command */
-$router->add('update:init', fn($args) => Console::init());
-$router->add('update:check', fn($args) => Console::check());
-$router->add('update:apply', fn($args) => Console::update());
-
-/* migration commands */
-$router->add('migrate [<tables>...]', fn($args) => Console::migrate($args));
-
-/* queue commands */
-$router->add('queue:init', fn($args) => queue()->init());
-$router->add('queue:work', fn($args) => queue()->listen());
-
-/* webhook commands */
-$router->add('webhook:set [<uri>]', fn($args) => Console::setWebhook($args));
-$router->add('webhook:unset', fn($args) => Console::unsetWebhook());
-
-$router->execArgv();
+new Console()->run();
