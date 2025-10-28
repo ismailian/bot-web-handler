@@ -10,7 +10,7 @@
 
 namespace TeleBot\System\Core;
 
-class FileLoader
+class HelperLoader
 {
 
     /**

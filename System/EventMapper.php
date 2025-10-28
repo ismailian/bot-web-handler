@@ -13,7 +13,7 @@ namespace TeleBot\System;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionException;
-use TeleBot\System\Filesystem\Collector;
+use TeleBot\System\Core\Filesystem;
 use TeleBot\System\Core\Attributes\Delegate;
 use TeleBot\System\Core\{Bootstrap, Handler};
 use TeleBot\System\Telegram\Filters\{Awaits, Chat, Only};
@@ -34,7 +34,7 @@ class EventMapper
         new Bootstrap()->boot();
         $this->handler = new Handler()->setConfig(Bootstrap::$config);
 
-        $handlers = Collector::getNamespacedFiles('App/Handlers');
+        $handlers = Filesystem::getNamespacedFiles('App/Handlers');
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
             if ($refClass->isSubclassOf(IncomingEvent::class)) {

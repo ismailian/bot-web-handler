@@ -11,12 +11,11 @@
 namespace TeleBot\System\Core;
 
 use Exception;
-use ReflectionMethod;
 use ReflectionException;
-use TeleBot\System\IncomingEvent;
-use TeleBot\System\Filesystem\Collector;
-use TeleBot\System\Telegram\Types\Event;
+use ReflectionMethod;
 use TeleBot\System\Core\Attributes\Delegate;
+use TeleBot\System\IncomingEvent;
+use TeleBot\System\Telegram\Types\Event;
 
 class Handler
 {
@@ -119,7 +118,7 @@ class Handler
             /** handler */
             [$class, $method] = explode('::', $fallback);
             call_user_func_array(
-                [new (Collector::getNamespacedFile($class)), $method], []
+                [new (Filesystem::getNamespacedFile($class)), $method], []
             );
         }
     }

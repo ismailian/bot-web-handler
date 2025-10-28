@@ -15,9 +15,8 @@ use ReflectionException;
 use TeleBot\System\IncomingEvent;
 use TeleBot\System\IncomingRequest;
 use TeleBot\System\Telegram\Types\Event;
-use TeleBot\System\Filesystem\Collector;
-use TeleBot\System\Core\Traits\Verifiable;
 use TeleBot\System\Core\Enums\RuntimeType;
+use TeleBot\System\Core\Traits\Verifiable;
 
 class Bootstrap
 {
@@ -55,7 +54,7 @@ class Bootstrap
     public static function init(): void
     {
         Dotenv::load();
-        [self::$config] = FileLoader::load([
+        [self::$config] = HelperLoader::load([
             'config.php',
             'System/Utils/*',
         ]);
@@ -111,7 +110,7 @@ class Bootstrap
         /** handler class */
         if (is_string($handler) && str_contains($handler, '::')) {
             [$class, $method] = explode('::', $handler);
-            $class = Collector::getNamespacedFile($class);
+            $class = Filesystem::getNamespacedFile($class);
             if ((Runtime::is(RuntimeType::TELEGRAM) && is_subclass_of($class, IncomingEvent::class))
                 || (Runtime::is(RuntimeType::REQUEST) && is_subclass_of($class, IncomingRequest::class))
             ) {
@@ -132,7 +131,7 @@ class Bootstrap
     {
         $this->setCors();
         if ($route = router()->matches(self::$config['routes']['web'] ?? [])) {
-            if ($handler = Collector::getNamespacedFile($route['handler'])) {
+            if ($handler = Filesystem::getNamespacedFile($route['handler'])) {
                 new Handler()
                     ->setConfig(self::$config)
                     ->assign(new $handler,
