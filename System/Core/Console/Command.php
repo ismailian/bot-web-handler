@@ -55,6 +55,22 @@ abstract class Command
     }
 
     /**
+     * Log a message to the console
+     *
+     * @param string $content
+     * @param bool $close
+     * @return void
+     */
+    public function log(string $content, bool $close = false): void
+    {
+        $output = sprintf('[%s][%s] %s', date('H:i:s a'), $this->command, $content);
+        echo $output . PHP_EOL;
+        if ($close) {
+            exit(1);
+        }
+    }
+
+    /**
      * Command handler
      *
      * @param mixed ...$args

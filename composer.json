@@ -11,6 +11,7 @@
   },
   "scripts": {
     "cli-init": [
+      "php -r \"if (!file_exists('.env')) @copy('.env.sample', '.env');\"",
       "php cli update init"
     ],
     "post-install-cmd": [

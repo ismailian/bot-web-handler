@@ -50,22 +50,18 @@ class Update extends Command
      */
     protected function init(): void
     {
-        if (!file_exists('.env')) {
-            @copy('.env.sample', '.env');
-        }
-
         if (!file_exists(self::HISTORY)) {
             file_put_contents(self::HISTORY, json_encode([
                 'date' => new DateTime()->format('Y-m-d\TH:i:s\Z'),
                 'changes' => [],
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-            $historyFileMessage = '[+] history file has been created!';
+            $historyFileMessage = 'history file has been created!';
         } else {
-            $historyFileMessage = '[!] history file already exists!';
+            $historyFileMessage = 'history file already exists!';
         }
 
-        echo $historyFileMessage . PHP_EOL;
+        $this->log($historyFileMessage);
     }
 
     /**
@@ -103,10 +99,10 @@ class Update extends Command
 
         $updates = $this->getCommits($lastUpdate, null, true);
         if (empty($updates)) {
-            die('[+] system is up-to-date!' . PHP_EOL);
+            $this->log('system is up-to-date!', true);
         }
 
-        echo PHP_EOL . '[+] available changes:' . PHP_EOL;
+        $this->log('available changes:');
         foreach ($updates as $update) {
             foreach ($update['files'] as $file) {
                 echo "\t* {$file['filename']} [{$file['status']}]" . PHP_EOL;
@@ -131,7 +127,7 @@ class Update extends Command
 
         $updates = $this->getCommits($lastUpdate, null, true);
         if (empty($updates)) {
-            die('[+] system is up-to-date!' . PHP_EOL);
+            $this->log('system is up-to-date!', true);
         }
 
         foreach ($updates as $update) {
@@ -168,7 +164,7 @@ class Update extends Command
             'changes' => $updates,
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-        echo '[+] all changes have been applied!' . PHP_EOL . PHP_EOL;
+        $this->log('all changes have been applied!');
     }
 
     /**
@@ -199,7 +195,7 @@ class Update extends Command
             }, json_decode($response, true)));
         } catch (GuzzleException $e) {
             if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
-                die('[!] Rate limit exceeded, please wait before trying again!');
+                $this->log('Rate limit exceeded, please wait before trying again!');
             }
         }
 
@@ -230,7 +226,7 @@ class Update extends Command
             ]), $files);
         } catch (GuzzleException $e) {
             if (preg_match('/(403 rate limit exceeded)/', $e->getMessage())) {
-                die('[!] Rate limit exceeded, please wait before trying again!');
+                $this->log('Rate limit exceeded, please wait before trying again!');
             }
 
             return [];
