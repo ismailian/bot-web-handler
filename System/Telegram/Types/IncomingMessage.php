@@ -12,14 +12,14 @@ namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
 use Exception;
-use TeleBot\System\Telegram\Traits\{
-    CanReply, CanDelete, CanForward
-};
+use TeleBot\System\Telegram\Traits\CanDelete;
+use TeleBot\System\Telegram\Traits\CanForward;
+use TeleBot\System\Telegram\Support\CanReplyWith;
 
 class IncomingMessage
 {
 
-    use CanDelete, CanForward, CanReply;
+    use CanDelete, CanForward;
 
     /** @var int $id message id */
     public int $id;
@@ -296,6 +296,9 @@ class IncomingMessage
 
     /** @var IncomingWebAppData|null $webAppData data sent by a Web App */
     public ?IncomingWebAppData $webAppData = null;
+
+    /** @var CanReplyWith|null $reply reply interface */
+    private CanReplyWith|null $reply = null;
 
     /**
      * default constructor
@@ -640,5 +643,19 @@ class IncomingMessage
                 $this->passportData = new PassportData($this->message['passport_data']);
             }
         } catch (Exception) {}
+    }
+
+    /**
+     * Get reply interface
+     *
+     * @return CanReplyWith
+     */
+    public function reply(): CanReplyWith
+    {
+        if (!$this->reply) {
+            $this->reply = new CanReplyWith($this->id, $this->chat?->id);
+        }
+
+        return $this->reply;
     }
 }
