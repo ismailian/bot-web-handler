@@ -10,8 +10,6 @@
 
 namespace TeleBot\System\Telegram\Traits\Methods;
 
-use GuzzleHttp\Psr7\Utils;
-use TeleBot\System\Telegram\Enums\ChatActions;
 use TeleBot\System\Telegram\Types\IncomingDice;
 use TeleBot\System\Telegram\Types\IncomingPhoto;
 use TeleBot\System\Telegram\Types\IncomingVideo;
@@ -50,14 +48,10 @@ trait Send
      * @param string|null $caption caption to send with image
      * @return IncomingPhoto|IncomingMessage|bool returns IncomingPhoto on success, otherwise false
      */
-    public function sendPhoto(
-        string  $imagePath,
-        ?string $caption = null,
-        bool    $asUrl = false
-    ): IncomingPhoto|IncomingMessage|bool
+    public function sendPhoto(string $imagePath, ?string $caption = null): IncomingPhoto|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'photo' => $asUrl ? $imagePath : Utils::tryFopen($imagePath, 'r'),
+            'photo' => getBuffer($imagePath),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -78,17 +72,12 @@ trait Send
      *
      * @param string $videoPath the video url to send
      * @param string|null $caption caption to send with image
-     * @param bool $asUrl weather the provider video is an ID or Url
      * @return IncomingVideo|IncomingMessage|bool returns IncomingVideo on success, otherwise false
      */
-    public function sendVideo(
-        string  $videoPath,
-        ?string $caption = null,
-        bool    $asUrl = false
-    ): IncomingVideo|IncomingMessage|bool
+    public function sendVideo(string $videoPath, ?string $caption = null): IncomingVideo|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'video' => $asUrl ? $videoPath : Utils::tryFopen($videoPath, 'r'),
+            'video' => getBuffer($videoPath),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -109,17 +98,12 @@ trait Send
      *
      * @param string $audioFile
      * @param string|null $caption
-     * @param bool $asUrl
      * @return IncomingAudio|IncomingMessage|bool
      */
-    public function sendAudio(
-        string  $audioFile,
-        ?string $caption = null,
-        bool    $asUrl = false
-    ): IncomingAudio|IncomingMessage|bool
+    public function sendAudio(string $audioFile, ?string $caption = null): IncomingAudio|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'audio' => $asUrl ? $audioFile : Utils::tryFopen($audioFile, 'r'),
+            'audio' => getBuffer($audioFile),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -140,17 +124,12 @@ trait Send
      *
      * @param string $filePath
      * @param string|null $caption
-     * @param bool $asUrl
      * @return IncomingAnimation|IncomingMessage|bool
      */
-    public function sendAnimation(
-        string  $filePath,
-        ?string $caption = null,
-        bool    $asUrl = false
-    ): IncomingAnimation|IncomingMessage|bool
+    public function sendAnimation(string $filePath, ?string $caption = null): IncomingAnimation|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'animation' => $asUrl ? $filePath : Utils::tryFopen($filePath, 'r'),
+            'animation' => getBuffer($filePath),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -171,17 +150,12 @@ trait Send
      *
      * @param string $fileUrl
      * @param string|null $caption caption to send with image
-     * @param bool $asUrl
      * @return IncomingDocument|IncomingMessage|bool returns IncomingDocument on success, otherwise false
      */
-    public function sendDocument(
-        string  $fileUrl,
-        ?string $caption = null,
-        bool    $asUrl = false
-    ): IncomingDocument|IncomingMessage|bool
+    public function sendDocument(string $fileUrl, ?string $caption = null): IncomingDocument|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'document' => $asUrl ? $fileUrl : Utils::tryFopen($fileUrl, 'r'),
+            'document' => getBuffer($fileUrl),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -218,20 +192,18 @@ trait Send
      * @param string $type
      * @param array $files
      * @param string|null $caption
-     * @param bool $asUrl
      * @return IncomingMessage[]|null
      */
     public function sendMediaGroup(
         string  $type,
         array   $files,
         ?string $caption = null,
-        bool    $asUrl = false
     ): ?array
     {
         $media = [];
         $attachments = [];
         foreach ($files as $index => $file) {
-            $attachments["{$type}_$index"] = $asUrl ? $file : Utils::tryFopen($file, 'r');
+            $attachments["{$type}_$index"] = getBuffer($file);
             $media[] = [
                 'type' => $type,
                 'media' => "attach://{$type}_$index",
