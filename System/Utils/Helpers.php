@@ -8,6 +8,8 @@
  * file that was distributed with this source code.
  */
 
+use GuzzleHttp\Psr7\Utils;
+
 if (!function_exists('env')) {
     /**
      * Get value from env
@@ -28,5 +30,31 @@ if (!function_exists('env')) {
         }
 
         return $value;
+    }
+}
+
+if (!function_exists('isUrl')) {
+    /**
+     * Check if given input is url
+     *
+     * @param string $pathOrUrl
+     * @return bool
+     */
+    function isUrl(string $pathOrUrl): bool
+    {
+        return (bool)filter_var(trim($pathOrUrl), FILTER_VALIDATE_URL);
+    }
+}
+
+if (!function_exists('getBuffer')) {
+    /**
+     * Get file buffer
+     *
+     * @param string $pathOrUrl
+     * @return string
+     */
+    function getBuffer(string $pathOrUrl): string
+    {
+        return isUrl($pathOrUrl) ? $pathOrUrl : Utils::tryFopen($pathOrUrl, 'r');
     }
 }
