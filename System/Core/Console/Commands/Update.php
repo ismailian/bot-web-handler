@@ -34,13 +34,8 @@ class Update extends Command
      */
     public function handle(...$args): void
     {
-        $type = match ($args['type']) {
-            'apply' => 'apply',
-            'check' => 'check',
-            default => 'init',
-        };
-
-        $this->{$type}();
+        $action = $args['type'] ?? 'init';
+        $this->{$action}();
     }
 
     /**
@@ -113,11 +108,11 @@ class Update extends Command
     }
 
     /**
-     * update system
+     * apply updates
      *
      * @return void
      */
-    protected function update(): void
+    protected function apply(): void
     {
         $lastUpdate = new DateTime()->format('Y-m-d\T00:00:00\Z');
         if (file_exists(self::HISTORY)) {
