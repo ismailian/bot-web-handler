@@ -98,13 +98,20 @@ class Update extends Command
         }
 
         $this->log('available changes:');
+
+        $rows = [];
+        $counter = 0;
         foreach ($updates as $update) {
             foreach ($update['files'] as $file) {
-                echo "\t* {$file['filename']} [{$file['status']}]" . PHP_EOL;
+                $rows[] = [
+                    'num' => $counter++,
+                    'file' => $file['filename'],
+                    'type' => ucfirst($file['status']),
+                ];
             }
         }
 
-        echo PHP_EOL;
+        $this->table($rows);
     }
 
     /**
@@ -226,5 +233,32 @@ class Update extends Command
 
             return [];
         }
+    }
+
+    /**
+     * Print a table
+     *
+     * @param array $rows
+     * @return void
+     */
+    protected function table(array $rows): void
+    {
+        $col1Width = max(array_map(fn($r) => strlen((string)$r['num']), $rows)) + 2;
+        $col2Width = max(array_map(fn($r) => strlen($r['file']), $rows)) + 2;
+        $col3Width = max(array_map(fn($r) => strlen($r['type']), $rows)) + 2;
+
+        $times = $col1Width + $col2Width + $col3Width + 10;
+
+        /** header */
+        echo str_repeat('-', $times) . PHP_EOL;
+        printf("| %-{$col1Width}s | %-{$col2Width}s | %-{$col3Width}s |\n", '*', 'File', 'Type');
+
+        /** body */
+        echo str_repeat('-', $times) . PHP_EOL;
+        foreach ($rows as $r) {
+            printf("| %-{$col1Width}s | %-{$col2Width}s | %-{$col3Width}s |\n", $r['num'], $r['file'], $r['type']);
+        }
+
+        echo PHP_EOL;
     }
 }
