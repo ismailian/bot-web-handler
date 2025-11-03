@@ -67,12 +67,15 @@ class Update extends Command
     protected function getClient(): Client
     {
         if (is_null($this->client)) {
+            $headers = ['X-GitHub-Api-Version' => '2022-11-28'];
+            if (env('GITHUB_API_TOKEN')) {
+                $headers['Authorization'] = 'Bearer ' . env('GITHUB_API_TOKEN');
+            }
+
             $this->client = http([
                 'verify' => false,
                 'base_uri' => 'https://api.github.com/',
-                'headers' => [
-                    'X-GitHub-Api-Version' => '2022-11-28'
-                ]
+                'headers' => $headers,
             ]);
         }
 
@@ -259,6 +262,6 @@ class Update extends Command
             printf("| %-{$col1Width}s | %-{$col2Width}s | %-{$col3Width}s |\n", $r['num'], $r['file'], $r['type']);
         }
 
-        echo PHP_EOL;
+        echo str_repeat('-', $times) . PHP_EOL . PHP_EOL;
     }
 }
