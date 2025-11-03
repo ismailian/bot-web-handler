@@ -39,8 +39,7 @@ class Console
     protected function loadCommands(): void
     {
         if (!is_dir($this->commandsPath)) {
-            fwrite(STDERR, "Commands directory not found: {$this->commandsPath}\n");
-            exit(1);
+            return;
         }
 
         $pattern = $this->commandsPath . '/*.php';
