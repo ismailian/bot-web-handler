@@ -20,16 +20,27 @@ class Awaits implements IEvent
     /**
      * default constructor
      *
-     * @param string $key
-     * @param string $value
+     * @param string $key session key
+     * @param string $value session value
+     * @param bool $reset if true, session key will be removed upon success
      */
-    public function __construct(public string $key, public string $value) {}
+    public function __construct(
+        protected string $key,
+        protected string $value,
+        protected bool   $reset = false
+    ) {}
 
     /**
      * @inheritDoc
      */
     public function apply(array $event): bool
     {
-        return session()->get($this->key) == $this->value;
+        $result = session()->get($this->key) == $this->value;
+        if ($result && $this->reset) {
+            session()->unset($this->key);
+        }
+
+        return $result;
     }
+
 }
