@@ -27,16 +27,8 @@ class Session
     /** @var string|mixed $sessionId */
     protected string $sessionId;
 
-    /**
-     * re-start session with custom session id
-     *
-     * @param string $sessionId
-     * @return Session
-     */
-    public function withId(string $sessionId): Session
-    {
-        return $this->init($sessionId);
-    }
+    /** @var string $expireKey key pointing to the session expiration timestamp */
+    protected string $expireKey = 'expires';
 
     /**
      * initialize session adapter
@@ -72,25 +64,88 @@ class Session
     }
 
     /**
+     * Add expire timestamp to the session data
+     *
+     * @param mixed $value session data
+     * @param string|null $expires relative time
+     * @return void
+     */
+    protected function addExpireTimestamp(mixed &$value, ?string $expires = null): void
+    {
+        if (!$expires) {
+            return;
+        }
+
+        $timestamp = strtotime($expires);
+        if ($timestamp > time()) {
+            if (!is_array($value)) {
+                $value = ['converted' => true, 'value' => $value];
+            }
+            $value[$this->expireKey] = $timestamp;
+        }
+    }
+
+    /**
+     * Check if session data is expired
+     *
+     * @param array $data
+     * @return bool
+     */
+    protected function isExpired(array $data): bool
+    {
+        return !empty($data[$this->expireKey]) && $data[$this->expireKey] < time();
+    }
+
+    /**
+     * Restore session data to its original type
+     *
+     * @param array $data
+     * @return mixed
+     */
+    protected function restore(array $data): mixed
+    {
+        if (array_key_exists('converted', $data) && array_key_exists('value', $data)) {
+            $data = $data['value'];
+        }
+
+        return $data;
+    }
+
+    /**
+     * re-start session with custom session id
+     *
+     * @param string $sessionId
+     * @return Session
+     */
+    public function withId(string $sessionId): Session
+    {
+        return $this->init($sessionId);
+    }
+
+    /**
      * set session data
      *
      * @param string $key
      * @param mixed $value
+     * @param string|null $expires
      * @return bool
      */
-    public function set(string $key, mixed $value): bool
+    public function set(string $key, mixed $value, ?string $expires = null): bool
     {
         $data = $this->init()->client->read();
 
         if ($key !== '*') {
             $keys = explode('.', $key);
-            $current = &$data;
+            $tmp = &$data;
             foreach ($keys as $key) {
-                $current = &$current[$key];
+                $tmp = &$tmp[$key];
             }
 
-            $current = $value;
+            $this->addExpireTimestamp($value, $expires);
+            $tmp = $value;
             $value = $data;
+        } else {
+            $this->addExpireTimestamp($value, $expires);
         }
 
         return $this->client->write($value);
@@ -106,19 +161,23 @@ class Session
     {
         $data = $this->init()->client->read();
         $keys = explode('.', $key);
-        $temp =& $data;
+        $tmp =& $data;
         foreach ($keys as $key) {
-            if (!array_key_exists($key, $temp)) return false;
-            $temp =& $temp[$key];
+            if (!array_key_exists($key, $tmp)) {
+                return false;
+            }
+            $tmp =& $tmp[$key];
         }
 
         // unset the target property
         $lastKey = array_pop($keys);
-        $temp =& $data;
+        $tmp =& $data;
 
-        foreach ($keys as $key) $temp =& $temp[$key];
-        unset($temp[$lastKey]);
+        foreach ($keys as $key) {
+            $tmp =& $tmp[$key];
+        }
 
+        unset($tmp[$lastKey]);
         return $this->client->write($data);
     }
 
@@ -131,14 +190,30 @@ class Session
     public function get(?string $key = null): mixed
     {
         $data = $this->init()->client->read();
-        if (!$key) return $data;
+        if (!$key) {
+            if ($this->isExpired($data)) {
+                $this->destroy();
+                return null;
+            }
+
+            unset($data[$this->expireKey]);
+            return $data;
+        }
 
         $keys = explode('.', $key);
         $lastKey = $keys[count($keys) - 1];
-        foreach ($keys as $key) {
-            if (isset($data[$key])) {
-                if ($key == $lastKey) return $data[$key];
-                $data = $data[$key];
+        foreach ($keys as $segmentKey) {
+            if (isset($data[$segmentKey])) {
+                if ($segmentKey == $lastKey) {
+                    if ($this->isExpired($data[$segmentKey])) {
+                        $this->unset($key);
+                        return null;
+                    }
+
+                    unset($data[$segmentKey][$this->expireKey]);
+                    return $this->restore($data[$segmentKey]);
+                }
+                $data = $data[$segmentKey];
             }
         }
 
