@@ -11,24 +11,20 @@
 namespace TeleBot\System\Session;
 
 use Exception;
+use TeleBot\System\Core\Traits\Expirable;
 use TeleBot\System\Interfaces\ISessionDriver;
-use TeleBot\System\Session\Drivers\{
-    DbDriver,
-    FileDriver,
-    RedisDriver,
-};
+use TeleBot\System\Session\Drivers\{DbDriver, FileDriver, RedisDriver};
 
 class Session
 {
+
+    use Expirable;
 
     /** @var ISessionDriver|null $client */
     protected ?ISessionDriver $client = null;
 
     /** @var string|mixed $sessionId */
     protected string $sessionId;
-
-    /** @var string $expireKey key pointing to the session expiration timestamp */
-    protected string $expireKey = 'expires';
 
     /**
      * initialize session adapter
@@ -61,54 +57,6 @@ class Session
         } catch (Exception) {
         }
         return $this;
-    }
-
-    /**
-     * Add expire timestamp to the session data
-     *
-     * @param mixed $value session data
-     * @param string|null $expires relative time
-     * @return void
-     */
-    protected function addExpireTimestamp(mixed &$value, ?string $expires = null): void
-    {
-        if (!$expires) {
-            return;
-        }
-
-        $timestamp = strtotime($expires);
-        if ($timestamp > time()) {
-            if (!is_array($value)) {
-                $value = ['converted' => true, 'value' => $value];
-            }
-            $value[$this->expireKey] = $timestamp;
-        }
-    }
-
-    /**
-     * Check if session data is expired
-     *
-     * @param array $data
-     * @return bool
-     */
-    protected function isExpired(array $data): bool
-    {
-        return !empty($data[$this->expireKey]) && $data[$this->expireKey] < time();
-    }
-
-    /**
-     * Restore session data to its original type
-     *
-     * @param array $data
-     * @return mixed
-     */
-    protected function restore(array $data): mixed
-    {
-        if (array_key_exists('converted', $data) && array_key_exists('value', $data)) {
-            $data = $data['value'];
-        }
-
-        return $data;
     }
 
     /**
