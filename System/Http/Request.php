@@ -14,19 +14,16 @@ class Request
 {
 
     /** @var array $headers request headers */
-    protected array $headers = [];
-
-    /** @var array|null $_query */
-    protected ?array $_query;
+    protected array $_headers = [];
 
     /** @var ?array $_json */
     protected ?array $_json;
 
-    /** @var ?array $_body */
-    protected ?array $_body;
-
-    /** @var ?array $event */
-    protected ?array $event;
+    public function __construct()
+    {
+        $this->_headers = getallheaders();
+        $this->_json = json_decode(file_get_contents('php://input'), true) ?? [];
+    }
 
     /**
      * Get header
@@ -46,13 +43,7 @@ class Request
      */
     public function headers(): array|string|null
     {
-        if (empty($this->headers)) {
-            foreach (getallheaders() as $name => $value) {
-                $this->headers[strtolower($name)] = $value;
-            }
-        }
-
-        return $this->headers;
+        return $this->_headers;
     }
 
     /**
@@ -122,47 +113,57 @@ class Request
      * get query parameters
      *
      * @param string|null $key
+     * @param bool $raw
      * @return string|array|null
      */
-    public function query(?string $key = null): string|array|null
+    public function query(?string $key = null, bool $raw = false): string|array|null
     {
-        $this->_query = $_GET;
-        if (!is_null($key)) {
-            return $this->_query[$key] ?? null;
+        if ($raw) {
+            return $_SERVER['QUERY_STRING'] ?? '';
         }
 
-        return $this->_query;
+        if ($key !== null) {
+            return $_GET[$key] ?? null;
+        }
+
+        return $_GET;
     }
 
     /**
      * get form-data body
      *
+     * @param string|null $key
      * @param bool $raw
      * @return array|string
      */
-    public function body(bool $raw = false): array|string
+    public function body(?string $key = null, bool $raw = false): mixed
     {
         if ($raw) {
             return file_get_contents('php://input');
         }
 
-        return [
-            ...($this->_body ?? ($this->_body = $_POST)),
-            ...$this->json()
-        ];
+        if ($key !== null) {
+            return $_POST[$key] ?? null;
+        }
+
+        return $_POST;
     }
 
     /**
-     * get json body
+     * get full json or single value
      *
+     * @param string|null $key
+     * @param bool $raw
      * @return array
      */
-    public function json(): array
+    public function json(?string $key = null, bool $raw = false): mixed
     {
-        if (empty($this->_json)) {
-            if (!($this->_json = json_decode(file_get_contents('php://input'), true))) {
-                $this->_json = [];
-            }
+        if ($key !== null) {
+            return $this->_json[$key] ?? null;
+        }
+
+        if ($raw) {
+            return file_get_contents('php://input');
         }
 
         return $this->_json;
