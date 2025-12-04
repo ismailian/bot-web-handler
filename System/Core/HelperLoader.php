@@ -16,42 +16,55 @@ class HelperLoader
     /**
      * load helper files
      *
-     * @param mixed $path
+     * @param mixed $path path or pattern to the php file
+     * @param bool $once whether to require once or not
      * @return mixed
      */
-    public static function load(mixed $path): mixed
+    public static function load(mixed $path, bool $once = true): mixed
     {
         if (is_string($path)) {
-            return self::requireFile($path);
+            return self::requireFile($path, $once);
         }
 
         if (is_array($path)) {
-            return array_map(fn($f) => self::requireFile($f), $path);
+            return array_map(fn($f) => self::requireFile($f, $once), $path);
         }
 
-        return null;
+        return [];
     }
 
     /**
      * require files
      *
      * @param string $filePath
+     * @param bool $once
      * @return mixed
      */
-    protected static function requireFile(string $filePath): mixed
+    protected static function requireFile(string $filePath, bool $once): mixed
     {
+        /**
+         * Require php file
+         *
+         * @param $f
+         * @return mixed
+         */
+        $require = function ($f) use ($once) {
+            if (!file_exists($f)) {
+                return null;
+            }
+            if ($once) {
+                return require_once $f;
+            }
+            return require $f;
+        };
+
         if (str_ends_with($filePath, '*')) {
-            return array_map(
-                fn($f) => require_once $f,
+            return array_map(fn($f) => $require($f),
                 glob($filePath . ".php")
             );
-        } else {
-            if (file_exists($filePath)) {
-                return require_once $filePath;
-            }
         }
 
-        return null;
+        return $require($filePath);
     }
 
 }

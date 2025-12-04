@@ -54,10 +54,9 @@ class Bootstrap
     public static function init(): void
     {
         Dotenv::load();
-        [self::$config] = HelperLoader::load([
-            'config.php',
-            'System/Utils/*',
-        ]);
+        HelperLoader::load('System/Utils/*');
+
+        static::$config = config();
     }
 
     /**
