@@ -43,15 +43,24 @@ class Cache
     /**
      * get request fingerprint
      *
+     * @param bool $includeBody include body signature in the fingerprint
      * @return string
      */
-    public function fingerprint(): string
+    public function fingerprint(bool $includeBody = false): string
     {
-        $ip = request()->ip();
-        $uri = request()->uri();
-        $method = request()->method();
+        $segments = [
+            request()->ip(),
+            request()->uri(),
+            request()->method(),
+            join(';', request()->query(raw: true)),
+        ];
 
-        return md5("$ip|$method|$uri");
+        if ($includeBody) {
+            $segments[] = md5(request()->body(raw: true));
+            $segments[] = md5(request()->json(raw: true));
+        }
+
+        return md5(join('|', $segments));
     }
 
     /**
