@@ -21,7 +21,10 @@ class Request
 
     public function __construct()
     {
-        $this->_headers = getallheaders();
+        foreach (getallheaders() as $key => $value) {
+            $this->_headers[trim(strtolower($key))] = $value;
+        }
+
         $this->_json = json_decode(file_get_contents('php://input'), true) ?? [];
     }
 
@@ -33,7 +36,7 @@ class Request
      */
     public function header(string $key): ?string
     {
-        return $this->headers()[strtolower($key)] ?? null;
+        return $this->headers()[strtolower(trim($key))] ?? null;
     }
 
     /**
