@@ -40,6 +40,8 @@ class IncomingCommand extends MessageEntity
     public function getArgs(): array
     {
         $args = str_replace($this->getCommand(), '', $this->text);
+        if (empty($args)) return [];
+
         return explode(' ', trim($args));
     }
 
