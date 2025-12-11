@@ -35,8 +35,9 @@ class Command implements IEvent
     {
         if (!$this->isMessage(array_keys($event))) return false;
         $key = $this->first(array_keys($event));
-        if (!empty($this->command))
-            $this->command = str_starts_with($this->command, '/') ? '' : "/$this->command";
+        if (!empty($this->command)) {
+            $this->command = str_starts_with($this->command, '/') ? $this->command : "/$this->command";
+        }
 
         foreach ($event[$key]['entities'] ?? [] as $entity) {
             if ($entity['type'] === 'bot_command') {
