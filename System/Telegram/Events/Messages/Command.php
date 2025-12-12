@@ -21,12 +21,19 @@ class Command implements IEvent
 
     use Messageable;
 
+    /** @var string[] $args command arg keys */
+    protected array $args;
+
     /**
      * default constructor
      *
      * @param ?string $command
+     * @param ...$args
      */
-    public function __construct(public ?string $command = null) {}
+    public function __construct(public ?string $command = null, ...$args)
+    {
+        $this->args = $args;
+    }
 
     /**
      * @inheritDoc
@@ -42,7 +49,7 @@ class Command implements IEvent
         foreach ($event[$key]['entities'] ?? [] as $entity) {
             if ($entity['type'] === 'bot_command') {
                 if (!$this->command || substr($event[$key]['text'], $entity['offset'], $entity['length']) == $this->command) {
-                    return new IncomingCommand($event[$key]['text'], $entity);
+                    return new IncomingCommand($event[$key]['text'], $entity, $this->args);
                 }
             }
         }

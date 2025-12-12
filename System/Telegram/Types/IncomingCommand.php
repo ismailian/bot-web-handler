@@ -14,6 +14,32 @@ class IncomingCommand extends MessageEntity
 {
 
     /**
+     * Default constructor
+     *
+     * @param string $text
+     * @param array $entity
+     * @param array $args
+     */
+    public function __construct(string $text, array $entity, public array $args = [])
+    {
+        parent::__construct($text, $entity);
+
+        $argKeys = $this->args;
+        $argValues = str_replace($this->getCommand(), '', $this->text);
+        if (empty($argValues)) return [];
+
+        $this->args = $argValues = explode(' ', trim($argValues));
+        if (!empty($argKeys)) {
+            $this->args = [];
+            foreach ($argKeys as $index => $argKey) {
+                $this->args[$argKey] = $argValues[$index] ?? null;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * get command value
      *
      * @return string|null
@@ -33,16 +59,24 @@ class IncomingCommand extends MessageEntity
     }
 
     /**
-     * get all user-input following the command
+     * Get command arg
      *
-     * @return array
+     * @param int|string $key arg key or index
+     * @return string|null returns value or null
      */
-    public function getArgs(): array
+    public function getArg(int|string $key): ?string
     {
-        $args = str_replace($this->getCommand(), '', $this->text);
-        if (empty($args)) return [];
+        return $this->args[$key] ?? null;
+    }
 
-        return explode(' ', trim($args));
+    /**
+     * Get all the text after the command
+     *
+     * @return string
+     */
+    public function getRawArgs(): string
+    {
+        return trim(str_replace($this->getCommand(), '', $this->text));
     }
 
 }
