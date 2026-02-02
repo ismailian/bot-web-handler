@@ -10,23 +10,10 @@
 
 namespace TeleBot\System;
 
-use TeleBot\System\Telegram\BotApi;
-
 class IncomingRequest
 {
 
     /** @var array $config */
     public array $config = [];
-
-    /** @var BotApi $telegram telegram client */
-    protected BotApi $telegram;
-
-    /**
-     * default constructor
-     */
-    public function __construct()
-    {
-        $this->telegram = new BotApi();
-    }
 
 }
