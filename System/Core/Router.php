@@ -21,32 +21,29 @@ class Router
      */
     public function matches(array $routes): array|bool
     {
-        if (
-            empty($routes) || (
-                empty($routes[request()->method()])
-                && empty($routes[strtoupper(request()->method())])
-            )) {
+        $routeList = $routes[request()->method()] ?? $routes[strtoupper(request()->method())] ?? [];
+        if (empty($routeList)) {
             return false;
         }
 
-        $uri = request()->uri();
-        $routes = $routes[request()->method()] ?? $routes[strtoupper(request()->method())];
-        foreach ($routes as $route => $handler) {
+        $uri = rtrim(request()->uri(), '/');
+        foreach ($this->getRouteMap($routeList) as $route => $handler) {
             if ($this->isDynamic($route)) {
                 $routeMeta = $this->getUrlInfo($uri, $route);
                 if ($routeMeta['valid']) {
                     $routeMeta['handler'] = $handler;
                     return $routeMeta;
                 }
-            } else {
-                if ($route === $uri) {
-                    return [
-                        'uri' => $uri,
-                        'route' => $route,
-                        'handler' => $handler,
-                        'params' => [],
-                    ];
-                }
+                continue;
+            }
+
+            if ($route === $uri) {
+                return [
+                    'uri' => $uri,
+                    'route' => $route,
+                    'handler' => $handler,
+                    'params' => [],
+                ];
             }
         }
 
@@ -59,27 +56,24 @@ class Router
      * @param string $route
      * @return bool
      */
-    protected function isDynamic(string $route): bool
+    private function isDynamic(string $route): bool
     {
-        return (bool)preg_match_all('/(?<key>{[a-z_]+})/', $route);
+        return (bool)preg_match_all('/(?<key>{[A-z]+})/', $route);
     }
 
     /**
-     * matches an url to a route.
-     * It matches an url against a route and returns data based on what it finds.
+     * matches a url to a route.
+     * It matches a url against a route and returns data based on what it finds.
      *
      * @param string $url the url from received request.
      * @param string $route the route to compare to.
      * @return array returns an array containing [url, route, params, isMatch].
      */
-    protected function getUrlInfo(string $url, string $route): array
+    private function getUrlInfo(string $url, string $route): array
     {
         $params = $this->getParams($route);
-
-        /** make the trailing slash optional */
-        list($newRoute, $routeLength, $lastSlashPos) = [$route, strlen($route), strrpos($route, '/')];
-        if ($routeLength - 1 === $lastSlashPos) $newRoute .= '?';
-        else $newRoute .= '/?';
+        [$newRoute, $routeLength, $lastSlashPos] = [$route, strlen($route), strrpos($route, '/')];
+        $newRoute .= $routeLength - 1 === $lastSlashPos ? '?' : '/?';
 
         $regex = @preg_replace(array_keys($params), array_values($params), $newRoute);
         $regex = @str_replace('/', '\/', $regex);
@@ -103,7 +97,7 @@ class Router
      * @param string $route the route to extract parameters from.
      * @return array returns an array with extracted parameters.
      */
-    protected function getParams(string $route): array
+    private function getParams(string $route): array
     {
         @preg_match_all('/\/?(?<name>\{[^0-9\s\-\/]+})\/?/', $route, $result);
         $params = [];
@@ -112,6 +106,33 @@ class Router
         }
 
         return $params;
+    }
+
+    /**
+     * Get routes map
+     *
+     * @param array $routes List of routes from router configuration
+     * @param string $prefix Internal path prefix (used for recursion)
+     * @return array
+     */
+    private function getRouteMap(array $routes, string $prefix = ''): array
+    {
+        $routeList = [];
+        foreach ($routes as $route => $handler) {
+            if ($route === '/' || $route === '') {
+                $fullRoute = $prefix ?: '/';
+            } else {
+                $fullRoute = rtrim($prefix . '/' . ltrim($route, '/'), '/');
+            }
+
+            if (is_array($handler)) {
+                $routeList += $this->getRouteMap($handler, $fullRoute);
+            } else {
+                $routeList[$fullRoute] = $handler;
+            }
+        }
+
+        return $routeList;
     }
 
 }
