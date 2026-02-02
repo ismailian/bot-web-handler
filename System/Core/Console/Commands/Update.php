@@ -43,6 +43,10 @@ class Update extends Command
     public function handle(...$args): void
     {
         $action = $args['type'] ?? 'init';
+        if (!in_array($action, ['init', 'check', 'apply'])) {
+            $this->log('Unknown action: ' . $action, true);
+        }
+
         $this->{$action}();
     }
 
@@ -111,7 +115,7 @@ class Update extends Command
         $this->log('available changes:');
 
         $rows = [];
-        $counter = 0;
+        $counter = 1;
         foreach ($updates as $update) {
             foreach ($update['files'] as $file) {
                 $rows[] = [
