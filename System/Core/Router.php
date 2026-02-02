@@ -21,13 +21,16 @@ class Router
      */
     public function matches(array $routes): array|bool
     {
-        $routeList = $routes[request()->method()] ?? $routes[strtoupper(request()->method())] ?? [];
-        if (empty($routeList)) {
+        if (empty($routes)) {
             return false;
         }
 
         $uri = rtrim(request()->uri(), '/');
-        foreach ($this->getRouteMap($routeList) as $route => $handler) {
+        foreach ($this->getRouteMap($routes) as $route => [$method, $handler]) {
+            if (!request()->isMethod($method)) {
+                continue;
+            }
+
             if ($this->isDynamic($route)) {
                 $routeMeta = $this->getUrlInfo($uri, $route);
                 if ($routeMeta['valid']) {
@@ -119,6 +122,13 @@ class Router
     {
         $routeList = [];
         foreach ($routes as $route => $handler) {
+            if (!is_array($handler)) {
+                [$method, $route] = explode(' ', $route);
+                if (empty($method) || is_null($route)) {
+                    continue;
+                }
+            }
+
             if ($route === '/' || $route === '') {
                 $fullRoute = $prefix ?: '/';
             } else {
@@ -128,7 +138,7 @@ class Router
             if (is_array($handler)) {
                 $routeList += $this->getRouteMap($handler, $fullRoute);
             } else {
-                $routeList[$fullRoute] = $handler;
+                $routeList[$fullRoute] = [$method, $handler];
             }
         }
 
