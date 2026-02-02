@@ -70,7 +70,8 @@ class Handler
         $this->executeDelegates();
 
         call_user_func_array(
-            [$this->instance, $this->method], [$this->args]
+            [$this->instance, $this->method],
+            $this->args ?? []
         );
     }
 
