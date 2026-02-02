@@ -16,50 +16,6 @@ use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Http\{Request, Response};
 use TeleBot\System\Core\{Database, HelperLoader, Logger, Router, Queue, Runtime};
 
-if (!function_exists('dot')) {
-    /**
-     * Get value from array or object with dot syntax
-     *
-     * @param string $path path to the value
-     * @param array|object $data data to get value from
-     * @return mixed
-     */
-    function dot(string $path, array|object $data): mixed
-    {
-        if (empty($data) || empty($path)) {
-            return null;
-        }
-
-        $segments = explode('.', $path);
-        foreach ($segments as $segment) {
-            if (is_array($data)) {
-                if (!array_key_exists($segment, $data)) {
-                    return null;
-                }
-                $data = $data[$segment];
-                continue;
-            }
-
-            if (is_object($data)) {
-                if (property_exists($data, $segment)) {
-                    $data = $data->{$segment};
-                    continue;
-                }
-
-                $getter = 'get' . ucfirst($segment);
-                if (method_exists($data, $getter)) {
-                    $data = $data->{$getter}();
-                    continue;
-                }
-                return null;
-            }
-            return null;
-        }
-
-        return $data;
-    }
-}
-
 if (!function_exists('config')) {
     /**
      * get config
