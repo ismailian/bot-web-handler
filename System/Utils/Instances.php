@@ -14,7 +14,7 @@ use TeleBot\System\Session\Session;
 use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Http\{Request, Response};
-use TeleBot\System\Core\{Database, HelperLoader, Logger, Router, Queue, Runtime};
+use TeleBot\System\Core\{Database, HelperLoader, Logger, Router, Queue, Runtime, ServiceContainer};
 
 if (!function_exists('config')) {
     /**
@@ -228,5 +228,23 @@ if (!function_exists('logger')) {
             $logger = Logger::getInstance();
         }
         return $logger;
+    }
+}
+
+if (!function_exists('services')) {
+    /**
+     * get service instance from the service container
+     *
+     * @param string $service service name
+     * @return mixed service object
+     */
+    function services(string $service): mixed
+    {
+        static $serviceContainer = null;
+        if ($serviceContainer === null) {
+            $serviceContainer = new ServiceContainer();
+            $serviceContainer->register();
+        }
+        return $serviceContainer[$service];
     }
 }
