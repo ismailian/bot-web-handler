@@ -23,11 +23,17 @@ class HelperLoader
     public static function load(mixed $path, bool $once = true): mixed
     {
         if (is_string($path)) {
-            return self::requireFile($path, $once);
+            return self::requireFile(
+                self::appendExtension($path), $once
+            );
         }
 
         if (is_array($path)) {
-            return array_map(fn($f) => self::requireFile($f, $once), $path);
+            return array_map(
+                fn($f) => self::requireFile(
+                    self::appendExtension($f), $once
+                ), $path
+            );
         }
 
         return [];
@@ -65,6 +71,21 @@ class HelperLoader
         }
 
         return $require($filePath);
+    }
+
+    /**
+     * Add php extension to end of filename
+     *
+     * @param string $path filename
+     * @return string
+     */
+    private static function appendExtension(string $path): string
+    {
+        if (str_ends_with($path, '*') || str_ends_with($path, '.php')) {
+            return $path;
+        }
+
+        return $path . '.php';
     }
 
 }
