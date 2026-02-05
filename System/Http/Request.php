@@ -180,16 +180,28 @@ class Request
      */
     public function fingerprint(bool $includeBody = false): string
     {
+        $query = $this->query();
+        ksort($query);
+
         $segments = [
             $this->ip(),
             $this->uri(),
             $this->method(),
-            md5($this->query(raw: true)),
+            md5(http_build_query($query)),
         ];
 
         if ($includeBody) {
-            $segments[] = md5($this->body(raw: true));
-            $segments[] = md5($this->json(raw: true));
+            $body = $this->body();
+            ksort($body);
+            $segments[] = md5(http_build_query($body));
+
+            $json = $this->json();
+            $jsonParams = json_decode($json, true);
+            if (is_array($jsonParams)) {
+                ksort($jsonParams);
+                $json = json_encode($jsonParams);
+            }
+            $segments[] = md5($json);
         }
 
         return md5(join('|', $segments));
