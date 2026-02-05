@@ -102,3 +102,37 @@ if (!function_exists('getBuffer')) {
         return isUrl($pathOrUrl) ? $pathOrUrl : Utils::tryFopen($pathOrUrl, 'r');
     }
 }
+
+if (!function_exists('iso8601_to_seconds')) {
+    /**
+     * Convert ISO-8601 interval to seconds
+     *
+     * @param string $value time interval in ISO-8601 format
+     * @return int|null returns number of seconds or null on error
+     */
+    function iso8601_to_seconds(string $value): ?int
+    {
+        try {
+            return new \DateTime()->add(new \DateInterval($value))->getTimestamp() - time();
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+}
+
+if (!function_exists('iso8601_to_timestamp')) {
+    /**
+     * Convert ISO-8601 interval to timestamp
+     *
+     * @param string $value time interval in ISO-8601 format
+     * @return int|null returns timestamp or null on error
+     */
+    function iso8601_to_timestamp(string $value): ?int
+    {
+        try {
+            return new \DateTime()->add(new \DateInterval($value))->getTimestamp();
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+}
