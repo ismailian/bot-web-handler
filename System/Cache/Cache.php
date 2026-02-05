@@ -70,6 +70,7 @@ class Cache
      */
     public function remember(string $key, mixed $value, ?string $ttl = null): bool
     {
+        $ttl ??= env('CACHE_TTL');
         return $this->init()->write($key, $value, $ttl);
     }
 

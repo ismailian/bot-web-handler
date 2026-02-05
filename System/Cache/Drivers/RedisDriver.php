@@ -95,8 +95,9 @@ class RedisDriver implements ICacheDriver
 
         return !!$this->client->set(
             "$this->prefix:$key",
-            $data, 'EX',
-            iso8601_to_seconds($ttl)
+            $data,
+            ($ttl ? 'EX' : null),
+            ($ttl ? iso8601_to_seconds($ttl) : null)
         );
     }
 

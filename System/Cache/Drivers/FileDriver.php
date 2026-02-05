@@ -23,7 +23,7 @@ class FileDriver implements ICacheDriver
      */
     public function getAll(int $cursor = 0, int $count = 100): array
     {
-        $dir = implode(DIRECTORY_SEPARATOR, [env('CACHE_DIR'), '*']);
+        $dir = implode('/', [env('CACHE_DIR'), '*']);
         return array_filter(glob($dir) ?? [], 'is_file');
     }
 
@@ -60,7 +60,7 @@ class FileDriver implements ICacheDriver
     public function write(string $key, mixed $data, ?string $ttl = null): bool
     {
         $data = [
-            self::TTL_KEY => iso8601_to_timestamp($ttl),
+            self::TTL_KEY => $ttl ? iso8601_to_timestamp($ttl) : null,
             self::CONTENT_KEY => $data,
         ];
 
