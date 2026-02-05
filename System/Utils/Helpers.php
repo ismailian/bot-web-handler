@@ -65,7 +65,7 @@ if (!function_exists('env')) {
     function env(string $key, ?string $default = null): mixed
     {
         $value = getenv($key, true);
-        if ($value === false) {
+        if ($value === false || $value === '') {
             return $default;
         }
 
