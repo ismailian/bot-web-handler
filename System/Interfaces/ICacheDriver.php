@@ -14,6 +14,15 @@ interface ICacheDriver
 {
 
     /**
+     * read all available cache data
+     *
+     * @param int $cursor redis cursor (Redis only)
+     * @param int $count max records to return (Redis only)
+     * @return array
+     */
+    public function getAll(int $cursor = 0, int $count = 100): array;
+
+    /**
      * read cache data
      *
      * @param string $key cache key
@@ -26,9 +35,10 @@ interface ICacheDriver
      *
      * @param string $key cache key
      * @param mixed $data cache data
+     * @param string|null $ttl cache TTL in ISO-8601 format (e.g: PT24H)
      * @return bool
      */
-    public function write(string $key, mixed $data): bool;
+    public function write(string $key, mixed $data, ?string $ttl = null): bool;
 
     /**
      * delete cache data

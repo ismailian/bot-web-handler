@@ -51,6 +51,26 @@ class RedisDriver implements ICacheDriver
     /**
      * @inheritDoc
      */
+    public function getAll(int $cursor = 0, int $count = 100): array
+    {
+        $keys = [];
+        do {
+            $options = [
+                'count' => $count,
+                'match' => $this->prefix . ':*',
+            ];
+
+            [$page, $_keys] = $this->client->scan($cursor, $options);
+            if (!empty($_keys)) {
+                $keys = array_merge($keys, $_keys);
+            }
+        } while ($page !== '0');
+        return $keys;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function read(string $key): mixed
     {
         if (empty($this->cache)) {
@@ -66,16 +86,18 @@ class RedisDriver implements ICacheDriver
     /**
      * @inheritDoc
      */
-    public function write(string $key, mixed $data): bool
+    public function write(string $key, mixed $data, ?string $ttl = null): bool
     {
         $this->cache = $data;
         if (is_array($data) || is_object($data)) {
             $data = json_encode($data);
         }
 
-        $result = $this->client->set("$this->prefix:$key", $data);
-
-        return !!$result;
+        return !!$this->client->set(
+            "$this->prefix:$key",
+            $data, 'EX',
+            iso8601_to_seconds($ttl)
+        );
     }
 
     /**

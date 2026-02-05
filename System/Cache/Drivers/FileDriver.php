@@ -10,10 +10,22 @@
 
 namespace TeleBot\System\Cache\Drivers;
 
+use TeleBot\System\Core\Traits\Expirable;
 use TeleBot\System\Interfaces\ICacheDriver;
 
 class FileDriver implements ICacheDriver
 {
+
+    use Expirable;
+
+    /**
+     * @inheritDoc
+     */
+    public function getAll(int $cursor = 0, int $count = 100): array
+    {
+        $dir = implode(DIRECTORY_SEPARATOR, [env('CACHE_DIR'), '*']);
+        return array_filter(glob($dir) ?? [], 'is_file');
+    }
 
     /**
      * @inheritDoc
@@ -21,35 +33,40 @@ class FileDriver implements ICacheDriver
     public function read(string $key): mixed
     {
         $cachePath = env('CACHE_DIR');
-        $cacheFilePath = $cachePath . "/" . $key;
+        $cacheFilePath = $cachePath . '/' . $key;
         if (!file_exists($cacheFilePath)) {
             return null;
         }
 
-        $cacheFileContent = file_get_contents($cacheFilePath);
-        if ($cacheFileContent === false) {
+        $content = file_get_contents($cacheFilePath);
+        if ($content === false) {
             return null;
         }
 
-        if (($json = json_decode($cacheFileContent, true))) {
-            return $json;
+        if (($json = json_decode($content, true))) {
+            if ($this->isExpired($json)) {
+                $this->delete($key);
+            }
+
+            $content = $this->restore($json);
         }
 
-        return $cacheFileContent;
+        return $content;
     }
 
     /**
      * @inheritDoc
      */
-    public function write(string $key, mixed $data): bool
+    public function write(string $key, mixed $data, ?string $ttl = null): bool
     {
-        $cachePath = env('CACHE_DIR');
-        $cacheFilePath = $cachePath . "/" . $key;
-        if (is_array($data) || is_object($data)) {
-            $data = json_encode($data);
-        }
+        $data = [
+            self::TTL_KEY => iso8601_to_timestamp($ttl),
+            self::CONTENT_KEY => $data,
+        ];
 
-        return (bool)file_put_contents($cacheFilePath, $data);
+        $cachePath = env('CACHE_DIR');
+        $cacheFilePath = $cachePath . '/' . $key;
+        return (bool)file_put_contents($cacheFilePath, json_encode($data));
     }
 
     /**
@@ -58,7 +75,7 @@ class FileDriver implements ICacheDriver
     public function delete(string $key): bool
     {
         $cachePath = env('CACHE_DIR');
-        $cacheFilePath = $cachePath . "/" . $key;
+        $cacheFilePath = $cachePath . '/' . $key;
         if (file_exists($cacheFilePath)) {
             return @unlink($cacheFilePath);
         }

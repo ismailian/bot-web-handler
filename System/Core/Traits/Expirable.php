@@ -5,55 +5,39 @@ namespace TeleBot\System\Core\Traits;
 trait Expirable
 {
 
-    /** @var string $expireKey key pointing to the data expiration timestamp */
-    protected string $expireKey = 'expires';
+    /** @var string key pointing to the data expiration timestamp */
+    public const string TTL_KEY = 'ttl';
 
-    /**
-     * Add expire timestamp to the data
-     *
-     * @param mixed $value data
-     * @param string|null $expires relative time
-     * @return void
-     */
-    protected function addExpireTimestamp(mixed &$value, ?string $expires = null): void
-    {
-        if (!$expires) {
-            return;
-        }
-
-        $timestamp = strtotime($expires);
-        if ($timestamp > time()) {
-            if (!is_array($value)) {
-                $value = ['converted' => true, 'value' => $value];
-            }
-            $value[$this->expireKey] = $timestamp;
-        }
-    }
+    /** @var string key pointing to the content */
+    public const string CONTENT_KEY = 'content';
 
     /**
      * Check if data is expired
      *
-     * @param array $data
+     * @param array|null $data
      * @return bool
      */
-    protected function isExpired(array $data): bool
+    protected function isExpired(?array $data = null): bool
     {
-        return !empty($data[$this->expireKey]) && $data[$this->expireKey] < time();
+        return !empty($data) && !empty($data[self::TTL_KEY]) && $data[self::TTL_KEY] < time();
     }
 
     /**
-     * Restore data to its original type
+     * Restore data to its original value
      *
-     * @param array $data
-     * @return mixed
+     * @param mixed $data cached data
+     * @return mixed original content
      */
-    protected function restore(array $data): mixed
+    protected function restore(mixed $data): mixed
     {
-        if (array_key_exists('converted', $data) && array_key_exists('value', $data)) {
-            $data = $data['value'];
+        if (empty($data)
+            || !is_array($data)
+            || !array_key_exists(self::TTL_KEY, $data)
+            || !array_key_exists(self::CONTENT_KEY, $data)) {
+            return $data;
         }
 
-        return $data;
+        return $data[self::CONTENT_KEY];
     }
 
 }

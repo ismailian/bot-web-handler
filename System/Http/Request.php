@@ -172,4 +172,27 @@ class Request
         return $this->_json;
     }
 
+    /**
+     * get request fingerprint
+     *
+     * @param bool $includeBody include body signature in the fingerprint
+     * @return string
+     */
+    public function fingerprint(bool $includeBody = false): string
+    {
+        $segments = [
+            $this->ip(),
+            $this->uri(),
+            $this->method(),
+            md5($this->query(raw: true)),
+        ];
+
+        if ($includeBody) {
+            $segments[] = md5($this->body(raw: true));
+            $segments[] = md5($this->json(raw: true));
+        }
+
+        return md5(join('|', $segments));
+    }
+
 }

@@ -10,30 +10,27 @@
 
 namespace TeleBot\System\Cache;
 
-use TeleBot\System\Core\Traits\Expirable;
 use TeleBot\System\Interfaces\ICacheDriver;
 use TeleBot\System\Cache\Drivers\{FileDriver, RedisDriver};
 
 class Cache
 {
 
-    use Expirable;
-
     /** @var ICacheDriver|null $client client */
-    protected ?ICacheDriver $client = null;
+    private ?ICacheDriver $client = null;
 
     /**
      * initialize driver client
      *
      * @return ICacheDriver
      */
-    protected function init(): ICacheDriver
+    private function init(): ICacheDriver
     {
         if ($this->client === null) {
-            $driver = env('CACHE_DRIVER', 'filesystem');
+            $driver = env('CACHE_DRIVER', CacheSource::FILESYSTEM);
             $this->client = match ($driver) {
-                'redis' => new RedisDriver(),
-                'filesystem' => new FileDriver(),
+                CacheSource::REDIS => new RedisDriver(),
+                CacheSource::FILESYSTEM => new FileDriver(),
             };
         }
 
@@ -41,26 +38,15 @@ class Cache
     }
 
     /**
-     * get request fingerprint
+     * List all available cache data
      *
-     * @param bool $includeBody include body signature in the fingerprint
-     * @return string
+     * @param int $cursor page number (Redis only)
+     * @param int $count max records to return (Redis only)
+     * @return array
      */
-    public function fingerprint(bool $includeBody = false): string
+    public function getAll(int $cursor = 0, int $count = 100): array
     {
-        $segments = [
-            request()->ip(),
-            request()->uri(),
-            request()->method(),
-            join(';', request()->query(raw: true)),
-        ];
-
-        if ($includeBody) {
-            $segments[] = md5(request()->body(raw: true));
-            $segments[] = md5(request()->json(raw: true));
-        }
-
-        return md5(join('|', $segments));
+        return $this->init()->getAll($cursor, $count);
     }
 
     /**
@@ -71,31 +57,20 @@ class Cache
      */
     public function get(string $key): mixed
     {
-        $data = $this->init()->read($key);
-        if ($this->isExpired($data)) {
-            $this->forget($key);
-            return null;
-        }
-
-        $data = $this->restore($data);
-
-        unset($data[$this->expireKey]);
-        return $data;
+        return $this->init()->read($key);
     }
 
     /**
-     * set data
+     * Cache data
      *
-     * @param string $key
-     * @param mixed $value
-     * @param string|null $expires
+     * @param string $key cache identifier
+     * @param mixed $value data to cache
+     * @param string|null $ttl time interval in ISO-8601 format (e.g: PT24H)
      * @return bool
      */
-    public function remember(string $key, mixed $value, ?string $expires = null): bool
+    public function remember(string $key, mixed $value, ?string $ttl = null): bool
     {
-        $this->addExpireTimestamp($value, $expires);
-
-        return $this->init()->write($key, $value);
+        return $this->init()->write($key, $value, $ttl);
     }
 
     /**

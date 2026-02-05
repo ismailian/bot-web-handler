@@ -389,7 +389,7 @@ response()->json($weatherData);
 Per User:
 
 ```php
-$cacheKey = cache()->fingerprint();
+$cacheKey = request()->fingerprint();
 if (($weatherData = cache()->get($cacheKey))) {
     response()->json($weatherData);
 }
