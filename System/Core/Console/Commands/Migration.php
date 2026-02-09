@@ -21,7 +21,7 @@ class Migration extends Command
         'table' => [
             'required' => true,
             'validation' => [
-                'type' => 'string',
+                'type' => 'regex',
                 'pattern' => '/^(users|events|sessions)$/',
             ],
         ],
@@ -57,6 +57,7 @@ class Migration extends Command
                     `id` INT NOT NULL AUTO_INCREMENT,
                     `session_id` VARCHAR(64) NOT NULL,
                     `data` JSON NOT NULL,
+                    `ttl` VARCHAR(45) NULL DEFAULT NULL,
                     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
                     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
                     PRIMARY KEY (`id`, `session_id`),
@@ -70,7 +71,7 @@ class Migration extends Command
     public function handle(...$args): void
     {
         $dbName = env('DATABASE_NAME');
-        $query = "show tables where Tables_in_$dbName in ({$args['table']})";
+        $query = "SHOW TABLES WHERE Tables_in_$dbName IN ('{$args['table']}')";
 
         $existingTables = database()->getClient()->query($query)->fetchAll();
         $existingTables = array_column($existingTables, 'Tables_in_' . $dbName);
