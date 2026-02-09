@@ -1,6 +1,6 @@
 <?php
 
-namespace TeleBot\System\Cache;
+namespace TeleBot\System\Core\Enums;
 
 final class DataSource
 {
