@@ -10,6 +10,7 @@
 
 namespace TeleBot\System\Cache;
 
+use TeleBot\System\Core\Enums\DataSource;
 use TeleBot\System\Interfaces\ICacheDriver;
 use TeleBot\System\Cache\Drivers\{FileDriver, RedisDriver};
 
@@ -27,10 +28,10 @@ class Cache
     private function init(): ICacheDriver
     {
         if ($this->client === null) {
-            $driver = env('CACHE_DRIVER', CacheSource::FILESYSTEM);
+            $driver = env('CACHE_DRIVER', DataSource::FILESYSTEM);
             $this->client = match ($driver) {
-                CacheSource::REDIS => new RedisDriver(),
-                CacheSource::FILESYSTEM => new FileDriver(),
+                DataSource::REDIS => new RedisDriver(),
+                DataSource::FILESYSTEM => new FileDriver(),
             };
         }
 

@@ -44,8 +44,9 @@ class FileDriver implements ICacheDriver
         }
 
         if (($json = json_decode($content, true))) {
-            if ($this->isExpired($json)) {
+            if ($this->hasExpired($json)) {
                 $this->delete($key);
+                return null;
             }
 
             $content = $this->restore($json);
