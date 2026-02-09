@@ -17,7 +17,7 @@ trait Expirable
      * @param array|null $data
      * @return bool
      */
-    protected function isExpired(?array $data = null): bool
+    protected function hasExpired(?array $data = null): bool
     {
         return !empty($data) && !empty($data[self::TTL_KEY]) && $data[self::TTL_KEY] < time();
     }
