@@ -57,6 +57,7 @@ class Logger
                     'method' => request()->method(),
                     'query' => request()->query(),
                     'body' => request()->body(),
+                    'json' => request()->json(),
                 ]
             ];
         }
