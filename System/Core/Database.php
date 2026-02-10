@@ -63,6 +63,18 @@ class Database
     }
 
     /**
+     * Set fetch mode (default: PDO::FETCH_ASSOC)
+     *
+     * @param int $mode PDO fetch mode
+     * @return self
+     */
+    public function setFetchMode(int $mode): self
+    {
+        $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, $mode);
+        return $this;
+    }
+
+    /**
      * execute raw sql query
      *
      * @param string $sql sql query
@@ -78,12 +90,11 @@ class Database
      *
      * @param string $sql sql query
      * @param array $args params
-     * @param int $fetchMode set return mode ie object or array
      * @return array|bool returns array of records
      */
-    public function rows(string $sql, array $args = [], int $fetchMode = PDO::FETCH_OBJ): array|bool
+    public function rows(string $sql, array $args = []): array|bool
     {
-        return $this->run($sql, $args)->fetchAll($fetchMode);
+        return $this->run($sql, $args)->fetchAll();
     }
 
     /**
@@ -127,12 +138,11 @@ class Database
      *
      * @param string $sql sql query
      * @param array $args params
-     * @param int $fetchMode set return mode ie object or array
      * @return array|object|bool returns single record
      */
-    public function row(string $sql, array $args = [], int $fetchMode = PDO::FETCH_OBJ): array|object|bool
+    public function row(string $sql, array $args = []): array|object|bool
     {
-        return $this->run($sql, $args)->fetch($fetchMode);
+        return $this->run($sql, $args)->fetch();
     }
 
     /**
@@ -140,12 +150,11 @@ class Database
      *
      * @param string $table name of table
      * @param integer $id id of record
-     * @param int $fetchMode set return mode ie object or array
      * @return array|object|bool returns single record
      */
-    public function getById(string $table, int $id, int $fetchMode = PDO::FETCH_OBJ): array|object|bool
+    public function getById(string $table, int $id): array|object|bool
     {
-        return $this->run("SELECT * FROM $table WHERE id = ?", [$id])->fetch($fetchMode);
+        return $this->run("SELECT * FROM $table WHERE id = ?", [$id])->fetch();
     }
 
     /**
