@@ -10,20 +10,28 @@
 
 namespace TeleBot\System\Session\Drivers;
 
-use TeleBot\System\Core\Database;
+use TeleBot\System\Core\Traits\Expirable;
 use TeleBot\System\Interfaces\ISessionDriver;
 
 class DbDriver implements ISessionDriver
 {
 
-    /** @var Database|null $db db client */
-    protected static ?Database $db = null;
+    use Expirable;
+
+    /** @var string sessions table */
+    private const string SESSION_TABLE = 'sessions';
+
+    /** @var string primary key for row */
+    private const string SESSION_ID_KEY = 'session_id';
+
+    /** @var string key for session data */
+    private const string SESSION_DATA_KEY = 'data';
 
     /** @var string $sessionId session id */
-    protected string $sessionId;
+    private string $sessionId;
 
-    /** @var array $cache cache value of session content */
-    protected array $cache = [];
+    /** @var array $cached cached session content for quick access */
+    private array $cached = [];
 
     /**
      * @inheritDoc
@@ -31,15 +39,10 @@ class DbDriver implements ISessionDriver
     public function __construct(string $sessionId)
     {
         $this->sessionId = $sessionId;
-        if (!self::$db) {
-            self::$db = new Database();
-        }
-
-        // create session record (if not exists)
-        if (!self::$db->row("SELECT id FROM `sessions` WHERE `session_id` = ? LIMIT 1", [$sessionId])) {
-            self::$db->insert("sessions", [
-                'session_id' => $sessionId,
-                'data' => json_encode([])
+        if (!database()->row("SELECT id FROM `sessions` WHERE `session_id` = ?", [$sessionId])) {
+            database()->insert(self::SESSION_TABLE, [
+                self::SESSION_ID_KEY => $sessionId,
+                self::SESSION_DATA_KEY => json_encode([])
             ]);
         }
     }
@@ -47,27 +50,53 @@ class DbDriver implements ISessionDriver
     /**
      * @inheritDoc
      */
-    public function read(): array
+    public function getAll(int $cursor = 0, int $count = 100): array
     {
-        if (empty($this->cache)) {
-            $session = self::$db->row("SELECT data FROM `sessions` WHERE `session_id` = ? LIMIT 1", [$this->sessionId]);
-            if ($session && ($json = json_decode($session->data, true))) {
-                $this->cache = $json;
-            }
-        }
-
-        return $this->cache;
+        return database()->rows('SELECT * FROM ' . self::SESSION_TABLE) ?? [];
     }
 
     /**
      * @inheritDoc
      */
-    public function write(array $data): bool
+    public function read(): array
     {
-        $this->cache = $data;
-        return self::$db->update("sessions",
-            ['data' => json_encode($data)],
-            ['session_id' => $this->sessionId]
+        if (empty($this->cached)) {
+            $session = database()->row("SELECT ttl,data FROM `sessions` WHERE `session_id` = ?", [$this->sessionId]);
+            if (!empty($session)) {
+                $this->cached[self::SESSION_DATA_KEY] = $session[self::SESSION_DATA_KEY] ?? [];
+                $this->cached[self::TTL_KEY] = $session[self::TTL_KEY] ?? null;
+            }
+        }
+
+        if (!empty($this->cached[self::TTL_KEY]) && (int)$this->cached[self::TTL_KEY] < time()) {
+            database()->delete(self::SESSION_TABLE, [
+                self::SESSION_ID_KEY => $this->sessionId,
+            ]);
+
+            return $this->cached = [];
+        }
+
+        $data = $this->cached[self::SESSION_DATA_KEY] ?? [];
+        if (!empty($data) && !is_array($data) && ($json = json_decode($data, true)) !== null) {
+            $data = $json;
+        }
+
+        return $data;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function write(array $data, ?string $ttl = null): bool
+    {
+        $sessData = [
+            self::SESSION_DATA_KEY => json_encode($data),
+            self::TTL_KEY => $ttl ? iso8601_to_timestamp($ttl) : null,
+        ];
+
+        $this->cached = $sessData;
+        return database()->update(self::SESSION_TABLE, $sessData,
+            [self::SESSION_ID_KEY => $this->sessionId]
         );
     }
 
@@ -76,6 +105,8 @@ class DbDriver implements ISessionDriver
      */
     public function delete(): int|bool
     {
-        return $this->write([]);
+        return database()->delete(self::SESSION_TABLE, [
+            self::SESSION_ID_KEY => $this->sessionId
+        ]);
     }
 }

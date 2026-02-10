@@ -10,38 +10,53 @@
 
 namespace TeleBot\System\Session\Drivers;
 
+use TeleBot\System\Core\Traits\Expirable;
 use TeleBot\System\Interfaces\ISessionDriver;
 
 class FileDriver implements ISessionDriver
 {
 
+    use Expirable;
+
     /** @var string $sessionId session id */
-    protected string $sessionId;
+    private string $sessionId;
 
     /** @var string $sessionFilePath session file path */
-    protected string $sessionFilePath;
+    private string $sessionFilePath;
 
-    /** @var array $cache cache value of session content */
-    protected array $cache = [];
+    /** @var array $cached cached session content for quick access */
+    private array $cached = [];
 
     /**
      * @inheritDoc
      */
     public function __construct(string $sessionId)
     {
-        $this->sessionId = $sessionId;
-        $this->sessionFilePath = join('/', [
-            env('SESSION_DIR', 'session'),
-            $this->sessionId . '.json'
-        ]);
+        $sessDir = env('SESSION_DIR', 'session');
+        $sessName = md5($sessionId) . '.json';
+        $sessData = [
+            self::TTL_KEY => null,
+            self::CONTENT_KEY => [],
+        ];
 
+        $this->sessionId = $sessionId;
+        $this->sessionFilePath = join('/', [$sessDir, $sessName]);
         if (!file_exists($this->sessionFilePath)) {
             if (!file_exists(dirname($this->sessionFilePath))) {
                 @mkdir(dirname($this->sessionFilePath));
             }
 
-            file_put_contents($this->sessionFilePath, json_encode([]));
+            file_put_contents($this->sessionFilePath, json_encode($sessData));
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAll(int $cursor = 0, int $count = 100): array
+    {
+        $dir = implode('/', [env('SESSION_DIR'), '*']);
+        return array_filter(glob($dir) ?? [], 'is_file');
     }
 
     /**
@@ -49,26 +64,33 @@ class FileDriver implements ISessionDriver
      */
     public function read(): array
     {
-        if (empty($this->cache)) {
+        if (empty($this->cached)) {
             $content = file_get_contents($this->sessionFilePath);
             if ($json = json_decode($content, true)) {
-                $this->cache = $json;
+                $this->cached = $json;
             }
         }
 
-        return $this->cache;
+        if ($this->hasExpired($this->cached)) {
+            $this->delete();
+            return $this->cached = [];
+        }
+
+        return $this->restore($this->cached);
     }
 
     /**
      * @inheritDoc
      */
-    public function write(array $data): bool
+    public function write(array $data, ?string $ttl = null): bool
     {
-        $this->cache = $data;
-        return (file_put_contents(
-            $this->sessionFilePath,
-            json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
-        ) > 0);
+        $data = [
+            self::TTL_KEY => $ttl ? iso8601_to_timestamp($ttl) : null,
+            self::CONTENT_KEY => $data,
+        ];
+
+        $this->cached = $data;
+        return (bool)file_put_contents($this->sessionFilePath, json_encode($data));
     }
 
     /**

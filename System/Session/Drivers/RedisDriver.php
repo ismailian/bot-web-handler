@@ -18,16 +18,16 @@ class RedisDriver implements ISessionDriver
 {
 
     /** @var Client $client redis client */
-    protected Client $client;
+    private Client $client;
 
     /** @var string $sessionId session id */
-    protected string $sessionId;
+    private string $sessionId;
 
-    /** @var array $cache cache value of session content */
-    protected array $cache = [];
+    /** @var array $cached cached session content for quick access */
+    private array $cached = [];
 
     /** @var string $prefix redis key prefix */
-    protected string $prefix = 'tg:bots';
+    private string $prefix = 'tg:bots';
 
     /**
      * @inheritDoc
@@ -53,27 +53,48 @@ class RedisDriver implements ISessionDriver
     /**
      * @inheritDoc
      */
-    public function read(): array
+    public function getAll(int $cursor = 0, int $count = 100): array
     {
-        if (empty($this->cache)) {
-            $data = $this->client->get("$this->prefix:{$this->sessionId}");
-            if (!empty($data) && ($json = json_decode($data, true))) {
-                $this->cache = $json;
-            }
-        }
+        $keys = [];
+        do {
+            $options = [
+                'count' => $count,
+                'match' => $this->prefix . ':*',
+            ];
 
-        return $this->cache;
+            [$page, $_keys] = $this->client->scan($cursor, $options);
+            if (!empty($_keys)) {
+                $keys = array_merge($keys, $_keys);
+            }
+        } while ($page !== '0');
+        return $keys;
     }
 
     /**
      * @inheritDoc
      */
-    public function write(array $data): bool
+    public function read(): array
     {
-        $this->cache = $data;
-        $result = $this->client->set("$this->prefix:$this->sessionId", json_encode($data));
+        if (empty($this->cached)) {
+            $data = $this->client->get("$this->prefix:{$this->sessionId}");
+            if (!empty($data) && ($json = json_decode($data, true))) {
+                $this->cached = $json;
+            }
+        }
 
-        return !!$result;
+        return $this->cached;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function write(array $data, ?string $ttl = null): bool
+    {
+        $this->cached = $data;
+        return !!$this->client->set(
+            "$this->prefix:$this->sessionId", json_encode($data),
+            ($ttl ? 'EX' : null), ($ttl ? iso8601_to_seconds($ttl) : null)
+        );
     }
 
     /**
