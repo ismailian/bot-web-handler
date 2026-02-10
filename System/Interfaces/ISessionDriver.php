@@ -21,6 +21,15 @@ interface ISessionDriver
     public function __construct(string $sessionId);
 
     /**
+     * read all available cache data
+     *
+     * @param int $cursor redis cursor (Redis only)
+     * @param int $count max records to return (Redis only)
+     * @return array
+     */
+    public function getAll(int $cursor = 0, int $count = 100): array;
+
+    /**
      * read session
      *
      * @return array
@@ -30,10 +39,11 @@ interface ISessionDriver
     /**
      * write session data
      *
-     * @param array $data
-     * @return bool
+     * @param array $data session data
+     * @param string|null $ttl cache TTL in ISO-8601 format (e.g: PT24H)
+     * @return bool True on success, otherwise, False
      */
-    public function write(array $data): bool;
+    public function write(array $data, ?string $ttl = null): bool;
 
     /**
      * delete session entry
