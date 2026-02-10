@@ -11,14 +11,13 @@
 namespace TeleBot\System\Session;
 
 use Exception;
-use TeleBot\System\Core\Traits\Expirable;
+use TeleBot\System\Core\Database;
+use TeleBot\System\Core\Enums\DataSource;
 use TeleBot\System\Interfaces\ISessionDriver;
 use TeleBot\System\Session\Drivers\{DbDriver, FileDriver, RedisDriver};
 
 class Session
 {
-
-    use Expirable;
 
     /** @var ISessionDriver|null $client */
     protected ?ISessionDriver $client = null;
@@ -32,7 +31,7 @@ class Session
      * @param string|null $sessionId
      * @return self
      */
-    protected function init(?string $sessionId = null): self
+    private function init(?string $sessionId = null): self
     {
         try {
             if (empty($this->sessionId) || !$this->client) {
@@ -48,14 +47,16 @@ class Session
                     }
                 }
 
-                $this->client = match (env('SESSION', 'filesystem')) {
-                    'filesystem' => new FileDriver($this->sessionId),
-                    'database' => new DbDriver($this->sessionId),
-                    'redis' => new RedisDriver($this->sessionId),
+                $this->client = match (env('SESSION_DRIVER', DataSource::FILESYSTEM)) {
+                    DataSource::REDIS => new RedisDriver($this->sessionId),
+                    DataSource::DATABASE => new DbDriver($this->sessionId),
+                    DataSource::FILESYSTEM => new FileDriver($this->sessionId),
                 };
             }
-        } catch (Exception) {
+        } catch (Exception $ex) {
+            logger()->onException($ex);
         }
+
         return $this;
     }
 
@@ -71,17 +72,28 @@ class Session
     }
 
     /**
+     * List all available session data
+     *
+     * @param int $cursor page number (Redis only)
+     * @param int $count max records to return (Redis only)
+     * @return array
+     */
+    public function getAll(int $cursor = 0, int $count = 100): array
+    {
+        return $this->init()->client->getAll($cursor, $count);
+    }
+
+    /**
      * set session data
      *
      * @param string $key
      * @param mixed $value
-     * @param string|null $expires
+     * @param string|null $ttl time interval in ISO-8601 format (e.g: PT24H) - Set to global session
      * @return bool
      */
-    public function set(string $key, mixed $value, ?string $expires = null): bool
+    public function set(string $key, mixed $value, ?string $ttl = null): bool
     {
         $data = $this->init()->client->read();
-
         if ($key !== '*') {
             $keys = explode('.', $key);
             $tmp = &$data;
@@ -89,14 +101,11 @@ class Session
                 $tmp = &$tmp[$key];
             }
 
-            $this->addExpireTimestamp($value, $expires);
             $tmp = $value;
             $value = $data;
-        } else {
-            $this->addExpireTimestamp($value, $expires);
         }
 
-        return $this->client->write($value);
+        return $this->client->write($value, $ttl);
     }
 
     /**
@@ -108,6 +117,10 @@ class Session
     public function unset(string $key): bool
     {
         $data = $this->init()->client->read();
+        if (empty($data)) {
+            return false;
+        }
+
         $keys = explode('.', $key);
         $tmp =& $data;
         foreach ($keys as $key) {
@@ -138,13 +151,11 @@ class Session
     public function get(?string $key = null): mixed
     {
         $data = $this->init()->client->read();
-        if (!$key) {
-            if ($this->isExpired($data)) {
-                $this->destroy();
-                return null;
-            }
+        if (empty($data)) {
+            return null;
+        }
 
-            unset($data[$this->expireKey]);
+        if (!$key) {
             return $data;
         }
 
@@ -152,20 +163,14 @@ class Session
         $lastKey = $keys[count($keys) - 1];
         foreach ($keys as $segmentKey) {
             if (isset($data[$segmentKey])) {
-                if ($segmentKey == $lastKey) {
-                    if ($this->isExpired($data[$segmentKey])) {
-                        $this->unset($key);
-                        return null;
-                    }
-
-                    unset($data[$segmentKey][$this->expireKey]);
-                    return $this->restore($data[$segmentKey]);
+                if ($segmentKey === $lastKey) {
+                    return $data[$segmentKey];
                 }
                 $data = $data[$segmentKey];
             }
         }
 
-        return null;
+        return $data;
     }
 
     /**
