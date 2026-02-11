@@ -13,26 +13,14 @@ namespace TeleBot\System\Telegram\Types;
 class MessageEntity
 {
 
-    /** @var int $offset entity offset */
-    public int $offset;
-
-    /** @var int $length entity length */
-    public int $length;
-
-    /** @var string $type entity type */
-    public string $type;
-
     /**
      * default constructor
      *
      * @param string $text
-     * @param array $entity
+     * @param int $offset
+     * @param int $length
+     * @param string $type
      */
-    public function __construct(protected string $text, protected array $entity)
-    {
-        $this->offset = $this->entity['offset'];
-        $this->length = $this->entity['length'];
-        $this->type = $this->entity['type'];
-    }
+    public function __construct(public string $text, public int $offset, public int $length, public string $type) {}
 
 }
