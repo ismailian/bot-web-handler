@@ -31,17 +31,15 @@ A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 
 #### 3. Useful commands
 
-| Command                         | Description                              |
-|---------------------------------|------------------------------------------|
-| `php cli update:check`          | check for available updates              |
-| `php cli update:apply`          | apply available updates                  |
-| `php cli handler:make <name>`   | create new handler                       |
-| `php cli handler:delete <name>` | delete a handler                         |
-| `php cli webhook:set [uri]`     | set bot webhook (URI is optional)        |
-| `php cli webhook:unset`         | unset bot webhook                        |
-| `php cli migrate <tables>`      | migrate tables (users, events, sessions) |
-| `php cli queue:init`            | create queue table + jobs directory      |
-| `php cli queue:work`            | run queue                                |
+| Command                        | Description                              |
+|--------------------------------|------------------------------------------|
+| `php cli update:check`         | check for available updates              |
+| `php cli update:apply`         | apply available updates                  |
+| `php cli webhook:set [uri]`    | set bot webhook (URI is optional)        |
+| `php cli webhook:unset`        | unset bot webhook                        |
+| `php cli migrate <table>`      | migrate tables (users, events, sessions) |
+| `php cli queue:init`           | create queue table + jobs directory      |
+| `php cli queue:work`           | run queue                                |
 
 ## Examples
 
@@ -309,14 +307,20 @@ In `config.php`, you can configure your routes to handle other requests.
   * @var array $routes allowed routes
   */
  'routes' => [
-     'web' => [
-         'get' => [
-             '/api/health-check' => 'HealthCheck::index'
-         ],
-         'post' => [
-             '/api/whitelist' => 'Whitelist::update'
-         ]
-     ]
+    'web' => [
+    
+        // simple route
+        'GET /' => 'Home::index',
+        
+        // grouped routes
+        '/api' => [
+            'GET /health-check' => 'HealthCheck::index',
+            'POST /whitelist' => 'Whitelist::update',
+        ],
+        
+        // routes with params
+        '/posts/{postId}/comments' => 'Posts::viewComments',
+    ]
  ],
 ```
 
@@ -362,7 +366,7 @@ public function __invoke(): void
         response()->setStatusCode(401)->end();
     }
 
-    $secret = getenv('ADMIN_API_KEY');
+    $secret = env('ADMIN_API_KEY');
     if (!hash_equals($secret, $apiKey)) {
         response()->setStatusCode(401)->end();
     }
@@ -397,6 +401,20 @@ if (($weatherData = cache()->get($cacheKey))) {
 $weatherData = []; // get data from API
 
 cache()->remember($cacheKey, $weatherData);
+response()->json($weatherData);
+```
+
+Cache with expiration date (example: 1 hour):
+
+```php
+$cacheKey = request()->fingerprint();
+if (($weatherData = cache()->get($cacheKey))) {
+    response()->json($weatherData);
+}
+
+$weatherData = []; // get data from API
+
+cache()->remember($cacheKey, $weatherData, 'PT1H');
 response()->json($weatherData);
 ```
 
