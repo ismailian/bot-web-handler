@@ -12,11 +12,15 @@ namespace TeleBot\System\Telegram\Types;
 
 use DateTime;
 use Exception;
+use ReflectionClass;
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
 
 class Event
 {
 
     /** @var string update id */
+    #[MapProp('update_id')]
     public string $id;
 
     /** @var DateTime|null $date update date */
@@ -29,69 +33,91 @@ class Event
     public ?User $from = null;
 
     /** @var IncomingMessage|null $message message update */
+    #[MapProp('message', IncomingMessage::class)]
     public ?IncomingMessage $message = null;
 
     /** @var IncomingMessage|null $editedMessage edited message update */
+    #[MapProp('edited_message', IncomingMessage::class)]
     public ?IncomingMessage $editedMessage = null;
 
     /** @var IncomingCallbackQuery|null $callbackQuery callback query update */
+    #[MapProp('callback_query', IncomingCallbackQuery::class)]
     public ?IncomingCallbackQuery $callbackQuery = null;
 
     /** @var IncomingInlineQuery|null $inlineQuery inline query update */
+    #[MapProp('inline_query', IncomingInlineQuery::class)]
     public ?IncomingInlineQuery $inlineQuery = null;
 
     /** @var IncomingChosenInlineResult|null $chosenInlineQuery chosen inline query update */
+    #[MapProp('chosen_inline_result', IncomingChosenInlineResult::class)]
     public ?IncomingChosenInlineResult $chosenInlineQuery = null;
 
     /** @var IncomingChatMember|null $myChatMember my chat member update */
+    #[MapProp('my_chat_member', IncomingChatMember::class)]
     public ?IncomingChatMember $myChatMember = null;
 
     /** @var IncomingChatMember|null $chatMember chat member update */
+    #[MapProp('chat_member', IncomingChatMember::class)]
     public ?IncomingChatMember $chatMember = null;
 
     /** @var IncomingPreCheckoutQuery|null $preCheckoutQuery pre checkout query */
+    #[MapProp('pre_checkout_query', IncomingPreCheckoutQuery::class)]
     public ?IncomingPreCheckoutQuery $preCheckoutQuery = null;
 
     /** @var IncomingShippingQuery|null $shippingQuery shipping query */
+    #[MapProp('shipping_query', IncomingShippingQuery::class)]
     public ?IncomingShippingQuery $shippingQuery = null;
 
     /** @var IncomingMessage|null $channelPost channel post update */
+    #[MapProp('channel_post', IncomingMessage::class)]
     public ?IncomingMessage $channelPost = null;
 
     /** @var IncomingMessage|null $editedChannelPost edited channel post update */
+    #[MapProp('edited_channel_post', IncomingMessage::class)]
     public ?IncomingMessage $editedChannelPost = null;
 
     /** @var IncomingBusinessConnection|null $businessConnection business connection update */
+    #[MapProp('business_connection', IncomingBusinessConnection::class)]
     public ?IncomingBusinessConnection $businessConnection = null;
 
     /** @var IncomingMessage|null $businessMessage business message update */
+    #[MapProp('business_message', IncomingMessage::class)]
     public ?IncomingMessage $businessMessage = null;
 
     /** @var IncomingMessage|null $editedBusinessMessage edited business message update */
+    #[MapProp('edited_business_message', IncomingMessage::class)]
     public ?IncomingMessage $editedBusinessMessage = null;
 
     /** @var IncomingBusinessMessagesDeleted|null $deletedBusinessMessages deleted business message update */
+    #[MapProp('deleted_business_messages', IncomingBusinessMessagesDeleted::class)]
     public ?IncomingBusinessMessagesDeleted $deletedBusinessMessages = null;
 
     /** @var IncomingMessageReactionUpdated|null $messageReaction message reaction update */
+    #[MapProp('message_reaction', IncomingMessageReactionUpdated::class)]
     public ?IncomingMessageReactionUpdated $messageReaction = null;
 
     /** @var IncomingMessageReactionCountUpdated|null $messageReactionCount message reaction count update */
+    #[MapProp('message_reaction_count', IncomingMessageReactionCountUpdated::class)]
     public ?IncomingMessageReactionCountUpdated $messageReactionCount = null;
 
     /** @var IncomingPoll|null $poll poll update */
+    #[MapProp('poll', IncomingPoll::class)]
     public ?IncomingPoll $poll = null;
 
     /** @var IncomingPollAnswer|null $pollAnswer poll answer update */
+    #[MapProp('poll_answer', IncomingPollAnswer::class)]
     public ?IncomingPollAnswer $pollAnswer = null;
 
     /** @var IncomingChatJoinRequest|null $chatJoinRequest chat join request update */
+    #[MapProp('chat_join_request', IncomingChatJoinRequest::class)]
     public ?IncomingChatJoinRequest $chatJoinRequest = null;
 
     /** @var IncomingChatBoostUpdated|null $chatBoost chat boost update */
+    #[MapProp('chat_boost', IncomingChatBoostUpdated::class)]
     public ?IncomingChatBoostUpdated $chatBoost = null;
 
     /** @var IncomingChatBoostRemoved|null $removedChatBoost chat boost removed update */
+    #[MapProp('removed_chat_boost', IncomingChatBoostRemoved::class)]
     public ?IncomingChatBoostRemoved $removedChatBoost = null;
 
     /**
@@ -102,146 +128,29 @@ class Event
      */
     public function __construct(protected readonly array $event)
     {
-        $this->id = $this->event['update_id'];
-
-        /**
-         * <Message>
-         * <EditedMessage>
-         * <ChannelPost>
-         * <EditedChannelPost>
-         * <BusinessMessage>
-         * <EditedBusinessMessage>
-         */
-        $messages = [
-            'message', 'edited_message',
-            'channel_post', 'edited_channel_post',
-            'business_message', 'edited_business_message',
-        ];
-        if (!empty($result = array_intersect($messages, array_keys($this->event)))) {
-            $result = array_values($result);
-            $update = new IncomingMessage($this->event[$result[0]]);
-            switch ($result[0]) {
-                case 'message': $this->message = $update; break;
-                case 'edited_message': $this->editedMessage = $update; break;
-                case 'channel_post': $this->channelPost = $update; break;
-                case 'edited_channel_post': $this->editedChannelPost = $update; break;
-                case 'business_message': $this->businessMessage = $update; break;
-                case 'edited_business_message': $this->editedBusinessMessage = $update; break;
-            }
-
-            $this->setProps($update);
-        }
-
-        /** <CallbackQuery> */
-        if (array_key_exists('callback_query', $this->event)) {
-            $this->callbackQuery = new IncomingCallbackQuery($this->event['callback_query']);
-            $this->setProps($this->callbackQuery);
-        }
-
-        /** <InlineQuery> */
-        if (array_key_exists('inline_query', $this->event)) {
-            $this->inlineQuery = new IncomingInlineQuery($this->event['inline_query']);
-            $this->setProps($this->inlineQuery);
-        }
-
-        /** <ChosenInlineResult> */
-        if (array_key_exists('chosen_inline_result', $this->event)) {
-            $this->chosenInlineQuery = new IncomingChosenInlineResult($this->event['chosen_inline_result']);
-            $this->setProps($this->chosenInlineQuery);
-        }
-
-        /**
-         * <ChatMember>
-         * <MyChatMember>
-         */
-        if (!empty($result = array_intersect(['chat_member', 'my_chat_member'], array_keys($this->event)))) {
-            $result = array_values($result);
-            $update = new IncomingChatMember($this->event[$result[0]]);
-            switch ($result[0]) {
-                case 'chat_member': $this->chatMember = $update; break;
-                case 'my_chat_member': $this->myChatMember = $update; break;
-            }
-
-            $this->setProps($update);
-        }
-
-        /** <PreCheckoutQuery> */
-        if (array_key_exists('pre_checkout_query', $this->event)) {
-            $this->preCheckoutQuery = new IncomingPreCheckoutQuery($this->event['pre_checkout_query']);
-            $this->setProps($this->preCheckoutQuery);
-        }
-
-        /** <BusinessConnection> */
-        if (array_key_exists('business_connection', $this->event)) {
-            $this->businessConnection = new IncomingBusinessConnection($this->event['business_connection']);
-            $this->setProps($this->businessConnection);
-        }
-
-        /** <ShippingQuery> */
-        if (array_key_exists('shipping_query', $this->event)) {
-            $this->shippingQuery = new IncomingShippingQuery($this->event['shipping_query']);
-            $this->setProps($this->shippingQuery);
-        }
-
-        /** <Poll> */
-        if (array_key_exists('poll', $this->event)) {
-            $this->poll = new IncomingPoll($this->event['poll']);
-            $this->setProps($this->poll);
-        }
-
-        /** <PollAnswer> */
-        if (array_key_exists('poll_answer', $this->event)) {
-            $this->pollAnswer = new IncomingPollAnswer($this->event['poll_answer']);
-            $this->setProps($this->pollAnswer);
-        }
-
-        /** <ChatJoinRequest> */
-        if (array_key_exists('chat_join_request', $this->event)) {
-            $this->chatJoinRequest = new IncomingChatJoinRequest($this->event['chat_join_request']);
-            $this->setProps($this->chatJoinRequest);
-        }
-
-        /** <ChatBoost> */
-        if (array_key_exists('chat_boost', $this->event)) {
-            $this->chatBoost = new IncomingChatBoostUpdated($this->event['chat_boost']);
-            $this->setProps($this->chatBoost);
-        }
-
-        /** <RemovedChatBoost> */
-        if (array_key_exists('removed_chat_boost', $this->event)) {
-            $this->removedChatBoost = new IncomingChatBoostRemoved($this->event['removed_chat_boost']);
-            $this->setProps($this->removedChatBoost);
-        }
-
-        /** <MessageReaction> */
-        if (array_key_exists('message_reaction', $this->event)) {
-            $this->messageReaction = new IncomingMessageReactionUpdated($this->event['message_reaction']);
-            $this->setProps($this->messageReaction);
-        }
-
-        /** <MessageReactionCount> */
-        if (array_key_exists('message_reaction_count', $this->event)) {
-            $this->messageReactionCount = new IncomingMessageReactionCountUpdated($this->event['message_reaction_count']);
-            $this->setProps($this->messageReactionCount);
-        }
-
-        /** <DeletedBusinessMessage> */
-        if (array_key_exists('deleted_business_messages', $this->event)) {
-            $this->deletedBusinessMessages = new IncomingBusinessMessagesDeleted($this->event['deleted_business_messages']);
-            $this->setProps($this->deletedBusinessMessages);
-        }
+        Hydrator::hydrate($this, $event);
+        $this->setProps();
     }
 
     /**
      * set Chat and From values
      *
-     * @param mixed $update
      * @return void
      */
-    protected function setProps(mixed $update): void
+    protected function setProps(): void
     {
-        $this->date = $update->date ?? null;
-        $this->from = $update?->from ?? null;
-        $this->chat = $update?->chat ?? null;
+        $skipProps = ['id', 'date'];
+        $refClass = new ReflectionClass($this);
+        foreach ($refClass->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+            if ($property->isInitialized($this)
+                && $property->getValue($this) !== null
+                && !in_array($property->getName(), $skipProps)
+            ) {
+                $this->date = $property->getValue($this)->date ?? null;
+                $this->from = $property->getValue($this)->from ?? null;
+                $this->chat = $property->getValue($this)->chat ?? null;
+                break;
+            }
+        }
     }
 }
