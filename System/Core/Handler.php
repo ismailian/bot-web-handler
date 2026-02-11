@@ -11,11 +11,11 @@
 namespace TeleBot\System\Core;
 
 use Exception;
-use ReflectionException;
 use ReflectionMethod;
-use TeleBot\System\Core\Attributes\Delegate;
+use ReflectionException;
 use TeleBot\System\IncomingEvent;
 use TeleBot\System\Telegram\Types\Event;
+use TeleBot\System\Core\Attributes\Delegate;
 
 class Handler
 {
@@ -49,12 +49,15 @@ class Handler
      * @param mixed $args
      * @return $this
      */
-    public function assign(mixed $instance, string $method, mixed $args): self
+    public function assign(mixed $instance, string $method, mixed $args = null): self
     {
         $this->instance = $instance;
         $this->method = $method;
-        $this->args = $args;
         $this->instance->config = $this->config;
+
+        if (!empty($args) && !is_array($args)) {
+            $this->args = [$args];
+        }
 
         return $this;
     }
