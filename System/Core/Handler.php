@@ -53,10 +53,11 @@ class Handler
     {
         $this->instance = $instance;
         $this->method = $method;
+        $this->args = $args;
         $this->instance->config = $this->config;
 
-        if (!empty($args) && !is_array($args)) {
-            $this->args = [$args];
+        if (!empty($this->args) && !is_array($this->args)) {
+            $this->args = [$this->args];
         }
 
         return $this;
