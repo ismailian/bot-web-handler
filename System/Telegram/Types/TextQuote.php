@@ -18,8 +18,8 @@ class TextQuote
      */
     public string $text;
 
-    /** @var MessageEntity[]|null $entities text entities */
-    public ?array $entities = null;
+    /** @var MessageEntities|null $entities text entities */
+    public ?MessageEntities $entities = null;
 
     /** @var int $position
      * Approximate quote position in the original message in UTF-16 code units as specified by the sender
@@ -36,16 +36,13 @@ class TextQuote
      *
      * @param array $textQuote
      */
-    public function __construct(protected readonly array $textQuote)
+    public function __construct(array $textQuote)
     {
-        $this->text = $this->textQuote['text'];
-        $this->position = $this->textQuote['position'];
-        $this->isManual = $this->textQuote['is_manual'] ?? null;
-        if (array_key_exists('entities', $this->textQuote)) {
-            $this->entities = array_map(
-                fn($entity) => new MessageEntity($this->text, $entity),
-                $this->textQuote['entities']
-            );
+        $this->text = $textQuote['text'];
+        $this->position = $textQuote['position'];
+        $this->isManual = $textQuote['is_manual'] ?? null;
+        if (array_key_exists('entities', $textQuote)) {
+            $this->entities = new MessageEntities($textQuote);
         }
     }
 
