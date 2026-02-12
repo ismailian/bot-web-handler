@@ -126,7 +126,7 @@ class Event
      * @param array $event
      * @throws Exception
      */
-    public function __construct(protected readonly array $event)
+    public function __construct(array $event)
     {
         Hydrator::hydrate($this, $event);
         $this->setProps();
