@@ -23,12 +23,13 @@ class MessageEntities implements \IteratorAggregate
      * default constructor
      *
      * @param array $message
+     * @param string $entitiesKey
      */
-    public function __construct(array $message)
+    public function __construct(array $message, string $entitiesKey = 'entities')
     {
         $this->entities = array_map(
             fn($e) => new MessageEntity($message['text'], ...$e),
-            $message['entities']
+            $message[$entitiesKey]
         );
     }
 
