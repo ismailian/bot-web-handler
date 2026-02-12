@@ -19,14 +19,16 @@ class MapProp
      *
      * @param string $key property name
      * @param string|null $type class to map to
-     * @param bool $isArray Whether it's an array of objects
-     * @param bool $asDateTime
+     * @param bool $isArray whether it's an array of objects
+     * @param bool $asDateTime convert value to DateTime object
+     * @param bool $asEnum convert value to enum
      */
     public function __construct(
         public string  $key,
         public ?string $type = null,
         public bool    $isArray = false,
-        public bool    $asDateTime = false
+        public bool    $asDateTime = false,
+        public bool    $asEnum = false,
     )
     {
         $this->source = $key;

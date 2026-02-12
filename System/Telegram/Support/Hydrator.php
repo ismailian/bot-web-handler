@@ -61,6 +61,10 @@ class Hydrator
             $value = new \DateTime()->setTimestamp($value);
         }
 
+        if ($map->asEnum && enum_exists($map->type)) {
+            $value = $map->type::tryFrom($value);
+        }
+
         if ($map->isArray && $map->type && is_array($value)) {
             $value = array_map(
                 fn($item) => new $map->type($item),
