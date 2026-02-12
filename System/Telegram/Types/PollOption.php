@@ -10,27 +10,33 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
+
 class PollOption
 {
 
     /** @var string $text option text */
+    #[MapProp('text')]
     public string $text;
 
-    /** @var MessageEntity[]|null $textEntities special entities in the text */
-    public ?array $textEntities = null;
+    /** @var MessageEntities|null $textEntities special entities in the text */
+    public ?MessageEntities $textEntities = null;
 
     /** @var int $voterCount number of votes */
+    #[MapProp('voter_count')]
     public int $voterCount;
 
-    public function __construct(protected readonly array $pollOption)
+    /**
+     * Default constructor
+     *
+     * @param array $pollOption
+     */
+    public function __construct(array $pollOption)
     {
-        $this->text = $this->pollOption['text'];
-        $this->voterCount = $this->pollOption['voter_count'];
-        if (!empty($pollOption['text_entities'])) {
-            $this->textEntities = array_map(
-                fn($e) => new MessageEntity($this->text, $e),
-                $this->pollOption['text_entities']
-            );
+        Hydrator::hydrate($this, $pollOption);
+        if (array_key_exists('text_entities', $pollOption)) {
+            $this->textEntities = new MessageEntities($pollOption, 'text_entities');
         }
     }
 
