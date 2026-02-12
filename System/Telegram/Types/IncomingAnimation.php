@@ -10,25 +10,34 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
+
 class IncomingAnimation extends File
 {
 
     /** @var int $width video width */
+    #[MapProp('width')]
     public int $width;
 
     /** @var int $height video height */
+    #[MapProp('height')]
     public int $height;
 
     /** @var int $duration video duration */
+    #[MapProp('duration')]
     public int $duration;
 
     /** @var PhotoSize|null $thumbnail animation thumbnail */
+    #[MapProp('thumbnail', PhotoSize::class)]
     public ?PhotoSize $thumbnail = null;
 
     /** @var string|null $fileName animation file name */
+    #[MapProp('file_name')]
     public ?string $fileName;
 
     /** @var string|null $mimeType file mime type */
+    #[MapProp('mime_type')]
     public ?string $mimeType = null;
 
     /**
@@ -36,29 +45,9 @@ class IncomingAnimation extends File
      *
      * @param array $incomingAnimation
      */
-    public function __construct(protected readonly array $incomingAnimation)
+    public function __construct(array $incomingAnimation)
     {
-        $this->fileId = $this->incomingAnimation['file_id'];
-        $this->fileUniqueId = $this->incomingAnimation['file_unique_id'];
-        $this->duration = $this->incomingAnimation['duration'];
-        $this->width = $this->incomingAnimation['width'];
-        $this->height = $this->incomingAnimation['height'];
-
-        if (array_key_exists('file_name', $this->incomingAnimation)) {
-            $this->fileName = $this->incomingAnimation['file_name'];
-        }
-
-        if (array_key_exists('file_size', $this->incomingAnimation)) {
-            $this->fileSize = $this->incomingAnimation['file_size'];
-        }
-
-        if (array_key_exists('mime_type', $this->incomingAnimation)) {
-            $this->mimeType = $this->incomingAnimation['mime_type'];
-        }
-
-        if (array_key_exists('thumbnail', $this->incomingAnimation)) {
-            $this->thumbnail = new PhotoSize($this->incomingAnimation['thumbnail']);
-        }
+        Hydrator::hydrate($this, $incomingAnimation);
     }
 
 }

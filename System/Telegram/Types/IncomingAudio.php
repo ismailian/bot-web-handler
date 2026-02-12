@@ -10,25 +10,34 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
+
 class IncomingAudio extends File
 {
 
     /** @var int $duration audio duration */
+    #[MapProp('duration')]
     public int $duration;
 
     /** @var string|null $performer audio performer */
+    #[MapProp('performer')]
     public ?string $performer = null;
 
     /** @var string|null $title audio title */
+    #[MapProp('title')]
     public ?string $title = null;
 
     /** @var string|null $fileName audio file name */
+    #[MapProp('file_name')]
     public ?string $fileName = null;
 
     /** @var string|null $mimeType mime type */
+    #[MapProp('mime_type')]
     public ?string $mimeType = null;
 
     /** @var PhotoSize|null $thumbnail audio thumbnail */
+    #[MapProp('thumbnail', PhotoSize::class)]
     public ?PhotoSize $thumbnail = null;
 
     /**
@@ -36,35 +45,9 @@ class IncomingAudio extends File
      *
      * @param array $incomingAudio
      */
-    public function __construct(protected readonly array $incomingAudio)
+    public function __construct(array $incomingAudio)
     {
-        $this->fileId = $this->incomingAudio['file_id'];
-        $this->fileUniqueId = $this->incomingAudio['file_unique_id'];
-        $this->duration = $this->incomingAudio['duration'];
-
-        if (array_key_exists('performer', $this->incomingAudio)) {
-            $this->performer = $this->incomingAudio['performer'];
-        }
-
-        if (array_key_exists('title', $this->incomingAudio)) {
-            $this->title = $this->incomingAudio['title'];
-        }
-
-        if (array_key_exists('file_name', $this->incomingAudio)) {
-            $this->fileName = $this->incomingAudio['file_name'];
-        }
-
-        if (array_key_exists('mime_type', $this->incomingAudio)) {
-            $this->mimeType = $this->incomingAudio['mime_type'];
-        }
-
-        if (array_key_exists('file_size', $this->incomingAudio)) {
-            $this->fileSize = $this->incomingAudio['file_size'];
-        }
-
-        if (array_key_exists('thumbnail', $this->incomingAudio)) {
-            $this->thumbnail = new PhotoSize($this->incomingAudio['thumbnail']);
-        }
+        Hydrator::hydrate($this, $incomingAudio);
     }
 
 }

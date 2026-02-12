@@ -10,16 +10,22 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
+
 class IncomingVideoNote extends File
 {
 
     /** @var int $length video width and height */
+    #[MapProp('length')]
     public int $length;
 
     /** @var int $duration video duration */
+    #[MapProp('duration')]
     public int $duration;
 
     /** @var PhotoSize|null $thumbnail video thumbnail */
+    #[MapProp('thumbnail', PhotoSize::class)]
     public ?PhotoSize $thumbnail = null;
 
     /**
@@ -29,18 +35,7 @@ class IncomingVideoNote extends File
      */
     public function __construct(protected readonly array $incomingVideoNote)
     {
-        $this->fileId = $this->incomingVideoNote['file_id'];
-        $this->fileUniqueId = $this->incomingVideoNote['file_unique_id'];
-        $this->length = $this->incomingVideoNote['length'];
-        $this->duration = $this->incomingVideoNote['duration'];
-
-        if (array_key_exists('thumbnail', $this->incomingVideoNote)) {
-            $this->thumbnail = new PhotoSize($this->incomingVideoNote['thumbnail']);
-        }
-
-        if (array_key_exists('file_size', $this->incomingVideoNote)) {
-            $this->fileSize = $this->incomingVideoNote['file_size'];
-        }
+        Hydrator::hydrate($this, $incomingVideoNote);
     }
 
 }

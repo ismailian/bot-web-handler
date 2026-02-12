@@ -10,13 +10,18 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
+
 class IncomingVoice extends File
 {
 
     /** @var int $duration audio duration */
+    #[MapProp('duration')]
     public int $duration;
 
     /** @var string|null $mimeType mime type */
+    #[MapProp('mime_type')]
     public ?string $mimeType = null;
 
     /**
@@ -26,16 +31,6 @@ class IncomingVoice extends File
      */
     public function __construct(protected readonly array $incomingVoice)
     {
-        $this->fileId = $this->incomingVoice['file_id'];
-        $this->fileUniqueId = $this->incomingVoice['file_unique_id'];
-        $this->duration = $this->incomingVoice['duration'];
-
-        if (array_key_exists('mime_type', $this->incomingVoice)) {
-            $this->mimeType = $this->incomingVoice['mime_type'];
-        }
-
-        if (array_key_exists('file_size', $this->incomingVoice)) {
-            $this->fileSize = $this->incomingVoice['file_size'];
-        }
+        Hydrator::hydrate($this, $incomingVoice);
     }
 }

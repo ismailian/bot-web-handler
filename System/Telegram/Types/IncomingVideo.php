@@ -10,25 +10,34 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
+
 class IncomingVideo extends File
 {
 
     /** @var int $width video width */
+    #[MapProp('width')]
     public int $width;
 
     /** @var int $height video height */
+    #[MapProp('height')]
     public int $height;
 
     /** @var int $duration video duration */
+    #[MapProp('duration')]
     public int $duration;
 
     /** @var PhotoSize|null $thumbnail */
+    #[MapProp('thumbnail', PhotoSize::class)]
     public ?PhotoSize $thumbnail = null;
 
     /** @var string|null $fileName */
+    #[MapProp('file_name')]
     public ?string $fileName = null;
 
     /** @var string|null $mimeType video mime type */
+    #[MapProp('mime_type')]
     public ?string $mimeType = null;
 
     /**
@@ -36,29 +45,9 @@ class IncomingVideo extends File
      *
      * @param array $incomingVideo
      */
-    public function __construct(protected readonly array $incomingVideo)
+    public function __construct(array $incomingVideo)
     {
-        $this->fileId = $this->incomingVideo['file_id'];
-        $this->fileUniqueId = $this->incomingVideo['file_unique_id'];
-        $this->width = $this->incomingVideo['width'];
-        $this->height = $this->incomingVideo['height'];
-        $this->duration = $this->incomingVideo['duration'];
-
-        if (array_key_exists('thumbnail', $this->incomingVideo)) {
-            $this->thumbnail = new PhotoSize($this->incomingVideo['thumbnail']);
-        }
-
-        if (array_key_exists('file_name', $this->incomingVideo)) {
-            $this->fileName = $this->incomingVideo['file_name'];
-        }
-
-        if (array_key_exists('mime_type', $this->incomingVideo)) {
-            $this->mimeType = $this->incomingVideo['mime_type'];
-        }
-
-        if (array_key_exists('file_size', $this->incomingVideo)) {
-            $this->fileSize = $this->incomingVideo['file_size'];
-        }
+        Hydrator::hydrate($this, $incomingVideo);
     }
 
 }

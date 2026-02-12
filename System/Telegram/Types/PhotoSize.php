@@ -10,13 +10,18 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
+
 class PhotoSize extends File
 {
 
     /** @var int $width photo width */
+    #[MapProp('width')]
     public int $width;
 
     /** @var int $height photo height */
+    #[MapProp('height')]
     public int $height;
 
     /**
@@ -24,16 +29,9 @@ class PhotoSize extends File
      *
      * @param array $photoSize
      */
-    public function __construct(protected readonly array $photoSize)
+    public function __construct(array $photoSize)
     {
-        $this->fileId = $this->photoSize['file_id'];
-        $this->fileUniqueId = $this->photoSize['file_unique_id'];
-        $this->width = $this->photoSize['width'];
-        $this->height = $this->photoSize['height'];
-
-        if (array_key_exists('file_size', $this->photoSize)) {
-            $this->fileSize = $this->photoSize['file_size'];
-        }
+        Hydrator::hydrate($this, $photoSize);
     }
 
 }

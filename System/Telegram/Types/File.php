@@ -10,6 +10,7 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
 use TeleBot\System\Telegram\Traits\Downloadable;
 
 class File
@@ -18,15 +19,19 @@ class File
     use Downloadable;
 
     /** @var string $fileId file id */
+    #[MapProp('file_id')]
     public string $fileId;
 
     /** @var string $fileUniqueId unique file id */
+    #[MapProp('file_unique_id')]
     public string $fileUniqueId;
 
     /** @var float|null $fileSize */
+    #[MapProp('file_size')]
     public ?float $fileSize = null;
 
     /** @var string|null $filePath file path */
+    #[MapProp('file_path')]
     public ?string $filePath = null;
 
     /**

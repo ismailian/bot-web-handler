@@ -10,16 +10,22 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
+
 class IncomingDocument extends File
 {
 
     /** @var string|null $fileName file name */
+    #[MapProp('file_name')]
     public ?string $fileName = null;
 
     /** @var string|null $mimeType mime type */
+    #[MapProp('mime_type')]
     public ?string $mimeType = null;
 
     /** @var PhotoSize|null $thumbnail file thumbnail */
+    #[MapProp('thumbnail', PhotoSize::class)]
     public ?PhotoSize $thumbnail = null;
 
     /**
@@ -27,26 +33,9 @@ class IncomingDocument extends File
      *
      * @param array $incomingDocument
      */
-    public function __construct(protected readonly array $incomingDocument)
+    public function __construct(array $incomingDocument)
     {
-        $this->fileId = $this->incomingDocument['file_id'];
-        $this->fileUniqueId = $this->incomingDocument['file_unique_id'];
-
-        if (array_key_exists('file_name', $this->incomingDocument)) {
-            $this->fileName = $this->incomingDocument['file_name'];
-        }
-
-        if (array_key_exists('mime_type', $this->incomingDocument)) {
-            $this->mimeType = $this->incomingDocument['mime_type'];
-        }
-
-        if (array_key_exists('file_size', $this->incomingDocument)) {
-            $this->fileSize = $this->incomingDocument['file_size'];
-        }
-
-        if (array_key_exists('thumbnail', $this->incomingDocument)) {
-            $this->thumbnail = new PhotoSize($this->incomingDocument['thumbnail']);
-        }
+        Hydrator::hydrate($this, $incomingDocument);
     }
 
 }

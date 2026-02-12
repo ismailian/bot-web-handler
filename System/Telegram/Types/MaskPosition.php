@@ -10,19 +10,26 @@
 
 namespace TeleBot\System\Telegram\Types;
 
+use TeleBot\System\Telegram\Traits\MapProp;
+use TeleBot\System\Telegram\Support\Hydrator;
+
 class MaskPosition
 {
 
     /** @var string $point the face part to which the mask should be place */
+    #[MapProp('point')]
     public string $point;
 
     /** @var float $xShift X-Axis */
+    #[MapProp('x_shift')]
     public float $xShift;
 
     /** @var float $yShift Y-Axis */
+    #[MapProp('y_shift')]
     public float $yShift;
 
     /** @var float $scale mask scaling coefficient */
+    #[MapProp('scale')]
     public float $scale;
 
     /**
@@ -30,12 +37,9 @@ class MaskPosition
      *
      * @param array $maskPosition
      */
-    public function __construct(protected readonly array $maskPosition)
+    public function __construct(array $maskPosition)
     {
-        $this->point = $this->maskPosition['point'];
-        $this->point = $this->maskPosition['x_shift'];
-        $this->point = $this->maskPosition['y_shift'];
-        $this->scale = $this->maskPosition['scale'];
+        Hydrator::hydrate($this, $maskPosition);
     }
 
 }
