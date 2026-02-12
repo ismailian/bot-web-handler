@@ -170,11 +170,7 @@ if (!function_exists('http')) {
      */
     function http(array $config = []): Client
     {
-        static $http = null;
-        if ($http === null) {
-            $http = new Client($config);
-        }
-        return $http;
+        return new Client($config);
     }
 }
 
