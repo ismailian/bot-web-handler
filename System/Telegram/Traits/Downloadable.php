@@ -75,7 +75,7 @@ trait Downloadable
     private function api(): Client
     {
         if (empty(self::$client)) {
-            self::$client = new Client([
+            self::$client = http([
                 'base_uri' => 'https://api.telegram.org'
             ]);
         }
