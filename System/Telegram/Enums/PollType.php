@@ -10,8 +10,8 @@
 
 namespace TeleBot\System\Telegram\Enums;
 
-enum PollType
+enum PollType: string
 {
-    case REGULAR;
-    case QUIZ;
+    case REGULAR = 'regular';
+    case QUIZ = 'quiz';
 }
