@@ -22,7 +22,7 @@ class IncomingCommand extends MessageEntity
      */
     public function __construct(string $text, array $entity, public array $args = [])
     {
-        parent::__construct($text, $entity);
+        parent::__construct($text, ...$entity);
 
         $argKeys = $this->args;
         $argValues = str_replace($this->getCommand(), '', $this->text);
@@ -48,11 +48,11 @@ class IncomingCommand extends MessageEntity
     {
         if (empty($this->text)) return null;
 
-        $command = substr($this->text, $this->entity['offset'], $this->entity['length']);
+        $command = substr($this->text, $this->offset, $this->length);
         $encoding = mb_detect_encoding($this->text);
         if ($encoding !== 'ASCII') {
             $text = mb_convert_encoding($this->text, 'UTF-16', $encoding);
-            $command = substr($text, $this->entity['offset'] * 2, $this->entity['length'] * 2);
+            $command = substr($text, $this->offset * 2, $this->length * 2);
         }
 
         return trim($command);
