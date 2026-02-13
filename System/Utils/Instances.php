@@ -27,7 +27,7 @@ if (!function_exists('config')) {
     {
         static $config = null;
         if ($config === null) {
-            $config = HelperLoader::load('config.php', false);
+            $config = HelperLoader::load('config', false);
         }
         return $key ? dot($key, $config) : $config;
     }
