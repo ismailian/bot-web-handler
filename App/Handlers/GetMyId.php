@@ -4,6 +4,7 @@ namespace TeleBot\App\Handlers;
 
 use TeleBot\System\IncomingEvent;
 use TeleBot\System\Telegram\Filters\Chat;
+use TeleBot\System\Telegram\Enums\ParseMode;
 use TeleBot\System\Telegram\Enums\InlineChatType;
 use TeleBot\System\Telegram\Types\IncomingMessage;
 use TeleBot\System\Telegram\Events\Messages\{Text, Mention};
@@ -23,7 +24,7 @@ class GetMyId extends IncomingEvent
         $reply = "Your user ID: <strong>{$this->event->from->id}</strong>\n";
         $reply .= "Current chat ID: <strong>{$this->event->chat->id}</strong>";
 
-        $this->telegram->sendMessage($reply);
+        $this->telegram->setParseMode(ParseMode::HTML)->sendMessage($reply);
     }
 
     /**
@@ -41,7 +42,7 @@ class GetMyId extends IncomingEvent
         $reply .= "Current chat ID: <strong>{$this->event->chat->id}</strong>";
 
         // we want to reply to the exact message that mentioned the bot
-        $message->reply()->withText($reply);
+        $message->reply()->withMode(ParseMode::HTML)->withText($reply);
     }
 
 }
