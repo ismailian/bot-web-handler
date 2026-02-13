@@ -51,7 +51,7 @@ trait Send
     public function sendPhoto(string $imagePath, ?string $caption = null): IncomingPhoto|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'photo' => getBuffer($imagePath),
+            'photo' => get_buffer($imagePath),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -77,7 +77,7 @@ trait Send
     public function sendVideo(string $videoPath, ?string $caption = null): IncomingVideo|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'video' => getBuffer($videoPath),
+            'video' => get_buffer($videoPath),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -103,7 +103,7 @@ trait Send
     public function sendAudio(string $audioFile, ?string $caption = null): IncomingAudio|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'audio' => getBuffer($audioFile),
+            'audio' => get_buffer($audioFile),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -129,7 +129,7 @@ trait Send
     public function sendAnimation(string $filePath, ?string $caption = null): IncomingAnimation|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'animation' => getBuffer($filePath),
+            'animation' => get_buffer($filePath),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -155,7 +155,7 @@ trait Send
     public function sendDocument(string $fileUrl, ?string $caption = null): IncomingDocument|IncomingMessage|bool
     {
         $data = $this->post(__FUNCTION__, [
-            'document' => getBuffer($fileUrl),
+            'document' => get_buffer($fileUrl),
             'caption' => $caption ?? '',
             ...($this->mode ? ['parse_mode' => $this->mode->value] : []),
         ]);
@@ -203,7 +203,7 @@ trait Send
         $media = [];
         $attachments = [];
         foreach ($files as $index => $file) {
-            $attachments["{$type}_$index"] = getBuffer($file);
+            $attachments["{$type}_$index"] = get_buffer($file);
             $media[] = [
                 'type' => $type,
                 'media' => "attach://{$type}_$index",
