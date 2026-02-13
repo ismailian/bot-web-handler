@@ -77,29 +77,42 @@ if (!function_exists('env')) {
     }
 }
 
-if (!function_exists('isUrl')) {
+if (!function_exists('is_file_id')) {
+    /**
+     * Check if value is a telegram file ID
+     *
+     * @param string $value
+     * @return bool
+     */
+    function is_file_id(string $value): bool
+    {
+        return (bool)preg_match('/^[A-z0-9\-]+$/', $value);
+    }
+}
+
+if (!function_exists('is_url')) {
     /**
      * Check if given input is url
      *
      * @param string $pathOrUrl
      * @return bool
      */
-    function isUrl(string $pathOrUrl): bool
+    function is_url(string $pathOrUrl): bool
     {
         return (bool)filter_var(trim($pathOrUrl), FILTER_VALIDATE_URL);
     }
 }
 
-if (!function_exists('getBuffer')) {
+if (!function_exists('get_buffer')) {
     /**
      * Get file buffer
      *
      * @param string $pathOrUrl
      * @return string
      */
-    function getBuffer(string $pathOrUrl): string
+    function get_buffer(string $pathOrUrl): string
     {
-        return isUrl($pathOrUrl) ? $pathOrUrl : Utils::tryFopen($pathOrUrl, 'r');
+        return is_file_id($pathOrUrl) || is_url($pathOrUrl) ? $pathOrUrl : Utils::tryFopen($pathOrUrl, 'r');
     }
 }
 
