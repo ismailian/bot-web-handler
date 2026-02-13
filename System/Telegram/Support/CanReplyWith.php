@@ -2,6 +2,7 @@
 
 namespace TeleBot\System\Telegram\Support;
 
+use TeleBot\System\Telegram\Enums\ParseMode;
 use TeleBot\System\Telegram\Types\IncomingPhoto;
 use TeleBot\System\Telegram\Types\IncomingAudio;
 use TeleBot\System\Telegram\Types\IncomingVideo;
@@ -20,6 +21,19 @@ class CanReplyWith
         protected int  $id,
         protected ?int $chat_id = null
     ) {}
+
+    /**
+     * Set parse mode
+     *
+     * @param ParseMode $mode parse mode
+     * @return $this
+     */
+    public function withMode(ParseMode $mode): self
+    {
+        bot()->setParseMode($mode);
+
+        return $this;
+    }
 
     /**
      * Reply with a text message

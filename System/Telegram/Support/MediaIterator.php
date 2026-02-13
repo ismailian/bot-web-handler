@@ -2,7 +2,6 @@
 
 namespace TeleBot\System\Telegram\Support;
 
-use Exception;
 use TeleBot\System\Telegram\Enums\PassBy;
 
 trait MediaIterator
