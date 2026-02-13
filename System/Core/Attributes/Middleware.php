@@ -15,24 +15,24 @@ use Attribute;
 #[Attribute(
     Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE
 )]
-readonly class Delegate
+final readonly class Middleware
 {
 
     /**
      * default constructor
      *
-     * @param string $delegateTo
+     * @param string $middleware middleware class
      */
-    public function __construct(protected string $delegateTo) {}
+    public function __construct(protected string $middleware) {}
 
     /**
-     * invoke delegateTo class
+     * invoke middleware class
      *
      * @return void
      */
     public function __invoke(): void
     {
-        new $this->delegateTo()();
+        new $this->middleware()();
     }
 
 }
