@@ -10,7 +10,7 @@
 
 namespace TeleBot\System\Interfaces;
 
-interface IDelegate
+interface IMiddleware
 {
 
     /**
