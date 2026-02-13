@@ -131,14 +131,12 @@ class Bootstrap
         $this->setCors();
         if ($route = router()->matches(self::$config['routes']['web'] ?? [])) {
             if ($handler = Filesystem::getNamespacedFile($route['handler'])) {
-                new Handler()
-                    ->setConfig(self::$config)
-                    ->assign(new $handler,
-                        explode('::', $route['handler'])[1], array_values($route['params'])
-                    )->run();
+                Handler::assign(
+                    new $handler, explode('::', $route['handler'])[1],
+                    array_values($route['params'])
+                );
+                Handler::run();
             }
-
-            // end connection with a status based on whether the handler is properly executed
             response()->setStatusCode(($handler ? 200 : 404))->end();
         }
     }

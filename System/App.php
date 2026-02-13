@@ -11,6 +11,7 @@
 namespace TeleBot\System;
 
 use Exception;
+use TeleBot\System\Core\Handler;
 
 class App extends EventMapper
 {
@@ -24,11 +25,11 @@ class App extends EventMapper
     {
         try {
             if ($this->init()) {
-                $this->handler->run();
+                Handler::run();
                 return;
             }
 
-            $this->handler->fallback();
+            Handler::fallback();
         } catch (Exception $ex) {
             logger()->error($ex->getMessage());
         }

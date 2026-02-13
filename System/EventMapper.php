@@ -10,19 +10,12 @@
 
 namespace TeleBot\System;
 
-use ReflectionClass;
-use ReflectionMethod;
-use ReflectionException;
 use TeleBot\System\Core\Filesystem;
-use TeleBot\System\Core\Attributes\Delegate;
+use ReflectionClass, ReflectionException;
 use TeleBot\System\Core\{Bootstrap, Handler};
-use TeleBot\System\Telegram\Filters\{Awaits, Chat, Only};
 
 class EventMapper
 {
-
-    /** @var Handler $handler */
-    protected Handler $handler;
 
     /**
      * initialize handler
@@ -32,15 +25,13 @@ class EventMapper
     public function init(): bool
     {
         new Bootstrap()->boot();
-        $this->handler = new Handler()->setConfig(Bootstrap::$config);
-
         $handlers = Filesystem::getNamespacedFiles('App/Handlers');
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
             if ($refClass->isSubclassOf(IncomingEvent::class)) {
                 foreach ($refClass->getMethods() as $refMethod) {
                     if (!empty($refMethod->getAttributes())) {
-                        if ($this->runFilters($refMethod) && $this->runEvents($refClass, $refMethod)) {
+                        if (Handler::check($refClass, $refMethod)) {
                             return true;
                         }
                     }
@@ -49,59 +40,6 @@ class EventMapper
         }
 
         return false;
-    }
-
-    /**
-     * evaluate filters
-     *
-     * @param ReflectionMethod $method
-     * @return bool
-     */
-    private function runFilters(ReflectionMethod $method): bool
-    {
-        $filters = [
-            ...$method->getAttributes(Delegate::class),
-            ...$method->getAttributes(Chat::class),
-            ...$method->getAttributes(Only::class),
-            ...$method->getAttributes(Awaits::class),
-        ];
-
-        foreach ($filters as $filter) {
-            if (is_subclass_of($method->class, Delegate::class)) {
-                $filter->newInstance()();
-            } else {
-                if (!($filter->newInstance()->apply(request()->json()))) {
-                    return false;
-                }
-            }
-
-        }
-
-        return true;
-    }
-
-    /**
-     * evaluate events
-     *
-     * @param ReflectionClass $refClass
-     * @param ReflectionMethod $method
-     * @return bool
-     * @throws ReflectionException
-     */
-    private function runEvents(ReflectionClass $refClass, ReflectionMethod $method): bool
-    {
-        $eventResult = null;
-        foreach ($method->getAttributes() as $attr) {
-            if (!str_contains($attr->getName(), 'Filters')) {
-                $eventResult = $attr->newInstance()->apply(request()->json());
-                if (!$eventResult) return false;
-            }
-        }
-
-        return (bool)$this->handler->assign(
-            $refClass->newInstance(),
-            $method->name, $eventResult
-        );
     }
 
 }
