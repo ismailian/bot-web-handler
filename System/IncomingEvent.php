@@ -18,9 +18,6 @@ use TeleBot\System\Exceptions\{InvalidUpdate, InvalidMessage};
 class IncomingEvent
 {
 
-    /** @var array $config */
-    public array $config;
-
     /** @var Event|null $event incoming message event */
     public ?Event $event = null;
 
@@ -29,13 +26,14 @@ class IncomingEvent
 
     /**
      * default constructor
+     *
      * @throws InvalidMessage
      * @throws InvalidUpdate
      * @throws Exception
      */
     public function __construct()
     {
-        $this->event = new Event(request()->json());
+        $this->event = event();
         $this->telegram = bot()->setChatId(
             $this->event->chat?->id ?? $this->event->from->id
         );
