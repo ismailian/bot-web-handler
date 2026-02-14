@@ -21,9 +21,9 @@ if (!function_exists('config')) {
      * get config
      *
      * @param string|null $key
-     * @return array
+     * @return mixed
      */
-    function config(?string $key = null): array
+    function config(?string $key = null): mixed
     {
         static $config = null;
         if ($config === null) {
