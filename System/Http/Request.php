@@ -16,8 +16,11 @@ class Request
     /** @var array $headers request headers */
     protected array $_headers = [];
 
-    /** @var ?array $_json */
-    protected ?array $_json;
+    /** @var array $_json parsed JSON body */
+    protected array $_json = [];
+
+    /** @var string $_rawBody raw request body */
+    protected string $_rawBody = '';
 
     public function __construct()
     {
@@ -25,7 +28,8 @@ class Request
             $this->_headers[trim(strtolower($key))] = $value;
         }
 
-        $this->_json = json_decode(file_get_contents('php://input'), true) ?? [];
+        $this->_rawBody = file_get_contents('php://input') ?: '';
+        $this->_json = json_decode($this->_rawBody, true) ?? [];
     }
 
     /**
@@ -40,27 +44,62 @@ class Request
     }
 
     /**
-     * return request headers
+     * Return request headers
      *
-     * @return array|string|null
+     * @return array
      */
-    public function headers(): array|string|null
+    public function headers(): array
     {
         return $this->_headers;
     }
 
     /**
-     * get source IP address
+     * Get source IP address.
      *
+     * By default, returns the direct connection IP (REMOTE_ADDR).
+     *
+     * Pass $trustProxy = true only if Nginx is explicitly configured to set
+     * one of the proxy headers below (e.g. via proxy_set_header). Without
+     * that Nginx config in place, these headers can be freely forged by the
+     * client and MUST NOT be trusted.
+     *
+     * Headers are checked in priority order:
+     *   1. CF-Connecting-IP  (Cloudflare)
+     *   2. X-Real-IP         (Nginx)
+     *   3. X-Forwarded-For   (standard; leftmost IP is used)
+     *   4. REMOTE_ADDR       (fallback)
+     *
+     * @param bool $trustProxy
      * @return string
      */
-    public function ip(): string
+    public function ip(bool $trustProxy = false): string
     {
+        if ($trustProxy) {
+            if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+                return trim($_SERVER['HTTP_CF_CONNECTING_IP']);
+            }
+
+            if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
+                return trim($_SERVER['HTTP_X_REAL_IP']);
+            }
+
+            if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                // X-Forwarded-For may contain a comma-separated chain; take the leftmost entry,
+                // which is the original client IP as reported by the first proxy in the chain.
+                // Only use this when you are certain Nginx is setting this header server-side.
+                $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $ip  = trim($ips[0]);
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+
         return $_SERVER['REMOTE_ADDR'];
     }
 
     /**
-     * get host name
+     * Get host name
      *
      * @return string|null
      */
@@ -70,7 +109,11 @@ class Request
     }
 
     /**
-     * get
+     * Get request URI (without query string).
+     *
+     * Uses REDIRECT_URL when available (Apache mod_rewrite),
+     * otherwise falls back to REQUEST_URI and strips the query string.
+     *
      * @return string
      */
     public function uri(): string
@@ -79,10 +122,6 @@ class Request
             return $_SERVER['REDIRECT_URL'];
         }
 
-        /**
-         * most likely nginx
-         * must remove the query string from the uri
-         */
         $requestUri = $_SERVER['REQUEST_URI'];
         if (str_contains($requestUri, '?')) {
             $requestUri = substr($requestUri, 0, strpos($requestUri, '?'));
@@ -92,7 +131,7 @@ class Request
     }
 
     /**
-     * get request method (lowercase)
+     * Get request method (lowercase)
      *
      * @return string
      */
@@ -113,7 +152,7 @@ class Request
     }
 
     /**
-     * get query parameters
+     * Get query parameters
      *
      * @param string|null $key
      * @param bool $raw
@@ -133,16 +172,16 @@ class Request
     }
 
     /**
-     * get form-data body
+     * Get form-data body
      *
      * @param string|null $key
      * @param bool $raw
-     * @return array|string
+     * @return array|string|null
      */
-    public function body(?string $key = null, bool $raw = false): mixed
+    public function body(?string $key = null, bool $raw = false): array|string|null
     {
         if ($raw) {
-            return file_get_contents('php://input');
+            return $this->_rawBody;
         }
 
         if ($key !== null) {
@@ -153,27 +192,27 @@ class Request
     }
 
     /**
-     * get full json or single value
+     * Get full JSON body or a single value by key
      *
      * @param string|null $key
      * @param bool $raw
-     * @return array
+     * @return array|string|null
      */
-    public function json(?string $key = null, bool $raw = false): mixed
+    public function json(?string $key = null, bool $raw = false): array|string|null
     {
-        if ($key !== null) {
-            return $this->_json[$key] ?? null;
+        if ($raw) {
+            return $this->_rawBody;
         }
 
-        if ($raw) {
-            return file_get_contents('php://input');
+        if ($key !== null) {
+            return $this->_json[$key] ?? null;
         }
 
         return $this->_json;
     }
 
     /**
-     * get request fingerprint
+     * Get request fingerprint
      *
      * @param bool $includeBody include body signature in the fingerprint
      * @return string
@@ -195,13 +234,9 @@ class Request
             ksort($body);
             $segments[] = md5(http_build_query($body));
 
-            $json = $this->json();
-            $jsonParams = json_decode($json, true);
-            if (is_array($jsonParams)) {
-                ksort($jsonParams);
-                $json = json_encode($jsonParams);
-            }
-            $segments[] = md5($json);
+            $json = $this->_json;
+            ksort($json);
+            $segments[] = md5(json_encode($json));
         }
 
         return md5(join('|', $segments));

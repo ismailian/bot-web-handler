@@ -15,10 +15,10 @@ class Response
 {
 
     /** @var array $headers response headers */
-    protected static array $headers = [];
+    protected array $headers = [];
 
     /**
-     * set http status code
+     * Set http status code
      *
      * @param int $code
      * @return self
@@ -31,12 +31,12 @@ class Response
     }
 
     /**
-     * send response to client
+     * Send response
      *
      * @param string|array|object|null $data
      * @return void
      */
-    public function send(string|array|object|null $data = null): void
+    public function send(mixed $data = null): void
     {
         if (!empty($data)) {
             if (is_array($data) || is_object($data)) {
@@ -44,25 +44,29 @@ class Response
             }
         }
 
-        die($data ?? "");
+        die($data ?? '');
     }
 
     /**
-     * set downloadable attachment headers
+     * Set downloadable attachment headers.
+     *
+     * The filename is sanitized to prevent header injection via CRLF sequences.
      *
      * @param string $filename
      * @return self
      */
     public function attachment(string $filename): self
     {
-        self::addHeader('Content-Type', 'application/octet-stream');
-        self::addHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        $safe = addslashes(basename(preg_replace('/[\r\n]/', '', $filename)));
+
+        $this->addHeader('Content-Type', 'application/octet-stream');
+        $this->addHeader('Content-Disposition', 'attachment; filename="' . $safe . '"');
 
         return $this;
     }
 
     /**
-     * add http header
+     * Add http header
      *
      * @param string $key
      * @param string $value
@@ -70,7 +74,7 @@ class Response
      */
     public function addHeader(string $key, string $value): self
     {
-        self::$headers[strtolower($key)] = $value;
+        $this->headers[strtolower($key)] = $value;
         header("$key: $value");
 
         return $this;
@@ -84,24 +88,24 @@ class Response
      */
     public function getHeader(string $key): ?string
     {
-        return self::$headers[strtolower($key)] ?? null;
+        return $this->headers[strtolower($key)] ?? null;
     }
 
     /**
-     * send response as json
+     * Send response as JSON
      *
      * @param array $data
      * @return void
      */
     public function json(array $data): void
     {
-        self::addHeader('Content-Type', 'application/json');
+        $this->addHeader('Content-Type', 'application/json');
 
         die(json_encode($data));
     }
 
     /**
-     * terminate process
+     * Terminate the process
      *
      * @return void
      */
@@ -111,9 +115,9 @@ class Response
     }
 
     /**
-     * close connection
+     * Close connection without terminating the process.
      *
-     * Helpful when you need to send a response without terminating the process
+     * Useful when further work needs to happen after the response is sent.
      *
      * @return void
      */
