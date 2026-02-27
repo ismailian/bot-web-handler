@@ -10,6 +10,8 @@
 
 namespace TeleBot\System\Core;
 
+use Closure;
+
 class Router
 {
 
@@ -112,6 +114,24 @@ class Router
     }
 
     /**
+     * Get a clean full route
+     *
+     * @param mixed $route route
+     * @param string $prefix prefix (prepend prefix if available)
+     * @param string $method method (prepend method if available)
+     * @return string
+     */
+    private function getFullRoute(mixed $route, string $prefix = '', string $method = ''): string
+    {
+        $prefix = rtrim($prefix, '/') . '/';
+        if (!empty($method)) {
+            $method .= ' ';
+        }
+
+        return $method . rtrim($prefix . ltrim($route, '/'), '/');
+    }
+
+    /**
      * Get routes map
      *
      * @param array $routes List of routes from router configuration
@@ -132,12 +152,15 @@ class Router
             if ($route === '/' || $route === '') {
                 $fullRoute = $prefix ?: '/';
             } else {
-                $fullRoute = rtrim($prefix . '/' . ltrim($route, '/'), '/');
+                $fullRoute = $this->getFullRoute($route, $prefix);
             }
 
             if (is_array($handler)) {
                 $routeList += $this->getRouteMap($handler, $fullRoute);
             } else {
+                if ($handler instanceof Closure) {
+                    $handler = call_user_func($handler, $this->getFullRoute($fullRoute, method: $method));
+                }
                 $routeList[$fullRoute] = [$method, $handler];
             }
         }

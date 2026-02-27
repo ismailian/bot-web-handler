@@ -112,7 +112,7 @@ class Database
 
         $stmt = $this->db->prepare($sql);
         try {
-            $is_assoc = !(array() === $args) && array_keys($args) !== range(0, count($args) - 1);
+            $is_assoc = array_keys($args) !== range(0, count($args) - 1);
             if ($is_assoc) {
                 foreach ($args as $key => $value) {
                     if (is_int($value)) {

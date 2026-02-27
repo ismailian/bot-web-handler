@@ -35,11 +35,11 @@ class RedisDriver implements ISessionDriver
      */
     public function __construct(string $sessionId)
     {
-        if (empty($token = env('TG_BOT_TOKEN'))) {
+        if (empty($botToken = env('TG_BOT_TOKEN'))) {
             throw new MissingToken;
         }
 
-        $this->prefix = 'tg:bots:' . explode(':', $token)[0];
+        $this->prefix = 'tg:bots:' . explode(':', $botToken, 2)[0];
         $this->sessionId = $sessionId;
         $this->client = new Client([
             'scheme' => 'tcp',
