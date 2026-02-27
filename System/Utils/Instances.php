@@ -12,6 +12,7 @@ use GuzzleHttp\Client;
 use TeleBot\System\Cache\Cache;
 use TeleBot\System\Session\Session;
 use TeleBot\System\Telegram\BotApi;
+use TeleBot\System\Throttle\RateLimiter;
 use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Http\{Request, Response};
 use TeleBot\System\Core\{Database, HelperLoader, Logger, Router, Queue, Runtime, ServiceContainer};
@@ -242,5 +243,21 @@ if (!function_exists('services')) {
             $serviceContainer->register();
         }
         return $serviceContainer[$service];
+    }
+}
+
+if (!function_exists('throttle')) {
+    /**
+     * get rate limiter instance
+     *
+     * @return RateLimiter
+     */
+    function throttle(): RateLimiter
+    {
+        static $rateLimiter = null;
+        if ($rateLimiter === null) {
+            $rateLimiter = new RateLimiter();
+        }
+        return $rateLimiter;
     }
 }

@@ -149,3 +149,25 @@ if (!function_exists('iso8601_to_timestamp')) {
         }
     }
 }
+
+if (!function_exists('throttled')) {
+    /**
+     * Return a closure to autoconfigure rate-limits for given route
+     *
+     * @param string $handler handler
+     * @param int $requests max number of requests (default: 60 requests)
+     * @param int $window window time in seconds (default: 60 seconds)
+     * @return Closure
+     */
+    function throttled(string $handler, int $requests = 60, int $window = 60): Closure
+    {
+        return function (string $route) use ($handler, $requests, $window) {
+            throttle()->addRouteRule($route, $requests, $window);
+            if (!is_bool($result = throttle()->attempt())) {
+                throttle()->throwResponse(config('throttle'), $result);
+            }
+
+            return $handler;
+        };
+    }
+}
