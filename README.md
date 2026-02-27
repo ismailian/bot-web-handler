@@ -456,18 +456,18 @@ You can configure Cors in `config.php` for acceptable domains like this example:
 #### ENV config
 
 
-| VAR               | Description                                              |
-|-------------------|----------------------------------------------------------|
-| `THROTTLE_DRIVER` | can be (filesystem, database, redis)                     |
-| `THROTTLE_DIR`    | directory to store rate limit data (only for Filesystem) |
-| `THROTTLE_REQS`   | maximum number of requests. Default: 60                  |
-| `THROTTLE_WINDOW` | window in seconds. Default: 60                           |
+| VAR                 | Description                                              |
+|---------------------|----------------------------------------------------------|
+| `THROTTLE_DRIVER`   | can be (filesystem, database, redis)                     |
+| `THROTTLE_DIR`      | directory to store rate limit data (only for Filesystem) |
+| `THROTTLE_MAX_REQS` | maximum number of requests. Default: 60                  |
+| `THROTTLE_WINDOW`   | window in seconds. Default: 60                           |
 
 ```dotenv
 # throttle
 THROTTLE_DRIVER=filesystem
 THROTTLE_DIR=path/to/folder
-THROTTLE_REQS=60
+THROTTLE_MAX_REQS=60
 THROTTLE_WINDOW=60
 ```
 
