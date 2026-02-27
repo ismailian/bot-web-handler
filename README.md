@@ -453,9 +453,25 @@ You can configure Cors in `config.php` for acceptable domains like this example:
 
 ### Rate Limiter (Throttling requests)
 
-You can configure rate limits globally or per route to have more control over resources
+#### ENV config
 
-`max_requests` and `window` have default values (60 request, 60 seconds) which can also be set in the ENV file.
+
+| VAR               | Description                                              |
+|-------------------|----------------------------------------------------------|
+| `THROTTLE_DRIVER` | can be (filesystem, database, redis)                     |
+| `THROTTLE_DIR`    | directory to store rate limit data (only for Filesystem) |
+| `THROTTLE_REQS`   | maximum number of requests. Default: 60                  |
+| `THROTTLE_WINDOW` | window in seconds. Default: 60                           |
+
+```dotenv
+# throttle
+THROTTLE_DRIVER=filesystem
+THROTTLE_DIR=path/to/folder
+THROTTLE_REQS=60
+THROTTLE_WINDOW=60
+```
+
+#### You can configure rate limits globally or per route to have more control over resources
 
 ```php
 /**
@@ -478,7 +494,7 @@ You can configure rate limits globally or per route to have more control over re
 ],
 ```
 
-You could also configure directly into the route using the helper `throttled`:
+#### You could also configure directly into the route using the helper `throttled`:
 
 ```php
 /**
