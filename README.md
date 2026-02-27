@@ -450,3 +450,46 @@ You can configure Cors in `config.php` for acceptable domains like this example:
   ],
 ],
 ```
+
+### Rate Limiter (Throttling requests)
+
+You can configure rate limits globally or per route to have more control over resources
+
+`max_requests` and `window` have default values (60 request, 60 seconds) which can also be set in the ENV file.
+
+```php
+/**
+ * @var array $throttle rate limit rules
+ */
+'throttle' => [
+    'rules' => [
+        [
+            'window' => 60, // remove to use the default value: 60
+            'max_requests' => 3, // remove to use the default value: 60
+            'route' => 'GET /api/users', // remove to have this rule applied globally
+        ],
+    ],
+    'handler' => fn(RateLimitResult $result) => response()
+        ->setStatusCode(429)
+        ->json([
+            'status' => 429,
+            'error' => 'Too many requests.',
+        ])
+],
+```
+
+You could also configure directly into the route using the helper `throttled`:
+
+```php
+/**
+ * @var array $routes allowed routes
+ */
+'routes' => [
+    'web' => [
+        '/api' => [
+            'POST /auth' => throttled('Auth::login', requests: 5, window: 60),
+            'GET /users' => throttled('Users::index', requests: 5, window: 1),
+        ],
+    ],
+],
+```
