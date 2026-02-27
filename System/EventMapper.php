@@ -28,7 +28,7 @@ class EventMapper
         $handlers = Filesystem::getNamespacedFiles('App/Handlers');
         foreach ($handlers as $handler) {
             $refClass = new ReflectionClass($handler);
-            if ($refClass->isSubclassOf(IncomingEvent::class)) {
+            if ($refClass->isSubclassOf(BaseEvent::class)) {
                 foreach ($refClass->getMethods() as $refMethod) {
                     if (!empty($refMethod->getAttributes())) {
                         if (Handler::check($refClass, $refMethod)) {

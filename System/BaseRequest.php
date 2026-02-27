@@ -10,10 +10,4 @@
 
 namespace TeleBot\System;
 
-class IncomingRequest
-{
-
-    /** @var array $config */
-    public array $config = [];
-
-}
+class BaseRequest {}

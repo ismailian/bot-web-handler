@@ -2,14 +2,14 @@
 
 namespace TeleBot\App\Handlers;
 
-use TeleBot\System\IncomingEvent;
+use TeleBot\System\BaseEvent;
 use TeleBot\System\Telegram\Filters\Chat;
 use TeleBot\System\Telegram\Enums\ParseMode;
 use TeleBot\System\Telegram\Enums\InlineChatType;
 use TeleBot\System\Telegram\Types\IncomingMessage;
 use TeleBot\System\Telegram\Events\Messages\{Text, Mention};
 
-class GetMyId extends IncomingEvent
+class GetMyId extends BaseEvent
 {
 
     /**

@@ -15,7 +15,7 @@ use TeleBot\System\Telegram\BotApi;
 use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Exceptions\{InvalidUpdate, InvalidMessage};
 
-class IncomingEvent
+class BaseEvent
 {
 
     /** @var Event|null $event incoming message event */
