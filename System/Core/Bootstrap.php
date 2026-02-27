@@ -10,6 +10,7 @@
 
 namespace TeleBot\System\Core;
 
+use Closure;
 use Exception;
 use ReflectionException;
 use TeleBot\System\BaseEvent;
@@ -87,6 +88,45 @@ class Bootstrap
     }
 
     /**
+     * Configure and check rate limits
+     *
+     * @return void
+     */
+    private function setThrottle(): void
+    {
+        $throttle = self::$config['throttle'];
+        if (empty($throttle)) {
+            return;
+        }
+
+        foreach ($throttle['rules'] as $options) {
+            $args = [
+                'maxRequests' => $options['max_requests'] ?? env('THROTTLE_MAX_REQS', 60),
+                'windowSeconds' => $options['window'] ?? env('THROTTLE_WINDOW', 60),
+                'keyResolver' => $options['key_resolver'] ?? null,
+            ];
+
+            if (array_key_exists('route', $options)) {
+                if (empty($options['route']) || $options['route'] == '*') {
+                    throttle()->addGlobalRule(...$args);
+                    continue;
+                } else {
+                    $args['route'] = $options['route'];
+                }
+            }
+
+            throttle()->addRouteRule(...$args);
+        }
+
+        $result = throttle()->attempt();
+        if (is_bool($result)) {
+            return;
+        }
+
+        throttle()->throwResponse($throttle, $result);
+    }
+
+    /**
      * handle maintenance mode
      *
      * @return void
@@ -129,6 +169,8 @@ class Bootstrap
     protected function handleIncomingRequests(): void
     {
         $this->setCors();
+        $this->setThrottle();
+
         if ($route = router()->matches(self::$config['routes']['web'] ?? [])) {
             if ($handler = Filesystem::getNamespacedFile($route['handler'])) {
                 Handler::assign(
