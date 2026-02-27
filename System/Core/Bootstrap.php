@@ -12,8 +12,8 @@ namespace TeleBot\System\Core;
 
 use Exception;
 use ReflectionException;
-use TeleBot\System\IncomingEvent;
-use TeleBot\System\IncomingRequest;
+use TeleBot\System\BaseEvent;
+use TeleBot\System\BaseRequest;
 use TeleBot\System\Telegram\Types\Event;
 use TeleBot\System\Core\Enums\RuntimeType;
 use TeleBot\System\Core\Traits\Verifiable;
@@ -110,8 +110,8 @@ class Bootstrap
         if (is_string($handler) && str_contains($handler, '::')) {
             [$class, $method] = explode('::', $handler);
             $class = Filesystem::getNamespacedFile($class);
-            if ((Runtime::is(RuntimeType::TELEGRAM) && is_subclass_of($class, IncomingEvent::class))
-                || (Runtime::is(RuntimeType::REQUEST) && is_subclass_of($class, IncomingRequest::class))
+            if ((Runtime::is(RuntimeType::TELEGRAM) && is_subclass_of($class, BaseEvent::class))
+                || (Runtime::is(RuntimeType::REQUEST) && is_subclass_of($class, BaseRequest::class))
             ) {
                 call_user_func_array([new $class, $method], []);
             }
