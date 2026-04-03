@@ -9,6 +9,11 @@
       "TeleBot\\App\\": "App/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
   "scripts": {
     "cli-init": [
       "php -r \"if (!file_exists('.env')) @copy('.env.sample', '.env');\"",
@@ -16,7 +21,8 @@
     ],
     "post-install-cmd": [
       "@cli-init"
-    ]
+    ],
+    "test": "phpunit"
   },
   "authors": [
     {
@@ -29,5 +35,8 @@
     "ext-mbstring": "*",
     "predis/predis": "^2.2",
     "ext-pdo": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5"
   }
 }
