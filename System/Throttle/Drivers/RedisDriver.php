@@ -1,34 +1,17 @@
 <?php
-/*
- * This file is part of the Bot Web Handler project.
- * Copyright 2024-2024 Ismail Aatif
- * https://github.com/ismailian/bot-web-handler
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace TeleBot\System\Throttle\Drivers;
 
-use Predis\Client;
+use TeleBot\System\Drivers\RedisDriver as Store;
 use TeleBot\System\Exceptions\MissingToken;
-use TeleBot\System\Interfaces\ICacheDriver;
+use TeleBot\System\Throttle\RateLimiterDriver;
 
-class RedisDriver implements ICacheDriver
+class RedisDriver implements RateLimiterDriver
 {
-
-    /** @var Client $client redis client */
-    protected Client $client;
-
-    /** @var mixed $cache cache value of cache content */
-    protected mixed $cache = [];
-
-    /** @var string $prefix redis key prefix */
-    protected string $prefix = 'tg:bots';
+    /** @var Store $store */
+    private Store $store;
 
     /**
-     * default constructor
-     *
      * @throws MissingToken
      */
     public function __construct()
@@ -38,74 +21,26 @@ class RedisDriver implements ICacheDriver
         }
 
         $botId = explode(':', $botToken, 2)[0];
-        $this->prefix = "tg:bots:$botId:cache";
-        $this->client = new Client([
-            'scheme' => 'tcp',
-            'host' => env('REDIS_HOST'),
-            'port' => env('REDIS_PORT'),
-            'user' => env('REDIS_USER'),
-            'password' => env('REDIS_PASSWORD')
-        ]);
+        $this->store = new Store("tg:bots:{$botId}:throttle");
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getAll(int $cursor = 0, int $count = 100): array
+    public function get(string $key): int
     {
-        $keys = [];
-        do {
-            $options = [
-                'count' => $count,
-                'match' => $this->prefix . ':*',
-            ];
-
-            [$page, $_keys] = $this->client->scan($cursor, $options);
-            if (!empty($_keys)) {
-                $keys = array_merge($keys, $_keys);
-            }
-        } while ($page !== '0');
-        return $keys;
+        return (int)($this->store->get($key) ?? 0);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function read(string $key): mixed
+    public function increment(string $key, int $ttl): int
     {
-        if (empty($this->cache)) {
-            $data = $this->client->get("$this->prefix:$key");
-            if (!empty($data) && ($json = json_decode($data, true))) {
-                $this->cache = $json;
-            }
-        }
-
-        return $this->cache;
+        return $this->store->increment($key, $ttl);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function write(string $key, mixed $data, ?string $ttl = null): bool
+    public function ttl(string $key): int
     {
-        $this->cache = $data;
-        if (is_array($data) || is_object($data)) {
-            $data = json_encode($data);
-        }
-
-        return !!$this->client->set(
-            "$this->prefix:$key",
-            $data,
-            ($ttl ? 'EX' : null),
-            ($ttl ? iso8601_to_seconds($ttl) : null)
-        );
+        return $this->store->ttl($key);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function delete(string $key): bool
+    public function reset(string $key): void
     {
-        return $this->client->del("$this->prefix:$key");
+        $this->store->delete($key);
     }
 }

@@ -10,27 +10,22 @@
 
 namespace TeleBot\System\Session\Drivers;
 
-use Predis\Client;
+use TeleBot\System\Drivers\RedisDriver as Store;
 use TeleBot\System\Exceptions\MissingToken;
 use TeleBot\System\Interfaces\ISessionDriver;
 
 class RedisDriver implements ISessionDriver
 {
+    /** @var Store $store */
+    private Store $store;
 
-    /** @var Client $client redis client */
-    private Client $client;
+    /** @var string $key */
+    private string $key;
 
-    /** @var string $sessionId session id */
-    private string $sessionId;
-
-    /** @var array $cached cached session content for quick access */
+    /** @var array $cached */
     private array $cached = [];
 
-    /** @var string $prefix redis key prefix */
-    private string $prefix = 'tg:bots';
-
     /**
-     * @inheritDoc
      * @throws MissingToken
      */
     public function __construct(string $sessionId)
@@ -39,69 +34,38 @@ class RedisDriver implements ISessionDriver
             throw new MissingToken;
         }
 
-        $this->prefix = 'tg:bots:' . explode(':', $botToken, 2)[0];
-        $this->sessionId = $sessionId;
-        $this->client = new Client([
-            'scheme' => 'tcp',
-            'host' => env('REDIS_HOST'),
-            'port' => env('REDIS_PORT'),
-            'user' => env('REDIS_USER'),
-            'password' => env('REDIS_PASSWORD')
-        ]);
+        $botId = explode(':', $botToken, 2)[0];
+        $this->store = new Store("tg:bots:{$botId}:session");
+        $this->key = $sessionId;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getAll(int $cursor = 0, int $count = 100): array
     {
-        $keys = [];
-        do {
-            $options = [
-                'count' => $count,
-                'match' => $this->prefix . ':*',
-            ];
-
-            [$page, $_keys] = $this->client->scan($cursor, $options);
-            if (!empty($_keys)) {
-                $keys = array_merge($keys, $_keys);
-            }
-        } while ($page !== '0');
-        return $keys;
+        return $this->store->getAll($cursor, $count);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function read(): array
     {
         if (empty($this->cached)) {
-            $data = $this->client->get("$this->prefix:{$this->sessionId}");
-            if (!empty($data) && ($json = json_decode($data, true))) {
-                $this->cached = $json;
+            $value = $this->store->get($this->key);
+            if (is_array($value)) {
+                $this->cached = $value;
             }
         }
 
         return $this->cached;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function write(array $data, ?string $ttl = null): bool
     {
         $this->cached = $data;
-        return !!$this->client->set(
-            "$this->prefix:$this->sessionId", json_encode($data),
-            ($ttl ? 'EX' : null), ($ttl ? iso8601_to_seconds($ttl) : null)
-        );
+        $ttl = $ttl ? iso8601_to_seconds($ttl) : null;
+        return $this->store->set($this->key, $data, $ttl);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function delete(): int
+    public function delete(): int|bool
     {
-        return $this->client->del("$this->prefix:$this->sessionId");
+        $this->cached = [];
+        return $this->store->delete($this->key);
     }
 }

@@ -1,26 +1,18 @@
 <?php
-/*
- * This file is part of the Bot Web Handler project.
- * Copyright 2024-2024 Ismail Aatif
- * https://github.com/ismailian/bot-web-handler
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace TeleBot\System\Cache\Drivers;
 
-use TeleBot\System\Drivers\FilesystemDriver as Store;
+use TeleBot\System\Drivers\DatabaseDriver as Store;
 use TeleBot\System\Interfaces\ICacheDriver;
 
-class FileDriver implements ICacheDriver
+class DbDriver implements ICacheDriver
 {
     /** @var Store $store */
     private Store $store;
 
     public function __construct()
     {
-        $this->store = new Store(env('CACHE_DIR'));
+        $this->store = new Store('cache', 'cache_key', 'cache_value', 'ttl', true);
     }
 
     public function getAll(int $cursor = 0, int $count = 100): array

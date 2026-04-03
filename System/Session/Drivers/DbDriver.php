@@ -10,103 +10,53 @@
 
 namespace TeleBot\System\Session\Drivers;
 
-use TeleBot\System\Core\Traits\Expirable;
+use TeleBot\System\Drivers\DatabaseDriver as Store;
 use TeleBot\System\Interfaces\ISessionDriver;
 
 class DbDriver implements ISessionDriver
 {
+    /** @var Store $store */
+    private Store $store;
 
-    use Expirable;
+    /** @var string $key */
+    private string $key;
 
-    /** @var string sessions table */
-    private const string SESSION_TABLE = 'sessions';
-
-    /** @var string primary key for row */
-    private const string SESSION_ID_KEY = 'session_id';
-
-    /** @var string key for session data */
-    private const string SESSION_DATA_KEY = 'data';
-
-    /** @var string $sessionId session id */
-    private string $sessionId;
-
-    /** @var array $cached cached session content for quick access */
+    /** @var array $cached */
     private array $cached = [];
 
-    /**
-     * @inheritDoc
-     */
     public function __construct(string $sessionId)
     {
-        $this->sessionId = $sessionId;
-        if (!database()->row("SELECT id FROM `sessions` WHERE `session_id` = ?", [$sessionId])) {
-            database()->insert(self::SESSION_TABLE, [
-                self::SESSION_ID_KEY => $sessionId,
-                self::SESSION_DATA_KEY => json_encode([])
-            ]);
-        }
+        $this->store = new Store('sessions', 'session_id', 'data', 'ttl');
+        $this->key = $sessionId;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getAll(int $cursor = 0, int $count = 100): array
     {
-        return database()->rows('SELECT * FROM ' . self::SESSION_TABLE) ?? [];
+        return $this->store->getAll($cursor, $count);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function read(): array
     {
         if (empty($this->cached)) {
-            $session = database()->row("SELECT ttl,data FROM `sessions` WHERE `session_id` = ?", [$this->sessionId]);
-            if (!empty($session)) {
-                $this->cached[self::SESSION_DATA_KEY] = $session[self::SESSION_DATA_KEY] ?? [];
-                $this->cached[self::TTL_KEY] = $session[self::TTL_KEY] ?? null;
+            $value = $this->store->get($this->key);
+            if (is_array($value)) {
+                $this->cached = $value;
             }
         }
 
-        if (!empty($this->cached[self::TTL_KEY]) && (int)$this->cached[self::TTL_KEY] < time()) {
-            database()->delete(self::SESSION_TABLE, [
-                self::SESSION_ID_KEY => $this->sessionId,
-            ]);
-
-            return $this->cached = [];
-        }
-
-        $data = $this->cached[self::SESSION_DATA_KEY] ?? [];
-        if (!empty($data) && !is_array($data) && ($json = json_decode($data, true)) !== null) {
-            $data = $json;
-        }
-
-        return $data;
+        return $this->cached;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function write(array $data, ?string $ttl = null): bool
     {
-        $sessData = [
-            self::SESSION_DATA_KEY => json_encode($data),
-            self::TTL_KEY => $ttl ? iso8601_to_timestamp($ttl) : null,
-        ];
-
-        $this->cached = $sessData;
-        return database()->update(self::SESSION_TABLE, $sessData,
-            [self::SESSION_ID_KEY => $this->sessionId]
-        );
+        $this->cached = $data;
+        $ttl = $ttl ? iso8601_to_seconds($ttl) : null;
+        return $this->store->set($this->key, $data, $ttl);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function delete(): int|bool
     {
-        return database()->delete(self::SESSION_TABLE, [
-            self::SESSION_ID_KEY => $this->sessionId
-        ]);
+        $this->cached = [];
+        return $this->store->delete($this->key);
     }
 }
