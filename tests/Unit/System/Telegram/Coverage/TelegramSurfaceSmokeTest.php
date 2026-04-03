@@ -84,12 +84,44 @@ class TelegramSurfaceSmokeTest extends TestCase
         $content = file_get_contents($absolutePath);
         $this->assertNotFalse($content, sprintf('Failed to read [%s].', $absolutePath));
 
-        preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatch);
-        preg_match('/\b(class|trait|enum)\s+([A-Za-z_][A-Za-z0-9_]*)\b/', $content, $symbolMatch);
+        $tokens = token_get_all($content);
+        $namespace = '';
+        $symbol = null;
 
-        $this->assertArrayHasKey(1, $namespaceMatch, sprintf('Namespace was not found in [%s].', $absolutePath));
-        $this->assertArrayHasKey(2, $symbolMatch, sprintf('Class/trait/enum name was not found in [%s].', $absolutePath));
+        for ($i = 0, $count = count($tokens); $i < $count; $i++) {
+            $token = $tokens[$i];
+            if (!is_array($token)) {
+                continue;
+            }
 
-        return trim($namespaceMatch[1]) . '\\' . trim($symbolMatch[2]);
+            if ($token[0] === T_NAMESPACE) {
+                $namespace = '';
+                for ($j = $i + 1; $j < $count; $j++) {
+                    $next = $tokens[$j];
+                    if ($next === ';') {
+                        break;
+                    }
+
+                    if (is_array($next) && in_array($next[0], [T_STRING, T_NAME_QUALIFIED, T_NS_SEPARATOR], true)) {
+                        $namespace .= $next[1];
+                    }
+                }
+            }
+
+            if (in_array($token[0], [T_CLASS, T_TRAIT, T_ENUM], true)) {
+                for ($j = $i + 1; $j < $count; $j++) {
+                    $next = $tokens[$j];
+                    if (is_array($next) && $next[0] === T_STRING) {
+                        $symbol = $next[1];
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        $this->assertNotSame('', $namespace, sprintf('Namespace was not found in [%s].', $absolutePath));
+        $this->assertNotNull($symbol, sprintf('Class/trait/enum name was not found in [%s].', $absolutePath));
+
+        return $namespace . '\\' . $symbol;
     }
 }
