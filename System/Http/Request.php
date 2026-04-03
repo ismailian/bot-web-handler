@@ -76,11 +76,17 @@ class Request
     {
         if ($trustProxy) {
             if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-                return trim($_SERVER['HTTP_CF_CONNECTING_IP']);
+                $ip = trim($_SERVER['HTTP_CF_CONNECTING_IP']);
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
             }
 
             if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
-                return trim($_SERVER['HTTP_X_REAL_IP']);
+                $ip = trim($_SERVER['HTTP_X_REAL_IP']);
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
             }
 
             if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -95,7 +101,12 @@ class Request
             }
         }
 
-        return $_SERVER['REMOTE_ADDR'];
+        $remoteAddress = $_SERVER['REMOTE_ADDR'] ?? '';
+        if (filter_var($remoteAddress, FILTER_VALIDATE_IP)) {
+            return $remoteAddress;
+        }
+
+        return '0.0.0.0';
     }
 
     /**
@@ -220,26 +231,32 @@ class Request
     public function fingerprint(bool $includeBody = false): string
     {
         $query = $this->query();
+        if (!is_array($query)) {
+            $query = [];
+        }
         ksort($query);
 
         $segments = [
             $this->ip(),
             $this->uri(),
             $this->method(),
-            md5(http_build_query($query)),
+            hash('sha256', http_build_query($query)),
         ];
 
         if ($includeBody) {
             $body = $this->body();
+            if (!is_array($body)) {
+                $body = [];
+            }
             ksort($body);
-            $segments[] = md5(http_build_query($body));
+            $segments[] = hash('sha256', http_build_query($body));
 
             $json = $this->_json;
             ksort($json);
-            $segments[] = md5(json_encode($json));
+            $segments[] = hash('sha256', json_encode($json) ?: '');
         }
 
-        return md5(join('|', $segments));
+        return hash('sha256', join('|', $segments));
     }
 
 }
