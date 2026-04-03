@@ -12,7 +12,7 @@ namespace TeleBot\System\Cache;
 
 use TeleBot\System\Core\Enums\DataSource;
 use TeleBot\System\Interfaces\ICacheDriver;
-use TeleBot\System\Cache\Drivers\{FileDriver, RedisDriver};
+use TeleBot\System\Cache\Drivers\{DbDriver, FileDriver, RedisDriver};
 
 class Cache
 {
@@ -31,6 +31,7 @@ class Cache
             $driver = env('CACHE_DRIVER', DataSource::FILESYSTEM);
             $this->client = match ($driver) {
                 DataSource::REDIS => new RedisDriver(),
+                DataSource::DATABASE => new DbDriver(),
                 DataSource::FILESYSTEM => new FileDriver(),
             };
         }

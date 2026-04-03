@@ -10,25 +10,16 @@
 
 namespace TeleBot\System\Cache\Drivers;
 
-use Predis\Client;
+use TeleBot\System\Drivers\RedisDriver as Store;
 use TeleBot\System\Exceptions\MissingToken;
 use TeleBot\System\Interfaces\ICacheDriver;
 
 class RedisDriver implements ICacheDriver
 {
-
-    /** @var Client $client redis client */
-    protected Client $client;
-
-    /** @var mixed $cache cache value of cache content */
-    protected mixed $cache = [];
-
-    /** @var string $prefix redis key prefix */
-    protected string $prefix = 'tg:bots';
+    /** @var Store $store */
+    private Store $store;
 
     /**
-     * default constructor
-     *
      * @throws MissingToken
      */
     public function __construct()
@@ -38,74 +29,27 @@ class RedisDriver implements ICacheDriver
         }
 
         $botId = explode(':', $botToken, 2)[0];
-        $this->prefix = "tg:bots:$botId:cache";
-        $this->client = new Client([
-            'scheme' => 'tcp',
-            'host' => env('REDIS_HOST'),
-            'port' => env('REDIS_PORT'),
-            'user' => env('REDIS_USER'),
-            'password' => env('REDIS_PASSWORD')
-        ]);
+        $this->store = new Store("tg:bots:{$botId}:cache");
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getAll(int $cursor = 0, int $count = 100): array
     {
-        $keys = [];
-        do {
-            $options = [
-                'count' => $count,
-                'match' => $this->prefix . ':*',
-            ];
-
-            [$page, $_keys] = $this->client->scan($cursor, $options);
-            if (!empty($_keys)) {
-                $keys = array_merge($keys, $_keys);
-            }
-        } while ($page !== '0');
-        return $keys;
+        return $this->store->getAll($cursor, $count);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function read(string $key): mixed
     {
-        if (empty($this->cache)) {
-            $data = $this->client->get("$this->prefix:$key");
-            if (!empty($data) && ($json = json_decode($data, true))) {
-                $this->cache = $json;
-            }
-        }
-
-        return $this->cache;
+        return $this->store->get($key);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function write(string $key, mixed $data, ?string $ttl = null): bool
     {
-        $this->cache = $data;
-        if (is_array($data) || is_object($data)) {
-            $data = json_encode($data);
-        }
-
-        return !!$this->client->set(
-            "$this->prefix:$key",
-            $data,
-            ($ttl ? 'EX' : null),
-            ($ttl ? iso8601_to_seconds($ttl) : null)
-        );
+        $ttl = $ttl ? iso8601_to_seconds($ttl) : null;
+        return $this->store->set($key, $data, $ttl);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function delete(string $key): bool
     {
-        return $this->client->del("$this->prefix:$key");
+        return (bool)$this->store->delete($key);
     }
 }
