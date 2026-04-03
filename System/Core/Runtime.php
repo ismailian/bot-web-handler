@@ -23,7 +23,7 @@ class Runtime
         /** verify routes */
         if (!empty(($routes = $config['routes']))) {
             if (!empty($routes['telegram'])) {
-                if (!in_array(request()->uri(), $routes)) {
+                if (!in_array(request()->uri(), $routes['telegram'])) {
                     $isTelegram = false;
                 }
             }

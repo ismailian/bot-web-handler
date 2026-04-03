@@ -21,7 +21,13 @@ class Process
      */
     public static function run(...$args): string|bool
     {
-        return exec(join(' ', $args));
+        $command = [];
+        foreach ($args as $index => $arg) {
+            $arg = (string)$arg;
+            $command[] = $index === 0 ? $arg : escapeshellarg($arg);
+        }
+
+        return exec(join(' ', $command));
     }
 
 }
