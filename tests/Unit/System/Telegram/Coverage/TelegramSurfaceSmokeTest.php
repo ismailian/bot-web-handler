@@ -21,7 +21,7 @@ class TelegramSurfaceSmokeTest extends TestCase
         $this->assertNotEmpty($eventFiles);
 
         foreach ($eventFiles as $file) {
-            $class = $this->symbolFromFile($file);
+            ['name' => $class] = $this->symbolFromFile($file);
 
             $this->assertTrue(class_exists($class), sprintf('Class [%s] should be autoloadable.', $class));
             $this->assertTrue(
@@ -38,7 +38,7 @@ class TelegramSurfaceSmokeTest extends TestCase
         $this->assertNotEmpty($validatorFiles);
 
         foreach ($validatorFiles as $file) {
-            $class = $this->symbolFromFile($file);
+            ['name' => $class] = $this->symbolFromFile($file);
 
             $this->assertTrue(class_exists($class), sprintf('Class [%s] should be autoloadable.', $class));
             $this->assertTrue(
@@ -57,9 +57,17 @@ class TelegramSurfaceSmokeTest extends TestCase
         $this->assertNotEmpty($allTraitFiles);
 
         foreach ($allTraitFiles as $file) {
-            $trait = $this->symbolFromFile($file);
+            ['name' => $symbol, 'kind' => $kind] = $this->symbolFromFile($file);
 
-            $this->assertTrue(trait_exists($trait), sprintf('Trait [%s] should be autoloadable.', $trait));
+            if ($kind === 'trait') {
+                $this->assertTrue(trait_exists($symbol), sprintf('Trait [%s] should be autoloadable.', $symbol));
+                continue;
+            }
+
+            $this->assertTrue(
+                class_exists($symbol) || enum_exists($symbol),
+                sprintf('Non-trait symbol [%s] should be autoloadable.', $symbol)
+            );
         }
     }
 
@@ -70,7 +78,7 @@ class TelegramSurfaceSmokeTest extends TestCase
         $this->assertNotEmpty($typeFiles);
 
         foreach ($typeFiles as $file) {
-            $class = $this->symbolFromFile($file);
+            ['name' => $class] = $this->symbolFromFile($file);
 
             $this->assertTrue(
                 class_exists($class) || enum_exists($class),
@@ -79,7 +87,7 @@ class TelegramSurfaceSmokeTest extends TestCase
         }
     }
 
-    private function symbolFromFile(string $absolutePath): string
+    private function symbolFromFile(string $absolutePath): array
     {
         $content = file_get_contents($absolutePath);
         $this->assertNotFalse($content, sprintf('Failed to read [%s].', $absolutePath));
@@ -87,6 +95,7 @@ class TelegramSurfaceSmokeTest extends TestCase
         $tokens = token_get_all($content);
         $namespace = '';
         $symbol = null;
+        $kind = null;
 
         for ($i = 0, $count = count($tokens); $i < $count; $i++) {
             $token = $tokens[$i];
@@ -113,6 +122,7 @@ class TelegramSurfaceSmokeTest extends TestCase
                     $next = $tokens[$j];
                     if (is_array($next) && $next[0] === T_STRING) {
                         $symbol = $next[1];
+                        $kind = token_name($token[0]);
                         break 2;
                     }
                 }
@@ -122,6 +132,9 @@ class TelegramSurfaceSmokeTest extends TestCase
         $this->assertNotSame('', $namespace, sprintf('Namespace was not found in [%s].', $absolutePath));
         $this->assertNotNull($symbol, sprintf('Class/trait/enum name was not found in [%s].', $absolutePath));
 
-        return $namespace . '\\' . $symbol;
+        return [
+            'name' => $namespace . '\\' . $symbol,
+            'kind' => strtolower(str_replace('T_', '', (string)$kind)),
+        ];
     }
 }
