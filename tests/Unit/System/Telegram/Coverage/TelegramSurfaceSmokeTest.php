@@ -21,7 +21,7 @@ class TelegramSurfaceSmokeTest extends TestCase
         $this->assertNotEmpty($eventFiles);
 
         foreach ($eventFiles as $file) {
-            $class = $this->classFromSystemPath($file);
+            $class = $this->symbolFromFile($file);
 
             $this->assertTrue(class_exists($class), sprintf('Class [%s] should be autoloadable.', $class));
             $this->assertTrue(
@@ -38,7 +38,7 @@ class TelegramSurfaceSmokeTest extends TestCase
         $this->assertNotEmpty($validatorFiles);
 
         foreach ($validatorFiles as $file) {
-            $class = $this->classFromSystemPath($file);
+            $class = $this->symbolFromFile($file);
 
             $this->assertTrue(class_exists($class), sprintf('Class [%s] should be autoloadable.', $class));
             $this->assertTrue(
@@ -57,7 +57,7 @@ class TelegramSurfaceSmokeTest extends TestCase
         $this->assertNotEmpty($allTraitFiles);
 
         foreach ($allTraitFiles as $file) {
-            $trait = $this->classFromSystemPath($file);
+            $trait = $this->symbolFromFile($file);
 
             $this->assertTrue(trait_exists($trait), sprintf('Trait [%s] should be autoloadable.', $trait));
         }
@@ -70,22 +70,26 @@ class TelegramSurfaceSmokeTest extends TestCase
         $this->assertNotEmpty($typeFiles);
 
         foreach ($typeFiles as $file) {
-            $class = $this->classFromSystemPath($file);
+            $class = $this->symbolFromFile($file);
 
-            $this->assertTrue(class_exists($class), sprintf('Class [%s] should be autoloadable.', $class));
+            $this->assertTrue(
+                class_exists($class) || enum_exists($class),
+                sprintf('Class or enum [%s] should be autoloadable.', $class)
+            );
         }
     }
 
-    private function classFromSystemPath(string $absolutePath): string
+    private function symbolFromFile(string $absolutePath): string
     {
-        $normalized = str_replace('\\', '/', $absolutePath);
-        $parts = explode('/System/', $normalized, 2);
+        $content = file_get_contents($absolutePath);
+        $this->assertNotFalse($content, sprintf('Failed to read [%s].', $absolutePath));
 
-        $this->assertCount(2, $parts, sprintf('Failed to map [%s] to class name.', $absolutePath));
+        preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatch);
+        preg_match('/\b(class|trait|enum)\s+([A-Za-z_][A-Za-z0-9_]*)\b/', $content, $symbolMatch);
 
-        $relative = $parts[1];
-        $withoutExt = preg_replace('/\\.php$/', '', $relative) ?: $relative;
+        $this->assertArrayHasKey(1, $namespaceMatch, sprintf('Namespace was not found in [%s].', $absolutePath));
+        $this->assertArrayHasKey(2, $symbolMatch, sprintf('Class/trait/enum name was not found in [%s].', $absolutePath));
 
-        return 'TeleBot\\System\\' . str_replace('/', '\\', $withoutExt);
+        return trim($namespaceMatch[1]) . '\\' . trim($symbolMatch[2]);
     }
 }
