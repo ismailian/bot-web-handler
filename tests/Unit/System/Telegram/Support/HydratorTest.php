@@ -52,7 +52,7 @@ class FixtureHydratedTarget
     #[MapProp('timestamp', null, false, true)]
     public ?DateTime $timestamp = null;
 
-    #[MapProp(':', FixtureSelfPayload::class)]
+    #[MapProp('name:', FixtureSelfPayload::class)]
     public ?FixtureSelfPayload $selfPayload = null;
 
     public function __construct(array $data)
