@@ -85,7 +85,7 @@ class Update extends Command
             }
 
             $this->client = http([
-                'verify' => false,
+                'verify' => env('HTTP_VERIFY_SSL', true),
                 'base_uri' => 'https://api.github.com/',
                 'headers' => $headers,
             ]);
@@ -198,7 +198,7 @@ class Update extends Command
             $query = [];
             $uri = '/repos/' . self::OWNER . '/' . self::REPO . '/commits';
             if ($startDate) $query['since'] = $startDate;
-            if ($endDate) $query['until'] = $startDate;
+            if ($endDate) $query['until'] = $endDate;
 
             $response = $this->getClient()->get($uri, ['query' => $query])->getBody();
             return array_reverse(array_map(function ($commit) use ($autoFetchFiles) {
