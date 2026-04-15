@@ -75,10 +75,11 @@ class Handler
         ];
 
         foreach ($filters as $filter) {
-            if (is_subclass_of($method->class, Middleware::class)) {
-                $filter->newInstance()();
+            $instance = $filter->newInstance();
+            if ($instance instanceof Middleware) {
+                $instance();
             } else {
-                if (!($filter->newInstance()->apply(request()->json()))) {
+                if (!$instance->apply(request()->json())) {
                     return false;
                 }
             }

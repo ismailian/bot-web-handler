@@ -75,8 +75,10 @@ class Bootstrap
         $origin = request()->origin();
         if (array_key_exists($origin, $cors)) {
             response()->addHeader('Access-Control-Allow-Origin', $origin);
-            response()->addHeader('Access-Control-Allow-Methods', join(',', $cors[$origin]['methods']));
-            response()->addHeader('Access-Control-Allow-Headers', join(',', $cors[$origin]['headers']));
+            $methods = $cors[$origin]['methods'];
+            $headers = $cors[$origin]['headers'];
+            response()->addHeader('Access-Control-Allow-Methods', is_array($methods) ? join(',', $methods) : $methods);
+            response()->addHeader('Access-Control-Allow-Headers', is_array($headers) ? join(',', $headers) : $headers);
             if ($cors[$origin]['allow_credentials']) {
                 response()->addHeader('Access-Control-Allow-Credentials', 'true');
             }
@@ -135,7 +137,7 @@ class Bootstrap
     protected function handleMaintenanceMode(): void
     {
         $mode = env('MAINTENANCE_MODE');
-        if (empty($mode) || $mode !== 'down') {
+        if (empty($mode) || strtolower($mode) !== 'down') {
             return;
         }
 
