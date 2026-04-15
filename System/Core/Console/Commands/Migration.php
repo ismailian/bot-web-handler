@@ -71,9 +71,11 @@ class Migration extends Command
     public function handle(...$args): void
     {
         $dbName = env('DATABASE_NAME');
-        $query = "SHOW TABLES WHERE Tables_in_$dbName IN ('{$args['table']}')";
+        $quotedDb = '`' . str_replace('`', '``', $dbName) . '`';
+        $stmt = database()->getClient()->prepare("SHOW TABLES WHERE Tables_in_{$quotedDb} IN (?)");
+        $stmt->execute([$args['table']]);
 
-        $existingTables = database()->getClient()->query($query)->fetchAll();
+        $existingTables = $stmt->fetchAll();
         $existingTables = array_column($existingTables, 'Tables_in_' . $dbName);
 
         if (in_array($args['table'], $existingTables)) {

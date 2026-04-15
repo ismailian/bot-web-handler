@@ -33,7 +33,7 @@ class FileDriver implements ICacheDriver
     public function read(string $key): mixed
     {
         $cachePath = env('CACHE_DIR');
-        $cacheFilePath = $cachePath . '/' . $key;
+        $cacheFilePath = $cachePath . '/' . basename($key);
         if (!file_exists($cacheFilePath)) {
             return null;
         }
@@ -66,7 +66,7 @@ class FileDriver implements ICacheDriver
         ];
 
         $cachePath = env('CACHE_DIR');
-        $cacheFilePath = $cachePath . '/' . $key;
+        $cacheFilePath = $cachePath . '/' . basename($key);
         return (bool)file_put_contents($cacheFilePath, json_encode($data));
     }
 
@@ -76,7 +76,7 @@ class FileDriver implements ICacheDriver
     public function delete(string $key): bool
     {
         $cachePath = env('CACHE_DIR');
-        $cacheFilePath = $cachePath . '/' . $key;
+        $cacheFilePath = $cachePath . '/' . basename($key);
         if (file_exists($cacheFilePath)) {
             return @unlink($cacheFilePath);
         }

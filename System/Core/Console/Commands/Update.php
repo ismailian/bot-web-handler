@@ -85,7 +85,6 @@ class Update extends Command
             }
 
             $this->client = http([
-                'verify' => false,
                 'base_uri' => 'https://api.github.com/',
                 'headers' => $headers,
             ]);
@@ -147,6 +146,7 @@ class Update extends Command
             $this->log('system is up-to-date!', true);
         }
 
+        $projectRoot = realpath(__DIR__ . '/../../../../');
         foreach ($updates as $update) {
             foreach ($update['files'] as $file) {
                 [$action, $color] = match ($file['status']) {
@@ -156,20 +156,40 @@ class Update extends Command
                     'renamed' => ['renaming', '1;34']
                 };
 
+                // Validate that the target path stays within the project root
+                $targetPath = realpath($projectRoot . '/' . $file['filename']) ?: ($projectRoot . '/' . $file['filename']);
+                if (!str_starts_with($targetPath, $projectRoot . DIRECTORY_SEPARATOR)
+                    && !str_starts_with($targetPath, $projectRoot . '/')) {
+                    $this->log("Skipping unsafe path: {$file['filename']}", true);
+                    continue;
+                }
+
                 echo "[+] \033[{$color}m$action\033[0m: {$file['filename']}" . PHP_EOL;
                 if ($action == 'deleting') {
-                    @unlink($file['filename']);
+                    @unlink($targetPath);
                 } else {
-                    if (!file_exists(dirname($file['filename']))) {
-                        @mkdir(dirname($file['filename']));
+                    // Validate the download URL is from GitHub's raw content domain
+                    $parsedUrl = parse_url($file['url']);
+                    if (($parsedUrl['host'] ?? '') !== 'raw.githubusercontent.com') {
+                        $this->log("Skipping file with unexpected URL host: {$file['url']}", true);
+                        continue;
                     }
 
-                    file_put_contents($file['filename'], file_get_contents($file['url']));
+                    if (!file_exists(dirname($targetPath))) {
+                        @mkdir(dirname($targetPath), 0755, true);
+                    }
+
+                    $content = (string)$this->getClient()->get($file['url'])->getBody();
+                    file_put_contents($targetPath, $content);
 
                     // delete previous file (if renamed)
                     if (array_key_exists('previous_filename', $file)) {
-                        @unlink($file['previous_filename']);
-                        @rmdir(dirname($file['previous_filename']));
+                        $prevPath = realpath($projectRoot . '/' . $file['previous_filename']) ?: ($projectRoot . '/' . $file['previous_filename']);
+                        if (str_starts_with($prevPath, $projectRoot . DIRECTORY_SEPARATOR)
+                            || str_starts_with($prevPath, $projectRoot . '/')) {
+                            @unlink($prevPath);
+                            @rmdir(dirname($prevPath));
+                        }
                     }
                 }
             }
@@ -198,7 +218,7 @@ class Update extends Command
             $query = [];
             $uri = '/repos/' . self::OWNER . '/' . self::REPO . '/commits';
             if ($startDate) $query['since'] = $startDate;
-            if ($endDate) $query['until'] = $startDate;
+            if ($endDate) $query['until'] = $endDate;
 
             $response = $this->getClient()->get($uri, ['query' => $query])->getBody();
             return array_reverse(array_map(function ($commit) use ($autoFetchFiles) {

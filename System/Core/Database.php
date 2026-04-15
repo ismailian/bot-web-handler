@@ -246,7 +246,7 @@ class Database
         $i = 0;
         $whereDetails = null;
         foreach ($where as $key => $value) {
-            $whereDetails .= $i == 0 ? "$key = ?" : " AND $key = ?";
+            $whereDetails .= $i == 0 ? "`$key` = ?" : " AND `$key` = ?";
             $i++;
         }
 
@@ -292,11 +292,9 @@ class Database
      */
     public function deleteByIds(string $table, string|array $ids): int|bool
     {
-        if (is_array($ids)) {
-            $ids = "'" . implode("','", $ids) . "'";
-        }
-
-        $stmt = $this->run("DELETE FROM $table WHERE id IN ($ids)");
+        $ids = (array)$ids;
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->run("DELETE FROM `$table` WHERE id IN ($placeholders)", $ids);
         return $stmt->rowCount();
     }
 

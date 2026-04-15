@@ -11,6 +11,8 @@
 namespace TeleBot\System\Core;
 
 use Exception;
+use RuntimeException;
+use TeleBot\System\Interfaces\IJob;
 
 class Queue
 {
@@ -97,6 +99,10 @@ class Queue
         $status = 2;
 
         try {
+            if (!is_a($job->job, IJob::class, true)) {
+                throw new RuntimeException("Invalid job class: {$job->job}");
+            }
+
             new $job->job($job->id, $payload)->process();
         } catch (Exception) {
             if ($attempts < $this->RETRIES) {

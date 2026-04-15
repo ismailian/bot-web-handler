@@ -16,6 +16,22 @@ trait Verifiable
 {
 
     /**
+     * Known Telegram update types (add new types here as Telegram Bot API evolves).
+     */
+    private const array UPDATE_TYPES = [
+        'message', 'edited_message', 'callback_query',
+        'inline_query', 'chosen_inline_result',
+        'shipping_query', 'pre_checkout_query',
+        'channel_post', 'edited_channel_post',
+        'poll', 'poll_answer',
+        'my_chat_member', 'chat_member', 'chat_join_request',
+        'business_connection', 'business_message',
+        'edited_business_message', 'deleted_business_messages',
+        'message_reaction', 'message_reaction_count',
+        'chat_boost', 'removed_chat_boost',
+    ];
+
+    /**
      * verify payload
      *
      * @return void
@@ -23,20 +39,8 @@ trait Verifiable
     private function verifyPayload(): void
     {
         $payload = request()->json();
-        $updates = [
-            'message', 'edited_message', 'callback_query',
-            'inline_query', 'chosen_inline_result',
-            'shipping_query', 'pre_checkout_query',
-            'channel_post', 'edited_channel_post',
-            'poll', 'poll_answer',
-            'my_chat_member', 'chat_member', 'chat_join_request',
-            'business_connection', 'business_message',
-            'edited_business_message', 'deleted_business_messages',
-            'message_reaction', 'message_reaction_count',
-            'chat_boost', 'removed_chat_boost'
-        ];
 
-        if (!isset($payload['update_id']) || empty(array_intersect($updates, array_keys($payload)))) {
+        if (!isset($payload['update_id']) || empty(array_intersect(self::UPDATE_TYPES, array_keys($payload)))) {
             response()->setStatusCode(401)->end();
         }
     }
@@ -102,13 +106,22 @@ trait Verifiable
         $payload = request()->json();
         unset($payload['update_id']);
         $keys = array_keys($payload);
-        $userId = $payload[$keys[0]]['from']['id'];
+
+        // Not all update types carry a 'from' field (e.g. channel_post, poll, chat_boost).
+        // Fall back to sender_chat for channel events; treat anonymous/system events as allowed.
+        $userId = $payload[$keys[0]]['from']['id']
+            ?? $payload[$keys[0]]['sender_chat']['id']
+            ?? null;
+
+        if ($userId === null) {
+            return true;
+        }
 
         $whitelist = self::$config['users']['whitelist'];
         $blacklist = self::$config['users']['blacklist'];
 
-        if (!empty($whitelist)) return in_array($userId, $whitelist);
-        if (!empty($blacklist)) return !in_array($userId, $blacklist);
+        if (!empty($whitelist)) return in_array($userId, $whitelist, true);
+        if (!empty($blacklist)) return !in_array($userId, $blacklist, true);
 
         return true;
     }
