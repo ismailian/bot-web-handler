@@ -24,8 +24,8 @@ class FileDriver implements ISessionDriver
     /** @var string $sessionFilePath session file path */
     private string $sessionFilePath;
 
-    /** @var array $cached cached session content for quick access */
-    private array $cached = [];
+    /** @var array|null $cached cached session content; null = not yet loaded */
+    private ?array $cached = null;
 
     /**
      * @inheritDoc
@@ -64,16 +64,15 @@ class FileDriver implements ISessionDriver
      */
     public function read(): array
     {
-        if (empty($this->cached)) {
+        if ($this->cached === null) {
             $content = file_get_contents($this->sessionFilePath);
-            if ($json = json_decode($content, true)) {
-                $this->cached = $json;
-            }
+            $this->cached = json_decode($content ?: '', true) ?? [];
         }
 
         if ($this->hasExpired($this->cached)) {
             $this->delete();
-            return $this->cached = [];
+            $this->cached = null;
+            return [];
         }
 
         return $this->restore($this->cached);
@@ -89,7 +88,7 @@ class FileDriver implements ISessionDriver
             self::CONTENT_KEY => $data,
         ];
 
-        $this->cached = $data;
+        $this->cached = null;
         return (bool)file_put_contents($this->sessionFilePath, json_encode($data));
     }
 

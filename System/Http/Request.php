@@ -29,7 +29,13 @@ class Request
         }
 
         $this->_rawBody = file_get_contents('php://input') ?: '';
-        $this->_json = json_decode($this->_rawBody, true) ?? [];
+        try {
+            $this->_json = $this->_rawBody !== ''
+                ? json_decode($this->_rawBody, true, 512, JSON_THROW_ON_ERROR)
+                : [];
+        } catch (\JsonException) {
+            $this->_json = [];
+        }
     }
 
     /**

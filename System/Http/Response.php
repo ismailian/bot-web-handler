@@ -101,7 +101,13 @@ class Response
     {
         $this->addHeader('Content-Type', 'application/json');
 
-        die(json_encode($data));
+        try {
+            $encoded = json_encode($data, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $encoded = json_encode(['error' => 'Response encoding failed: ' . $e->getMessage()]);
+        }
+
+        die($encoded);
     }
 
     /**
