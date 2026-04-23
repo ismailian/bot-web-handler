@@ -8,3 +8,6 @@ tests
 todos.txt
 history.json
 /qodana.yaml
+CLAUDE.md
+.claudeignore
+.claude

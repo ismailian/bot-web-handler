@@ -324,24 +324,24 @@ In `config.php`, you can configure your routes to handle other requests.
  ],
 ```
 
-### Delegates (middlewares)
+### Middlewares
 
-delegates are meant to intercept incoming requests before hitting the final handler.
-To create a delegate, simply add new class to the `App\Delegates` directory, and implement the `IDelegate` interface.
+Middlewares are meant to intercept incoming requests before hitting the final handler.
+To create a middleware, simply add a new class to the `App\Middlewares` directory and implement the `IMiddleware` interface.
 
 This example demonstrates how to verify that the http request is coming from the admin.
 
 Example `Web` Handler:
 
 ```php
-use TeleBot\App\Delegates\IsAdmin;
+use TeleBot\App\Middlewares\IsAdmin;
 
 /**
  * list all users
  *
  * @return void
  */
-#[Delegate(IsAdmin::class)]
+#[Middleware(IsAdmin::class)]
 public function users(): void
 {
     // some logic to fetch users
@@ -351,7 +351,7 @@ public function users(): void
 }
 ```
 
-`IsAdmin` delegate:
+`IsAdmin` middleware:
 
 ```php
 /**
