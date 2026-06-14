@@ -63,6 +63,31 @@ class Database
     }
 
     /**
+     * Safely quote a SQL identifier (table or column name).
+     *
+     * Identifiers cannot be parameterized, so they are strictly validated
+     * against an allowlist and wrapped in backticks to prevent SQL injection
+     * when callers pass dynamic table/column names. Qualified names such as
+     * `db.table` are supported.
+     *
+     * @param string $identifier
+     * @return string
+     * @throws \InvalidArgumentException on an invalid identifier
+     */
+    protected function quoteIdentifier(string $identifier): string
+    {
+        $parts = array_map(function ($part) {
+            $part = trim($part, '`');
+            if ($part === '' || !preg_match('/^[A-Za-z0-9_]+$/', $part)) {
+                throw new \InvalidArgumentException("Invalid SQL identifier: $part");
+            }
+            return "`$part`";
+        }, explode('.', $identifier));
+
+        return implode('.', $parts);
+    }
+
+    /**
      * Set fetch mode (default: PDO::FETCH_ASSOC)
      *
      * @param int $mode PDO fetch mode
@@ -154,6 +179,7 @@ class Database
      */
     public function getById(string $table, int $id): array|object|bool
     {
+        $table = $this->quoteIdentifier($table);
         return $this->run("SELECT * FROM $table WHERE id = ?", [$id])->fetch();
     }
 
@@ -177,8 +203,9 @@ class Database
      */
     public function insert(string $table, array $data): int|string|bool
     {
+        $table = $this->quoteIdentifier($table);
         $columns = implode(',', array_map(
-                fn($k) => ('`' . trim($k, '`') . '`'),
+                fn($k) => $this->quoteIdentifier($k),
                 array_keys($data))
         );
 
@@ -215,14 +242,16 @@ class Database
      */
     public function update(string $table, array $data, array $where): int|bool
     {
+        $table = $this->quoteIdentifier($table);
         $values = array_values($data);
-        $fieldDetails = array_map(fn($key) => "`$key` = ?,", array_keys($data));
+        $fieldDetails = array_map(fn($key) => $this->quoteIdentifier($key) . " = ?,", array_keys($data));
         $fieldDetails = rtrim(join('', $fieldDetails), ',');
 
         $i = 0;
         $whereDetails = null;
         foreach ($where as $key => $value) {
-            $whereDetails .= $i == 0 ? "`$key` = ?" : " AND `$key` = ?";
+            $column = $this->quoteIdentifier($key);
+            $whereDetails .= $i == 0 ? "$column = ?" : " AND $column = ?";
             $values[] = $value;
             $i++;
         }
@@ -241,18 +270,19 @@ class Database
      */
     public function delete(string $table, array $where, int $limit = 1): int|bool
     {
+        $table = $this->quoteIdentifier($table);
         $values = array_values($where);
 
         $i = 0;
         $whereDetails = null;
         foreach ($where as $key => $value) {
-            $whereDetails .= $i == 0 ? "`$key` = ?" : " AND `$key` = ?";
+            $column = $this->quoteIdentifier($key);
+            $whereDetails .= $i == 0 ? "$column = ?" : " AND $column = ?";
             $i++;
         }
 
-        if (is_numeric($limit)) {
-            $limit = "LIMIT $limit";
-        }
+        $limit = (int)$limit;
+        $limit = "LIMIT $limit";
 
         $stmt = $this->run("DELETE FROM $table WHERE $whereDetails $limit", $values);
         return $stmt->rowCount();
@@ -266,6 +296,7 @@ class Database
      */
     public function deleteAll(string $table): int|bool
     {
+        $table = $this->quoteIdentifier($table);
         $stmt = $this->run("DELETE FROM $table");
         return $stmt->rowCount();
     }
@@ -279,6 +310,7 @@ class Database
      */
     public function deleteById(string $table, int $id): int|bool
     {
+        $table = $this->quoteIdentifier($table);
         $stmt = $this->run("DELETE FROM $table WHERE id = ?", [$id]);
         return $stmt->rowCount();
     }
@@ -293,8 +325,9 @@ class Database
     public function deleteByIds(string $table, string|array $ids): int|bool
     {
         $ids = (array)$ids;
+        $table = $this->quoteIdentifier($table);
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        $stmt = $this->run("DELETE FROM `$table` WHERE id IN ($placeholders)", $ids);
+        $stmt = $this->run("DELETE FROM $table WHERE id IN ($placeholders)", $ids);
         return $stmt->rowCount();
     }
 
@@ -306,6 +339,7 @@ class Database
      */
     public function truncate(string $table): int|bool
     {
+        $table = $this->quoteIdentifier($table);
         $stmt = $this->run("TRUNCATE TABLE $table");
         return $stmt->rowCount();
     }

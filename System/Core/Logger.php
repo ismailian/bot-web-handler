@@ -67,7 +67,7 @@ class Logger
             mkdir(self::LOG_DIR);
         }
 
-        $logPath = self::LOG_DIR . '/' . date('Y-m-d__H-i-s') . '.log';
+        $logPath = self::LOG_DIR . '/' . date('Y-m-d') . '.log';
         $encodedData = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         if (!$encodedData) {
             unset($data['trace']);
@@ -80,7 +80,8 @@ class Logger
          */
         $encodedData = self::redactSecrets($encodedData);
 
-        file_put_contents($logPath, $encodedData);
+        // Append so multiple entries within the same day are not lost.
+        file_put_contents($logPath, $encodedData . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 
     /**

@@ -16,12 +16,24 @@ class Process
     /**
      * execute system command
      *
-     * @param mixed ...$args
+     * The command name is passed through escapeshellcmd() and every argument
+     * through escapeshellarg() so that untrusted input cannot inject
+     * additional shell commands. Pass the binary as the first argument and
+     * each parameter as its own subsequent argument, e.g.
+     * Process::run('convert', $input, $output).
+     *
+     * @param string $command command/binary to execute
+     * @param string ...$args arguments to pass to the command
      * @return string|bool
      */
-    public static function run(...$args): string|bool
+    public static function run(string $command, string ...$args): string|bool
     {
-        return exec(join(' ', $args));
+        $cmd = escapeshellcmd($command);
+        foreach ($args as $arg) {
+            $cmd .= ' ' . escapeshellarg($arg);
+        }
+
+        return exec($cmd);
     }
 
 }

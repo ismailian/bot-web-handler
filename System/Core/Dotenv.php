@@ -28,8 +28,26 @@ class Dotenv
         if (file_exists(self::$envFilename) && is_file(self::$envFilename)) {
             $envFile = new SplFileObject(self::$envFilename);
             while (!$envFile->eof()) {
-                $validLine = preg_match('/^(?<key>[!a-zA-Z]\S+)=(?<value>.+)?$/', ($line = trim($envFile->fgets())));
-                if ($validLine) putenv(str_replace('"', '', $line));
+                $line = trim($envFile->fgets());
+                if ($line === '' || $line[0] === '#') {
+                    continue;
+                }
+
+                if (!preg_match('/^(?<key>[!a-zA-Z]\S+)=(?<value>.*)$/', $line, $m)) {
+                    continue;
+                }
+
+                $key = $m['key'];
+                $value = trim($m['value']);
+
+                // Strip a single pair of surrounding quotes (preserving inner ones).
+                if (strlen($value) >= 2
+                    && ($value[0] === '"' || $value[0] === "'")
+                    && $value[-1] === $value[0]) {
+                    $value = substr($value, 1, -1);
+                }
+
+                putenv("$key=$value");
             }
         }
     }
