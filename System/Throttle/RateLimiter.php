@@ -200,19 +200,20 @@ class RateLimiter
     }
 
     /**
-     * Get client IP
+     * Get client IP.
+     *
+     * Proxy headers (CF-Connecting-IP / X-Forwarded-For / X-Real-IP) are
+     * client-controllable and MUST NOT be trusted unless a trusted proxy is
+     * known to overwrite them. Defer to Request::ip(), which only honours
+     * those headers when TRUST_PROXY is explicitly enabled. Trusting them
+     * unconditionally lets a client rotate the header to get a fresh bucket
+     * on every request, defeating rate limiting entirely.
      *
      * @return string
      */
     private function clientIp(): string
     {
-        foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $header) {
-            if (!empty($_SERVER[$header])) {
-                // X-Forwarded-For can be a comma-separated list; take the first
-                return trim(explode(',', $_SERVER[$header])[0]);
-            }
-        }
-        return '0.0.0.0';
+        return request()->ip((bool)env('TRUST_PROXY', false));
     }
 
     /**

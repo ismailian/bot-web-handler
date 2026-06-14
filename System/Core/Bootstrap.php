@@ -192,7 +192,8 @@ class Bootstrap
      */
     protected function handleIncomingEvents(): void
     {
-        $this->verifyIP()
+        $this->requireVerification()
+            ->verifyIP()
             ->verifySignature()
             ->verifyRoute()
             ->verifyPayload();

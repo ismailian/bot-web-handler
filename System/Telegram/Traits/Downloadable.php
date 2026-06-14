@@ -35,10 +35,13 @@ trait Downloadable
         }
 
         /* write file to disk */
-        $filename ??= basename($this->filePath);
+        // basename() strips any directory components (e.g. "../") from the
+        // caller-supplied name. Telegram-provided file names are untrusted and
+        // could otherwise traverse outside the intended directory.
+        $filename = basename($filename ?? $this->filePath);
         $buffer = $this->getFileContent();
         if ($directory) {
-            $filename = $directory . (str_ends_with($directory, '/') ? '' : '/') . $filename;
+            $filename = rtrim($directory, '/') . '/' . $filename;
         }
 
         return (file_put_contents($filename, $buffer) > 0) ? $filename : false;

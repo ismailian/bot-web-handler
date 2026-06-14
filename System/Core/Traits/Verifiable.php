@@ -32,6 +32,32 @@ trait Verifiable
     ];
 
     /**
+     * Ensure at least one authentication mechanism is configured.
+     *
+     * Without a secret token, source-IP allowlist, or user whitelist, the
+     * webhook accepts any well-formed update from anyone who knows the URL,
+     * allowing update spoofing and session poisoning (session id = from.id).
+     * Fail closed by default; an operator can explicitly opt out (e.g. for
+     * local development) via ALLOW_UNVERIFIED_WEBHOOK=true.
+     *
+     * @return self
+     */
+    private function requireVerification(): self
+    {
+        $hasSignature = !empty(self::$config['signature']);
+        $hasIp = !empty(self::$config['ip']);
+        $hasWhitelist = !empty(self::$config['users']['whitelist']);
+
+        if (!$hasSignature && !$hasIp && !$hasWhitelist) {
+            if (!env('ALLOW_UNVERIFIED_WEBHOOK', false)) {
+                response()->setStatusCode(401)->end();
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * verify payload
      *
      * @return void
@@ -88,12 +114,76 @@ trait Verifiable
     private function verifyIP(): self
     {
         if (!empty(($sourceIp = self::$config['ip']))) {
-            if (!hash_equals($sourceIp, request()->ip())) {
+            $allowed = is_array($sourceIp) ? $sourceIp : [$sourceIp];
+            if (!$this->ipMatchesAny(request()->ip(), $allowed)) {
                 response()->setStatusCode(401)->end();
             }
         }
 
         return $this;
+    }
+
+    /**
+     * Check whether an IP matches any allowed entry.
+     *
+     * Each entry may be an exact IP or a CIDR range (IPv4 or IPv6),
+     * e.g. '149.154.160.0/20'.
+     *
+     * @param string $ip
+     * @param array $allowed
+     * @return bool
+     */
+    private function ipMatchesAny(string $ip, array $allowed): bool
+    {
+        foreach ($allowed as $candidate) {
+            $candidate = trim((string)$candidate);
+            if ($candidate === '') {
+                continue;
+            }
+
+            if (str_contains($candidate, '/')) {
+                if ($this->ipInCidr($ip, $candidate)) {
+                    return true;
+                }
+            } elseif (hash_equals($candidate, $ip)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine whether an IP falls within a CIDR range.
+     *
+     * @param string $ip
+     * @param string $cidr
+     * @return bool
+     */
+    private function ipInCidr(string $ip, string $cidr): bool
+    {
+        [$subnet, $bits] = explode('/', $cidr, 2);
+        $bits = (int)$bits;
+
+        $ipBin = @inet_pton($ip);
+        $subnetBin = @inet_pton($subnet);
+        if ($ipBin === false || $subnetBin === false || strlen($ipBin) !== strlen($subnetBin)) {
+            return false;
+        }
+
+        $bytes = intdiv($bits, 8);
+        $remainder = $bits % 8;
+
+        if ($bytes > 0 && strncmp($ipBin, $subnetBin, $bytes) !== 0) {
+            return false;
+        }
+
+        if ($remainder === 0) {
+            return true;
+        }
+
+        $mask = chr((0xff << (8 - $remainder)) & 0xff);
+        return (ord($ipBin[$bytes]) & ord($mask)) === (ord($subnetBin[$bytes]) & ord($mask));
     }
 
     /**
