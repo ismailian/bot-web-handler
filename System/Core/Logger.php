@@ -75,16 +75,57 @@ class Logger
         }
 
         /**
-         * telegram logs may contain the bot token,
-         * and it must be redacted before writing to the desk
+         * logs may contain secrets (bot token, DB/Redis credentials),
+         * and they must be redacted before writing to disk.
          */
-        if (preg_match('/bot(?<token>\d+:[a-zA-Z0-9-_]+)?/i', $encodedData, $result)) {
-            if (array_key_exists('token', $result)) {
-                $encodedData = str_replace($result['token'], '', $encodedData);
+        $encodedData = self::redactSecrets($encodedData);
+
+        file_put_contents($logPath, $encodedData);
+    }
+
+    /**
+     * Redact secrets from log output.
+     *
+     * Removes Telegram bot tokens wherever they appear and scrubs known
+     * secret values pulled from the environment (DB/Redis passwords, tokens).
+     *
+     * @param string $content
+     * @return string
+     */
+    protected static function redactSecrets(string $content): string
+    {
+        /** telegram bot tokens: <bot_id>:<secret> (anywhere in the output) */
+        $content = preg_replace('/\d{6,}:[A-Za-z0-9_-]{30,}/', '[REDACTED]', $content);
+
+        /** literal secret values sourced from the environment */
+        foreach (['TG_BOT_TOKEN', 'DATABASE_PASS', 'REDIS_PASSWORD', 'GITHUB_API_TOKEN'] as $key) {
+            $secret = getenv($key);
+            if (is_string($secret) && $secret !== '') {
+                $content = str_replace($secret, '[REDACTED]', $content);
             }
         }
 
-        file_put_contents($logPath, $encodedData);
+        return $content;
+    }
+
+    /**
+     * Strip argument values from a stack trace.
+     *
+     * Trace frames include call arguments by default, which can leak secrets
+     * (e.g. the credentials passed to new PDO(...)). Keep only non-sensitive
+     * frame metadata.
+     *
+     * @param array $trace
+     * @return array
+     */
+    protected static function sanitizeTrace(array $trace): array
+    {
+        return array_map(static function ($frame) {
+            if (is_array($frame)) {
+                unset($frame['args']);
+            }
+            return $frame;
+        }, $trace);
     }
 
     /**
@@ -99,7 +140,7 @@ class Logger
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTrace()
+            'trace' => self::sanitizeTrace($exception->getTrace())
         ]);
     }
 

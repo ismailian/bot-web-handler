@@ -32,6 +32,32 @@ trait Verifiable
     ];
 
     /**
+     * Ensure at least one authentication mechanism is configured.
+     *
+     * Without a secret token, source-IP allowlist, or user whitelist, the
+     * webhook accepts any well-formed update from anyone who knows the URL,
+     * allowing update spoofing and session poisoning (session id = from.id).
+     * Fail closed by default; an operator can explicitly opt out (e.g. for
+     * local development) via ALLOW_UNVERIFIED_WEBHOOK=true.
+     *
+     * @return self
+     */
+    private function requireVerification(): self
+    {
+        $hasSignature = !empty(self::$config['signature']);
+        $hasIp = !empty(self::$config['ip']);
+        $hasWhitelist = !empty(self::$config['users']['whitelist']);
+
+        if (!$hasSignature && !$hasIp && !$hasWhitelist) {
+            if (!env('ALLOW_UNVERIFIED_WEBHOOK', false)) {
+                response()->setStatusCode(401)->end();
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * verify payload
      *
      * @return void
