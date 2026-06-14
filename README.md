@@ -19,9 +19,14 @@ A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 
 - domain url `APP_DOMAIN`
 - bot token `BOT_TOKEN`
-- webhook secret `TG_WEBHOOK_SIGNATURE` (Optional)
+- webhook secret `TG_WEBHOOK_SIGNATURE` (**recommended** — see Security below)
 - Telegram source IP `TG_WEBHOOK_SOURCE_IP` (Optional)
-    - I don't recommend setting this, because the Telegram IP will definitely change.
+    - Accepts a single IP, or a comma/array of IPs and CIDR ranges (e.g. `149.154.160.0/20`).
+    - The Telegram IP may change, so prefer the webhook secret over this.
+- `TRUST_PROXY` (default `false`) — set to `true` only when a trusted proxy
+  (nginx/Cloudflare) overwrites client-IP headers; otherwise spoofed headers
+  could bypass rate limiting.
+- `ALLOW_UNVERIFIED_WEBHOOK` (default `false`) — see Security below.
 
 #### 2. Set the following properties in the `config.php` file
 
@@ -40,6 +45,29 @@ A webhook driven handler for [Telegram Bots](https://core.telegram.org/bots/api)
 | `php cli migrate <table>`      | migrate tables (users, events, sessions) |
 | `php cli queue:init`           | create queue table + jobs directory      |
 | `php cli queue:work`           | run queue                                |
+
+## Security
+
+**Authenticate the webhook.** Incoming updates are verified against the secret
+token, a source-IP allowlist, or a user whitelist. If **none** of these is
+configured the handler fails closed and rejects every update with `401`. Set
+at least one — the secret token (`TG_WEBHOOK_SIGNATURE`) is strongly
+recommended, since without authentication anyone who learns your webhook URL
+can forge updates and poison user sessions. For local development only you may
+set `ALLOW_UNVERIFIED_WEBHOOK=true` to bypass this check.
+
+**Serve only a public document root.** Point your web server's document root at
+a dedicated public directory (or otherwise block direct HTTP access to
+`logs/`, `session/`, `.env`, `config.php`, `cli`, and `composer.json`). Logs
+can contain request data; never expose them. Example (nginx):
+
+```nginx
+location ~* /(\.env|config\.php|composer\.(json|lock)|cli)$ { deny all; }
+location ~* /(logs|session)/ { deny all; }
+```
+
+**Run behind HTTPS** and keep `TRUST_PROXY=false` unless a trusted proxy sets
+the client-IP headers (see above).
 
 ## Examples
 

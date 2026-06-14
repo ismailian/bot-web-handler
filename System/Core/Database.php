@@ -152,7 +152,10 @@ class Database
                 $stmt->execute($args);
             }
         } catch (Exception $e) {
+            // Log then re-throw: returning a statement whose execute() failed
+            // leads to silent data corruption further up the call stack.
             Logger::onException($e);
+            throw $e;
         }
 
         return $stmt;
